@@ -1,2 +1,4 @@
 # beita
-welcome to myGit
+you can:
+npm install
+npm install babel-polyfill --save-dev
