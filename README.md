@@ -1,2 +1,2 @@
 # beita
-this is mygit
+welcome to myGit
