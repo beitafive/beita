@@ -1,3 +1,5 @@
 # beita
-welcome to myGit
-my name is wuzq
+
+you can:
+npm install
+npm install babel-polyfill --save-dev
