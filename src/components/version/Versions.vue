@@ -1,7 +1,9 @@
 <template>
 	<div class="w-versions">
 		<h2 style="margin-bottom:20px;">版本管理</h2>
-		<button class="addUser" @click="dialogVisible = true">+ 添加版本</button>
+		<router-link to="/addversion">
+			<button class="addUser">+ 添加版本</button>			
+		</router-link>
 		<p style="margin-top:20px;"><el-cascader
 		    placeholder="请选择项目"
 		    :options="projectarr"
@@ -10,7 +12,15 @@
 		    v-model="findproject"
 		    @change="checkChange"
 		  ></el-cascader>
-		  <el-input v-model="f_title" placeholder="请输入内容" style="width:200px;margin: 0 100px;"></el-input>
+		  <el-select v-model="status" placeholder="请选择状态">
+		    <el-option
+		      v-for="item in statusArr"
+		      :key="item.value"
+		      :label="item.label"
+		      :value="item.value">
+		    </el-option>
+		  </el-select>
+		  <el-input v-model="f_title" placeholder="请输入标题" style="width:200px;"></el-input>
 		   <el-button type="primary" icon="circle-cross" @click="clearSearch">清空</el-button>
 		  <el-button type="primary" icon="search" @click="getList('1',findprojectinfo,f_title)">搜索</el-button>
 		</p>
@@ -40,44 +50,31 @@
 			      width="200">
 			    </el-table-column>
 			    <el-table-column
+			      prop="status_name"
+			      label="状态"
+			      width="140">
+			    </el-table-column>
+			    <el-table-column
 			      prop="created_at"
 			      label="创建时间"
-			      width="300">
+			      width="230">
 			    </el-table-column>
 			    <el-table-column
 			      label="操作"
-			      width="100">
+			      width="230">
 			      <template scope="scope">
-			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index)">编辑</el-button>
+			      	<el-button type="text" size="small" v-if="role=='developer'&&scope.row.status=='WAIT'" @click="changeItem(scope.row,'FINISHED')" >完成</el-button>
+			      	<el-button type="text" size="small" v-if="role=='tester'&&scope.row.status=='FINISHED'" @click="changeItem(scope.row,'TESTED')">测试通过</el-button>
+			      	<el-button type="text" size="small" v-if="(role=='project_manager'||role=='depart_manager')&&scope.row.status=='TESTED'" @click="changeItem(scope.row,'CLOSED')">关闭</el-button>
+			      	<router-link :to="{path:'editversion',query:{id:scope.row.id}}" v-if="(role=='project_manager'||role=='depart_manager')">
+				        <el-button type="text" size="small">编辑</el-button>			  
+			      	</router-link>
 			        &nbsp;<router-link :to="{path:'/VsDoc',query:{id:scope.row.id}}" target="_blank"><el-button type="text" size="small">查看</el-button></router-link>
 			      </template>
 			    </el-table-column>
 			  </el-table>
-			  <p><button @click="getList(+pageIndex-1,findprojectinfo,f_title)">上一页</button>{{+pageIndex}}/{{allCount}}<button @click="getList(+pageIndex+1,findprojectinfo,f_title)">下一页</button></p>
+			  <p><el-button type="primary" icon="arrow-left" @click="getList(+pageIndex-1,findprojectinfo,f_title)">上一页</el-button> {{+pageIndex}} / {{allCount}} <el-button type="primary" @click="getList(+pageIndex+1,findprojectinfo,f_title)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
 		</div>
-		<el-dialog title="添加版本" v-model="dialogVisible" size="tiny">
-			<div class='addUserInfo'>
-				<p>项目<el-cascader
-				    placeholder="请选择项目"
-				    :options="projectarr"
-				    filterable
-				    style="float:right;width:75%"
-				    v-model="addproject"
-				    @change="addcheckChange"
-				  ></el-cascader>
-				</p>
-				<p>标题 <input type="text" v-model="addtitle" /></p>
-				<p>简介 <input type="text" v-model="addsynopsis" /></p>
-				<div style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
-				内容	
-				<textarea class="content" placeholder="请添加内容描述" v-model="addcontent"></textarea>
-				</div>
-			</div>
-		  <span slot="footer" class="dialog-footer">
-		    <el-button @click="dialogVisible = false">取 消</el-button>
-		    <el-button type="primary" @click="addNewUser">确 定</el-button>
-		  </span>
-		</el-dialog>
 		<el-dialog title="编辑版本信息" v-model="updateUserInfos" size="tiny">
 			<div class='addUserInfo'>
 				<p>标题 <input type="text" v-model="updatetitle" /></p>
@@ -100,19 +97,16 @@ export default({
 	name:'Versions',
 	data(){
 		return{
-			addtitle:'',//添加-标题
-			addcontent:'',//添加-内容
-			addsynopsis:'',//添加-简介
-			addprojectinfo:'',//添加-项目
-			addproject:[],
+			role:localStorage.role,		//角色
 			f_title:'',//搜索-标题
 			findprojectinfo:'',//搜索-项目
 			findproject:[],
+			status:'',
+			statusArr:[{value:'WAIT',label:'进行中'},{value:'FINISHED',label:'已完成'},{value:'TESTED',label:'测试通过'},{value:'CLOSED',label:'已关闭'}],
 			tableData:[],//列表数据
 			pageIndex:1,//页面下标
 			count:'',//列表总数
 			allCount:'',//页面总数
-			dialogVisible:false,//添加弹窗
 			updateUserInfos:false,//编辑弹窗
 			updatetitle:'',//编辑 标题
 			updatesynopsis:'',//编辑 简介
@@ -134,7 +128,27 @@ export default({
 	 	}
 	},
 	methods:{
-		//获取版本列表
+		changeItem(row,status){
+			let that = this;
+			$.ajax({
+				type:"get",
+				dataType:'json',
+				url:"/api.php?s=/version/change_status",
+				data:{
+					id:row.id,
+					status:status
+				},
+				success:function(res){
+					let data = res;
+					if(data.error==1){
+						that.$message(data.error_message)
+						return;
+					}
+					that.getList();
+				}
+			});
+		},
+		//获取项目列表
 		getVersions(){
 			let that = this;
 			$.ajax({
@@ -163,6 +177,7 @@ export default({
 				data:{
 					page:x||1,
 					project_id:y,
+					status:that.status,
 					title:z
 				},
 				dataType:'json',
@@ -183,89 +198,15 @@ export default({
 				}
 			});
 		},
-		//添加版本功能
-		addNewUser(){
-			let that = this;
-			$.ajax({
-				type:"post",
-				data:{
-					project_id:that.addprojectinfo,
-					short_desc:that.addsynopsis,
-					title:that.addtitle,
-					content:that.addcontent,
-				},
-				url:"/api.php?s=/add_version",
-				dataType:'json',
-				success:function(res){
-					let data = res;
-					if(data.error==1){
-						that.$message(data.error_message);
-						return;
-					}
-					if(data.error==0){
-						that.dialogVisible = false;
-						that.addtitle = "";
-						that.addproject = [];
-						that.addcontent = "";
-						that.addsynopsis = '';
-						that.addprojectinfo = '';
-						that.allCount = data.data.count;
-						that.$message("添加成功");
-					}
-					that.getList();
-				}
-			});
-		},
-		//编辑用户信息   x为下标index
-		updateUserInfo(x){
-			this.updateUserInfos = true;
-			this.updatesynopsis = this.tableData[x].short_desc;
-			this.updatetitle = this.tableData[x].title;
-			this.updatecontent = this.tableData[x].content;
-			this.updateid = this.tableData[x].id;
-			this.updateprojectid = this.tableData[x].project_id;
-			this.updateIndex = x;
-		},
-		//发送更新用户信息功能
-		updateUser(){
-			let that = this;
-			$.ajax({
-				type:"post",
-				data:{
-					id:that.updateid,
-					project_id:that.updateprojectid,
-					short_desc:that.updatesynopsis,
-					title:that.updatetitle,
-					content:that.updatecontent
-				},
-				url:"/api.php?s=/update_version",
-				dataType:'json',
-				success:function(res){
-					let data = res;
-					if(data.error == 1){
-						that.$message(data.error_message)
-						return;
-					}
-					if(data.error == 0){
-						that.$message("更新成功");
-						that.getList(that.pageIndex);
-						that.updateUserInfos = false;
-					}
-				}
-			});
-		},
 		//获取checkbox的值
 		checkChange(value){
 			this.findprojectinfo = value[0];
-		},
-		//获取checkbox的值
-		addcheckChange(value){
-			this.addprojectinfo = value[0];
 		},
 		//清空搜索框
 		clearSearch(){
 			this.findproject = [];
 			this.f_title = '';
+			this.status = '';
 			this.findprojectinfo = '';
 		}
 	}
@@ -286,6 +227,7 @@ export default({
 		border:1px solid #ddd;
 		background-color: #fff;
 		border-radius:3px;
+		cursor:pointer;
 	}
 	.w-versions .addUserInfo{
 		box-sizing: border-box;
@@ -316,15 +258,6 @@ export default({
 		margin-top:50px;
 		text-align: center;
 		font-size:14px;
-	}
-	.w-versions .tables p button{
-		width:68px;height:28px;
-		margin:0 20px;
-		background:#fff;
-		border:1px solid #ddd;
-		font-size:14px;
-		color:#333;
-		border-radius:3px;
 	}
 	.w-versions .content,.w-versions .updateContent{
 		width:75%;

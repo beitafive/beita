@@ -29,15 +29,14 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
     	'/api.php':{
-        target:'http://dev.anchumall.cc:9526/api.php',
+        target:'http://10.10.40.190/anchu_OA/api/public/api.php',
         changeOrigin:true,
         pathRewrite:{
             '^/api.php':''
         }
       }
     },
-    //http://dev.anchumall.cc:9526/api.php?s=front/doc/get_list
-    //http://10.10.40.199/oa/api2/public/api.php 
+    //http://10.10.40.190/anchu_OA/api/public/api.php
     //http://dev.anchumall.cc:9526/api.php
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README

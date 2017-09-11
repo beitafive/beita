@@ -64,20 +64,13 @@
 			      width="250">
 			    </el-table-column>
 			    <el-table-column
-			      prop="request"
-			      label="request"
-			      width="200">
-			    </el-table-column>
-			    <el-table-column
-			      prop="response"
-			      label="response"
-			      width="180">
-			    </el-table-column>
-			    <el-table-column
 			      label="操作"
 			      width="120">
 			      <template scope="scope">
 			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index,scope.row)">编辑</el-button>
+			        <router-link :to="{path:'/apidoc',query:{id:scope.row.id}}" target="_blank">
+				        <el-button type="text" size="small" style="margin-left:15px">查看</el-button>			        	
+			        </router-link>
 			      </template>
 			    </el-table-column>
 			 </el-table>

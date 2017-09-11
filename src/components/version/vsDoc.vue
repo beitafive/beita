@@ -1,48 +1,78 @@
 <template>
-	<div class="w-doc">
-		<h2>{{msg.title}}</h2>
+	<div class="w-content">
+		<h3>{{msg.project_name}}<span>{{msg.title}}</span></h3>
 		<p>创建时间：{{msg.created_at}}</p>
-		<p v-html="msg.html"></p>
+		<p>简介：{{msg.short_desc}}</p>
+		<p v-html="'内容：'+msg.html">内容：</p>
+		<h4>版本进度</h4>
+		<p>任务总数:{{task.task_amount}}</p>
+		<p>进度:{{task.progress}}%</p>
+		<p>已完成的任务总数:{{task.task_finished_amount}}</p>
+		<h4>进度详情</h4>
+		<el-table
+		    :data="taskList"
+		    border
+		    style="width: 301px;margin-left:300px;">
+		    <el-table-column
+		      prop="realname"
+		      label="姓名"
+		      width="100">
+		    </el-table-column>
+		    <el-table-column
+		      prop="amount"
+		      label="任务总数"
+		      width="100">
+		    </el-table-column>
+		    <el-table-column
+		      prop="point_amount"
+		      label="工时总量 "
+		      width="100">
+		    </el-table-column>
+		  </el-table>
 	</div>
 </template>
 
 <script>
-	export default{
-		name:'doc',
+	export default({
+		name:'content',
 		data(){
 			return{
-				msg:''
+				id:'',
+				msg:'',			//概括
+				task:'',		//任务概括
+				taskList:[],	//任务列表
 			}
+		},
+		created(){
+			this.id = this.$route.query.id;
 		},
 		mounted(){
-			this.getInfo();
-		},
-		methods:{
-			getInfo(){
-				let that = this;
-				$.ajax({
-					type:"get",
-					url:"/api.php?s=/front/doc/get",
-					data:{
-						id:that.$route.query.id
-					},
-					dataType:'json',
-					success:function(res){
-						if(res.error == 0){
-							that.msg = res.data;				
-						}
-						if(res.error == 1){
-							that.$message(res.error_message);
-						}
+			let that = this;
+			$.ajax({
+				type:"get",
+				url:"/api.php?s=front/version/get_detail",
+				data:{
+					id:that.id
+				},
+				dataType:'json',
+				success:function(res){
+					let data = res;
+					if(data.error == 0){
+						that.msg = data.data.task;
+						that.task = data.data.stat;
+						that.taskList = data.data.stat_rows;
 					}
-				});
-			}
+					if(data.error == 1){
+						that.$message(data.error_message);
+					}
+				}
+			});
 		}
-	}
+	})
 </script>
 
 <style scoped>
-	.w-doc{
+	.w-content{
 		width:900px;
 		min-height:1000px;
 		background:#fff;
@@ -51,13 +81,25 @@
 		padding:30px 50px;
 		font-family: "microsoft yahei";
 	}
-	.w-doc h2{
+	.w-content h3{
 		font-size:50px;
 		text-align: center;
 	}
-	.w-doc p{
-		margin: 50px 0 20px 50px;
+	.w-content h4{
+		font-size:36px;
+		text-align: center;
+		margin-bottom:20px;
+	}
+	.w-content h3 span{
+		font-size:20px;
+		color:#3c3c3c;
+		font-weight: 100;
+		margin-left:20px;
+	}
+	.w-content p{
+		margin: 20px 0 20px 50px;
 		font-size:18px;
+		line-height:30px;
 	}
 	html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 

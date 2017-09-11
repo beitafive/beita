@@ -1,7 +1,9 @@
 <template>
 	<div class="w-document">
 		<h2>文档管理</h2>
-		<button class="addUser" @click="addTip = true">+ 添加文档</button>
+		<router-link to="/createdoc">
+			<button class="addUser">+ 添加文档</button>			
+		</router-link>
 		<p style="margin-top:20px;">
 		  <el-input v-model="f_title" placeholder="请输入标题" style="width:200px;margin-right:50px;"></el-input>
 		  <el-button type="primary" icon="search" @click="getlist(1)">搜索</el-button>
@@ -13,6 +15,11 @@
 		    border
 		    style="width: 100%">
 		    <el-table-column
+		      prop="id"
+		      label="ID"
+		      width="120">
+		    </el-table-column>
+		    <el-table-column
 		      prop="title"
 		      label="标题"
 		      width="180">
@@ -21,7 +28,7 @@
 		      label="操作"
 		      width="150">
 		      <template scope="scope">
-		      	<router-link :to="{path:'/editdoc',query:{id:scope.row.id}}" target="_blank">
+		      	<router-link :to="{path:'/editdoc',query:{id:scope.row.id}}">
 		      		<el-button type="text" style="margin-right:20px;">编辑</el-button>
 		      	</router-link>	
 		      	<router-link :to="{path:'/doc',query:{id:scope.row.id}}" target="_blank">
@@ -32,21 +39,6 @@
 		  </el-table>
 		  <p><button @click="getlist(+pageIndex-1)">上一页</button>{{+pageIndex}}/{{allCount}}<button @click="getlist(+pageIndex+1)">下一页</button></p>
 		</div>
-		
-		<!--添加BUG-->
-		<el-dialog title="添加BUG" v-model="addTip" size="tiny">
-			<div class='addDoc'>
-				<p>标题 <input type="text" v-model="addtitle" /></p>
-				<div style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
-				内容
-				<textarea class="content" placeholder="请添加内容描述" v-model="addcontent"></textarea>
-				</div>
-			</div>
-		  <span slot="footer" class="dialog-footer">
-		    <el-button @click="addTip = false">取 消</el-button>
-		    <el-button type="primary" @click="createDoc">确 定</el-button>
-		  </span>
-		</el-dialog>
 	</div>
 </template>
 
@@ -56,13 +48,9 @@
 		data(){
 			return{
 				tableData:[],		//列表数据
-				addTip:false,		//弹窗判断 - 添加
-				addtitle:'',		//标题 	- 添加
-				addcontent:'',		//内容	- 添加
 				f_title:'',			//标题 	- 搜索
 				pageIndex:1,		//当前页
 				allCount:1,			//总数
-				
 			}
 		},
 		mounted(){
@@ -99,27 +87,6 @@
 					}
 				});
 			},
-			//创建文档
-			createDoc(){
-				let _this = this;
-				$.ajax({
-					type:"get",
-					url:"/api.php?s=/front/doc/create",
-					dataType:'json',
-					data:{
-						title:_this.addtitle,
-						content:_this.addcontent
-					},
-					success:(res)=>{
-						if(res.error == 0){
-							_this.addTip = false;
-							_this.getlist(1);
-						}else{
-							_this.$message.error(res.error_msg)
-						}
-					}
-				});
-			},
 		}
 	}
 </script>
@@ -139,6 +106,7 @@
 		border:1px solid #ddd;
 		background-color: #fff;
 		border-radius:3px;
+		cursor: pointer;
 	}
 	.w-document .addDoc{
 		box-sizing: border-box;

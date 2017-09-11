@@ -1,14 +1,13 @@
 <template>
-	<div class="w-doc">
+	<div class="w-historydoc">
 		<h2>{{msg.title}}</h2>
-		<p>创建时间：{{msg.created_at}}</p>
-		<p v-html="msg.html"></p>
+		<p v-html="'内容：<br>'+msg.html"></p>
 	</div>
 </template>
 
 <script>
 	export default{
-		name:'doc',
+		name:'historydoc',
 		data(){
 			return{
 				msg:''
@@ -22,17 +21,18 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/doc/get",
+					url:"/api.php?s=/front/get_history_detail",
 					data:{
 						id:that.$route.query.id
 					},
 					dataType:'json',
 					success:function(res){
-						if(res.error == 0){
-							that.msg = res.data;				
+						let data = res;
+						if(data.error == 0){
+							that.msg = data.data;				
 						}
-						if(res.error == 1){
-							that.$message(res.error_message);
+						if(data.error == 1){
+							that.$message(data.error_message);
 						}
 					}
 				});
@@ -42,20 +42,26 @@
 </script>
 
 <style scoped>
-	.w-doc{
-		width:900px;
-		min-height:1000px;
+	.w-historydoc{
+		width:1000px;
+		min-height:1200px;
 		background:#fff;
 		margin: 20px auto 50px;
 		box-shadow:0 0 5px 5px #ccc;
-		padding:30px 50px;
+		padding:30px 20px;
 		font-family: "microsoft yahei";
 	}
-	.w-doc h2{
+	.w-historydoc h2{
 		font-size:50px;
 		text-align: center;
 	}
-	.w-doc p{
+	.w-historydoc h2 span{
+		font-size:20px;
+		color:#3c3c3c;
+		font-weight: 100;
+		margin-left:20px;
+	}
+	.w-historydoc p{
 		margin: 50px 0 20px 50px;
 		font-size:18px;
 	}

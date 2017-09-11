@@ -1,7 +1,6 @@
 //wzq
 import Vue from 'vue'
 import Vuex from 'vuex'
-import * as types from './types'
 import "babel-polyfill"
 
 Vue.use(Vuex)

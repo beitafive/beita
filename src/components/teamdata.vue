@@ -1,6 +1,6 @@
 <template>
 	<div class="w-document">
-		<h2>文档管理</h2>
+		<h2>团队统计</h2>
 		<p style="margin-top:20px;">
 		  <el-date-picker
 		      v-model="beginTime"
@@ -27,22 +27,22 @@
 		    </el-table-column>
 		    <el-table-column
 		      prop="task_amount"
-		      label="完成的任务数"
+		      label="完成任务数"
 		      width="130">
 		    </el-table-column>
 		    <el-table-column
-		      prop="task_dp_amount"
-		      label="完成的任务点数"
+		      prop="task_point_amount"
+		      label="完成工时数"
 		      width="130">
 		    </el-table-column>
 		    <el-table-column
 		      prop="task_wait_amount"
-		      label="等待的任务数"
+		      label="待完成任务数"
 		      width="130">
 		    </el-table-column>
 		    <el-table-column
-		      prop="task_wait_dp_amount"
-		      label="等待的任务点数"
+		      prop="task_wait_point_amount"
+		      label="待完成工时数 "
 		      width="130">
 		    </el-table-column>
 		    <el-table-column
@@ -66,9 +66,15 @@
 		data(){
 			return{
 				tableData:[],		//列表数据
-				beginTime:'',
-				endTime:'',
+				beginTime:'',		//
+				endTime:'',			
+				sTime:'',
+				eTime:'',
 			}
+		},
+		beforeMount(){
+			this.beginTime = new Date();
+			this.endTime = new Date();
 		},
 		mounted(){
 			this.getList();
@@ -76,24 +82,23 @@
 		methods:{
 			getList(){
 				let that = this;
-				let sTime,eTime;
 				if(that.beginTime != ""){
-					sTime = that.beginTime.getFullYear()+'-'+(that.beginTime.getMonth()+1)+'-'+that.beginTime.getDate();
+					that.sTime = that.beginTime.getFullYear()+'-'+(that.beginTime.getMonth()+1)+'-'+that.beginTime.getDate();
 				}else{
-					sTime = '';
+					that.sTime = '';
 				}
 				if(that.endTime != ""){
-					eTime = that.endTime.getFullYear()+'-'+(that.endTime.getMonth()+1)+'-'+that.endTime.getDate();
+					that.eTime = that.endTime.getFullYear()+'-'+(that.endTime.getMonth()+1)+'-'+that.endTime.getDate();
 				}else{
-					eTime = '';
+					that.eTime = '';
 				}
 				$.ajax({
 					type:"get",
 					url:"/api.php?s=front/stat/team",
 					dataType:'json',
 					data:{
-						start_date:sTime,
-						end_date:eTime
+						start_date:that.sTime,
+						end_date:that.eTime
 					},
 					success:(res)=>{
 						if(res.error == 0){

@@ -1,14 +1,17 @@
 <template>
-	<div class="w-doc">
+	<div class="w-taskdoc">
 		<h2>{{msg.title}}</h2>
 		<p>创建时间：{{msg.created_at}}</p>
-		<p v-html="msg.html"></p>
+		<p>执行者：{{msg.owner_name}}</p>
+		<p>提出者：{{msg.submit_user_name}}</p>
+		<span>内容:</span>
+		<div v-html="msg.html"></div>
 	</div>
 </template>
 
 <script>
 	export default{
-		name:'doc',
+		name:'taskdoc',
 		data(){
 			return{
 				msg:''
@@ -22,17 +25,18 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/doc/get",
+					url:"/api.php?s=/front/task/get",
 					data:{
 						id:that.$route.query.id
 					},
 					dataType:'json',
 					success:function(res){
-						if(res.error == 0){
-							that.msg = res.data;				
+						let data = res;
+						if(data.error == 0){
+							that.msg = data.data;				
 						}
-						if(res.error == 1){
-							that.$message(res.error_message);
+						if(data.error == 1){
+							that.$message(data.error_message);
 						}
 					}
 				});
@@ -42,7 +46,7 @@
 </script>
 
 <style scoped>
-	.w-doc{
+	.w-taskdoc{
 		width:900px;
 		min-height:1000px;
 		background:#fff;
@@ -51,13 +55,17 @@
 		padding:30px 50px;
 		font-family: "microsoft yahei";
 	}
-	.w-doc h2{
+	.w-taskdoc h2{
 		font-size:50px;
 		text-align: center;
 	}
-	.w-doc p{
-		margin: 50px 0 20px 50px;
+	.w-taskdoc p{
+		margin: 50px 0 20px 0px;
 		font-size:18px;
+	}
+	.w-taskdoc span{
+		font-size:26px;
+		font-weight: 600;
 	}
 	html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
@@ -186,5 +194,5 @@
 	
 	@media only screen and (min-width: 768px) {
 	    body{font-size:16px;}
-	}
+	} 
 </style>

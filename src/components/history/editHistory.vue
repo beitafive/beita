@@ -1,26 +1,26 @@
 <template>
-	<div class="editdoc">
-		<h2>文档修改</h2>
-		<p><span>标题</span> <input type="text" v-model="msg.title" placeholder="请填写标题" /></p>
+	<div class='edithistory'>
+		<h2>部门历史</h2>
+		<p><span>标题</span> <input type="text" v-model="msg.title" /></p>
 		<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
 		    <span style="float:left">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="msg.content"></textarea>
 		</p>
 		<p>
-			<el-button type="primary" @click="updateDocs" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
-			<router-link to="/document"><el-button type="info" style="width:100px"> 取 消 </el-button></router-link>
+			 <el-button type="primary" @click="addHistory" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
+			<router-link to="/history"><el-button type="info" style="width:100px"> 取 消 </el-button></router-link>
 		</p>
 	</div>
 </template>
 
 <script>
 	export default{
-		name:'editdoc',
+		name:'edithistory',
 		data(){
 			return{
 				msg:{
 					title:'',
-					content:'',
-				}
+					content:''
+				},
 			}
 		},
 		mounted(){
@@ -31,66 +31,66 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/doc/get",
+					url:"/api.php?s=/front/get_history_detail",
 					data:{
 						id:that.$route.query.id
 					},
 					dataType:'json',
 					success:function(res){
-						if(res.error == 0){
-							that.msg = res.data;				
-						}
-						if(res.error == 1){
-							that.$message(res.error_message);
+						let data = res;
+						if(data.error == 0){
+							that.msg = data.data;				
 						}
 					}
 				});
 			},
-			//更新文档
-			updateDocs(){
+			//添加任务
+			addHistory(){
 				let that = this;
 				$.ajax({
-					type:"get",
-					url:"/api.php?s=/front/doc/update",
-					dataType:'json',
+					type:"post",
 					data:{
-						id:that.$route.query.id,
+						id:that.$route.query.id || '',
 						title:that.msg.title,
-						content:that.msg.content
+						content:that.msg.content,
 					},
-					success:(res)=>{
-						if(res.error == 0){
-							that.$router.push("/document")
-							that.$message.success("保存成功！")
-						}else{
-							that.$message.error(res.error_msg)
+					dataType:'json',
+					url:"/api.php?s=/front/get_history_addandedit",
+					success:function(res){
+						let data = res
+						if(data.error==1){
+							that.$message(data.error_message);
+							return;
+						}
+						if(data.error==0){
+							that.$message("保存成功");
+							that.$router.push("/history");
 						}
 					}
 				});
-			}
+			},
 		}
 	}
 </script>
-
 <style scoped>
-	.editdoc{
+	.edithistory{
 		float:left;
 		width:85%;
 		background:#fff;
 		box-sizing:border-box;
-		padding:20px 50px 150px 30px;
+		padding:20px 50px 150px 80px;
 	}
-	.editdoc h2{
+	.edithistory h2{
 		margin-bottom: 40px;
 	}
-	.editdoc p{
+	.edithistory p{
 		margin:20px 0;
 	}
-	.editdoc p span{
+	.edithistory p span{
 		width:100px;
 		display: inline-block;
 	}
-	.editdoc p input{
+	.edithistory p input{
 		width:250px;
 		height:34px;
 		border:1px solid #ddd;
@@ -98,7 +98,7 @@
 		box-sizing: border-box;
 		padding:4px;
 	}
-	.editdoc p textarea{
+	.edithistory p textarea{
 		resize: none;
 		width:900px;
 		min-height:600px;

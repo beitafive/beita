@@ -2,6 +2,8 @@
 	<div class="w-account">
 		<h2 style="margin-bottom:20px;">账户管理</h2>
 		<button class="addUser" @click="dialogVisible = true">+ 添加账户</button>
+		<p style="margin-top:30px">标题<el-input v-model="f_title" placeholder="请输入内容" style="width:200px;margin:0 15px"></el-input>
+			<el-button type="primary" icon="search" @click="getList('1')">搜索</el-button></p>
 		<div class="tables">
 			<el-table
 			    :data="tableData"
@@ -18,9 +20,11 @@
 			      width="200">
 			    </el-table-column>
 			    <el-table-column
-			      prop="content"
 			      label="内容"
 			      width="400">
+			      <template scope="scope">
+			      	<div v-html="scope.row.content"></div>
+			      </template>
 			    </el-table-column>
 			    <el-table-column
 			      label="操作"
@@ -30,7 +34,8 @@
 			      </template>
 			    </el-table-column>
 			  </el-table>
-			  <p><button @click="getList(+pageIndex-1)">上一页</button>{{+pageIndex}}/{{allCount}}<button @click="getList(+pageIndex+1)">下一页</button></p>
+			  <p class="contor"><el-button type="primary" icon="arrow-left" @click="getList(+pageIndex-1)">上一页</el-button>{{+pageIndex}}/{{allCount}}
+			  	<el-button type="primary" @click="getList(+pageIndex+1)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
 		</div>
 		<el-dialog title="添加账户" v-model="dialogVisible" size="tiny">
 			<div class='addUserInfo'>
@@ -66,6 +71,7 @@ export default({
 	name:'Account',
 	data(){
 		return{
+			f_title:'',
 			tableData:[],
 			count:'',
 			pageIndex:1,
@@ -94,7 +100,8 @@ export default({
 			$.ajax({
 				type:"get",
 				data:{
-					page:x||1
+					page:x||1,
+					title:that.f_title
 				},
 				dataType:'json',
 				url:"/api.php?s=/get_account_list",
@@ -221,19 +228,10 @@ export default({
 		border-top:1px solid #ddd;
 		padding-top:20px;
 	}
-	.w-account .tables p{
+	.w-account .tables .contor{
 		margin-top:50px;
 		text-align: center;
 		font-size:14px;
-	}
-	.w-account .tables p button{
-		width:68px;height:28px;
-		margin:0 20px;
-		background:#fff;
-		border:1px solid #ddd;
-		font-size:14px;
-		color:#333;
-		border-radius:3px;
 	}
 	.w-account .content,.w-account .updateContent{
 		width:75%;

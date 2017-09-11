@@ -1,5 +1,5 @@
 <template>
-	<div class="usercontorl">
+	<div class="usercontrol">
 		<h2 style="margin-bottom:20px;">用户管理</h2>
 		<button class="addUser" @click="dialogVisible = true">+ 添加用户</button>
 		<div class="tables">
@@ -44,14 +44,20 @@
 			    </el-table-column>
 			    <el-table-column
 			      label="操作"
-			      width="100">
+			      width="160">
 			      <template scope="scope">
 			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index)">编辑</el-button>
+			        <el-button type="text" size="small" @click="getrolelist(scope.row)">分配角色</el-button>
 			      </template>
 			    </el-table-column>
 			  </el-table>
 			  <p><button @click="getList(+pageIndex-1,10)">上一页</button>{{+pageIndex}}/{{allCount}}<button @click="getList(+pageIndex+1,10)">下一页</button>总人数：{{count}}</p>
 		</div>
+		<!--
+        	作者：beitafive@163.com
+        	时间：2017-05-06
+        	描述：添加弹窗
+        -->
 		<el-dialog title="添加用户" v-model="dialogVisible" size="tiny">
 			<div class='addUserInfo'>
 				<p>用户名 <input type="text" v-model="addname" placeholder="用户名必填"/></p>
@@ -79,6 +85,11 @@
 		    <el-button type="primary" @click="addNewUser">确 定</el-button>
 		  </span>
 		</el-dialog>
+		<!--
+        	作者：beitafive@163.com
+        	时间：2017-05-06
+        	描述：编辑弹窗
+        -->
 		<el-dialog title="编辑用户信息" v-model="updateUserInfos" size="tiny">
 			<div class='addUserInfo'>
 				<p>用户名 <input type="text" v-model="updateusername"  /></p>
@@ -105,6 +116,15 @@
 		    <el-button type="primary" @click='updateUser' >确 定</el-button>
 		  </span>
 		</el-dialog>
+		<el-dialog title="分配角色" v-model="editroleTip" size="small">
+			<div class='addUserInfo'>
+				<el-checkbox v-for="(val,ind) in roleList" :label="val.title" :key="val" v-model="val.check">{{val.title}}</el-checkbox>
+			</div>
+		  <span slot="footer" class="dialog-footer">
+		    <el-button @click="editroleTip = false">取 消</el-button>
+		    <el-button type="primary" @click='submitUR' >确 定</el-button>
+		  </span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -113,12 +133,14 @@ export default({
 	name:'Pandect',
 	data(){
 		return{
-			tableData:[],
+			tableData:[],				//列表数据
 			count:'',
-			pageIndex:1,
-			allCount:'',
-			dialogVisible:false,
-			updateUserInfos:false,
+			pageIndex:1,				//当前页数
+			allCount:'',				//总页数
+			dialogVisible:false,		//新增弹窗
+			updateUserInfos:false,		//更新弹窗
+			editroleTip:false,			//分配角色弹窗
+			//添加 所需 数据
 			addname:'',
 			addrealname:'',
 			addemail:'',
@@ -129,6 +151,7 @@ export default({
 			addssh1:'',
 			addssh2:'',
 			addssh3:'',
+			//编辑 所需 数据
 			updateusername:'',
 			updaterealname:'',
 			updateemail:'',
@@ -139,13 +162,68 @@ export default({
 			updateleave_at:'',
 			updatessh1:'',
 			updatessh2:'',
-			updatessh3:''
+			updatessh3:'',
+			
+			//角色
+			roleList:[],
+			user_id:'',
 		}
 	},
 	mounted(){
 		this.getList();
 	},
 	methods:{
+		//获取角色列表
+		getrolelist(row){
+			let _this = this;
+			_this.user_id = row.id;
+			$.ajax({
+				type:"get",
+				url:_this.$api.usercontrol.getrolelist,
+				data:{
+					user_id:row.id
+				},
+				dataType:'json',
+				success:(res)=>{
+					if(res.error == 0){
+						_this.editroleTip = true;
+						_this.roleList = res.data;
+						_this.roleList.map((item)=>{
+							item.check==0?item.check=false:item.check=true;
+						})
+					}else{
+						_this.$message.error(res.error_msg)
+					}
+				}
+			});
+		},
+		//发送用户角色请求
+		submitUR(){
+			let _this = this;
+			let arr = [];
+			this.roleList.map((item)=>{
+				if(item.check){
+					arr.push(item.role_id)
+				}
+			})
+			$.ajax({
+				type:'post',
+				url:_this.$api.usercontrol.editrole,
+				data:{
+					user_id:_this.user_id,
+					role_id:arr.join(',')
+				},
+				dataType:'json',
+				success:(res)=>{
+					if(res.error == 0){
+						_this.editroleTip = false;
+					}else{
+						_this.$message.error(res.error_msg);
+					}
+				}
+			})
+		},
+		//获取列表
 		getList(x){
 			let that = this;
 			if(x=="0"){
@@ -157,7 +235,7 @@ export default({
 				data:{
 					page:x||1
 				},
-				url:"/api.php?s=/get_user_list",
+				url:that.$api.usercontrol.getlist,
 				dataType:'json',
 				success:function(res){
 					let data = res;
@@ -193,7 +271,7 @@ export default({
 					ssh_pub_key2:that.addssh2,
 					ssh_pub_key3:that.addssh3
 				},
-				url:"/api.php?s=/add_user",
+				url:that.$api.usercontrol.add,
 				success:function(res){
 					let data = res;
 					if(data.error==1){
@@ -251,7 +329,7 @@ export default({
 					ssh_pub_key2:that.updatessh2,
 					ssh_pub_key3:that.updatessh3
 				},
-				url:"/api.php?s=/update_user",
+				url:that.$api.usercontrol.edit,
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
@@ -288,32 +366,32 @@ export default({
 </script>
 
 <style>
-	.usercontorl{
+	.usercontrol{
 		float:left;
 		width:85%;
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;
 	}
-	.usercontorl .addUser{
+	.usercontrol .addUser{
 		font-size:14px;
 		width:98px;height:28px;
 		border:1px solid #ddd;
 		background-color: #fff;
 		border-radius:3px;
 	}
-	.usercontorl .addUserInfo{
+	.usercontrol .addUserInfo{
 		box-sizing: border-box;
 		padding:0 50px;
 	}
-	.usercontorl .addUserInfo p{
+	.usercontrol .addUserInfo p{
 		height:40px;
 		margin:10px 0;
 		line-height:40px;
 		font-size:14px;
 		color:#333;
 	}
-	.usercontorl .addUserInfo input{
+	.usercontrol .addUserInfo input{
 		width:75%;
 		height:38px;
 		border:1px solid #ddd;
@@ -322,18 +400,18 @@ export default({
 		padding:10px;
 		border-radius:4px;
 	}
-	.usercontorl .tables{
+	.usercontrol .tables{
 		width:100%;
 		margin-top:20px;
 		border-top:1px solid #ddd;
 		padding-top:20px;
 	}
-	.usercontorl .tables p{
+	.usercontrol .tables p{
 		margin-top:50px;
 		text-align: center;
 		font-size:14px;
 	}
-	.usercontorl .tables p button{
+	.usercontrol .tables p button{
 		width:68px;height:28px;
 		margin:0 20px;
 		background:#fff;
@@ -342,7 +420,7 @@ export default({
 		color:#333;
 		border-radius:3px;
 	}
-	.usercontorl .updateContent{
+	.usercontrol .updateContent{
 		width:75%;
 		height:120px;
 		float:right;

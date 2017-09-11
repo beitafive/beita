@@ -1,14 +1,16 @@
 <template>
-	<div class="w-doc">
+	<div class="w-apidoc">
 		<h2>{{msg.title}}</h2>
-		<p>创建时间：{{msg.created_at}}</p>
-		<p v-html="msg.html"></p>
+		<p>URL：{{msg.url}}</p>
+		<p>METHOD：{{msg.method}}</p>
+		<p v-html="'REQUEST：<br>'+msg.request"></p>
+		<p v-html="'RESPONSE：<br>'+msg.response"></p>
 	</div>
 </template>
 
 <script>
 	export default{
-		name:'doc',
+		name:'apidoc',
 		data(){
 			return{
 				msg:''
@@ -22,17 +24,18 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/doc/get",
+					url:"/api.php?s=front/api/get",
 					data:{
 						id:that.$route.query.id
 					},
 					dataType:'json',
 					success:function(res){
-						if(res.error == 0){
-							that.msg = res.data;				
+						let data = res;
+						if(data.error == 0){
+							that.msg = data.data;				
 						}
-						if(res.error == 1){
-							that.$message(res.error_message);
+						if(data.error == 1){
+							that.$message(data.error_message);
 						}
 					}
 				});
@@ -42,7 +45,7 @@
 </script>
 
 <style scoped>
-	.w-doc{
+	.w-apidoc{
 		width:900px;
 		min-height:1000px;
 		background:#fff;
@@ -51,11 +54,17 @@
 		padding:30px 50px;
 		font-family: "microsoft yahei";
 	}
-	.w-doc h2{
+	.w-apidoc h2{
 		font-size:50px;
 		text-align: center;
 	}
-	.w-doc p{
+	.w-apidoc h2 span{
+		font-size:20px;
+		color:#3c3c3c;
+		font-weight: 100;
+		margin-left:20px;
+	}
+	.w-apidoc p{
 		margin: 50px 0 20px 50px;
 		font-size:18px;
 	}
