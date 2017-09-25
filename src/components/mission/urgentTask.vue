@@ -1,7 +1,7 @@
 <template>
 	<div class="w-urgenttask">
 		<h2>紧急任务</h2>
-		<router-link to="/addurgent">
+		<router-link to="/addurgent" v-if="badd">
 			<button class="addUser">+ 添加任务</button>			
 		</router-link>
 		<p style="margin-top:20px;"><el-cascader
@@ -109,14 +109,14 @@
 			      label="操作"
 			      width="200">
 			      <template scope="scope">
-			      	<el-button type="text" size="small" @click="updateOwner(scope.$index,scope.row)">分配</el-button>
-			      	<router-link :to="{path:'/editurgent',query:{id:scope.row.id}}" v-if="role=='project_manager'||role=='depart_manager'">
+			      	<el-button type="text" size="small" @click="updateOwner(scope.$index,scope.row)" v-if="ballot">分配</el-button>
+			      	<router-link :to="{path:'/editurgent',query:{id:scope.row.id}}" v-if="bedit">
 				        <el-button type="text" size="small">编辑</el-button>			     
 			      	</router-link>
-			        <el-button type="text" size="small" @click="finishItem(scope.$index,scope.row)" v-if="role=='developer'&&scope.row.status=='WAIT'">完成</el-button>
-			        <el-button type="text" size="small" @click="closeItem(scope.$index,scope.row)" v-if="(role=='project_manager'||role=='depart_manager')&&scope.row.status=='TESTED'">关闭</el-button>
-			        <el-button type="text" size="small" @click="testedItem(scope.row)" v-if="(role=='tester')&&scope.row.status=='FINISHED'">测试通过</el-button>
-			        <router-link :to="{path:'/taskDoc',query:{id:scope.row.id}}" target="_blank">
+			        <el-button type="text" size="small" @click="finishItem(scope.$index,scope.row)" v-if="bfinish && scope.row.status=='WAIT'">完成</el-button>
+			        <el-button type="text" size="small" @click="closeItem(scope.$index,scope.row)" v-if="bclose && scope.row.status=='TESTED'">关闭</el-button>
+			        <el-button type="text" size="small" @click="testedItem(scope.row)" v-if="bpass && scope.row.status=='FINISHED'">测试通过</el-button>
+			        <router-link :to="{path:'/taskDoc',query:{id:scope.row.id}}" target="_blank" v-if="bread">
 				        <el-button type="text" size="small" style="margin-left:20px">查看</el-button>
 			        </router-link>
 			      </template>
@@ -180,12 +180,31 @@ export default({
 			//分配 任务
 			updateOwnerTip:false,
 			newowner:'',
+			
+			badd:false,				//添加
+			bedit:false,			//编辑
+			bpass:false,			//通过
+			ballot:false,			//分配
+			bfinish:false,			//完成
+			bclose:false,			//关闭
+			bread:false,			//查看
 		}
 	},
 	mounted(){
-		this.getList();
+		let _this = this;
+		this.$store.dispatch("getPer","urgent").then(()=>{
+			_this.$store.state.perList.includes("urgent.add")?_this.badd=true:'';
+			_this.$store.state.perList.includes("urgent.edit")?_this.bedit=true:'';	
+			_this.$store.state.perList.includes("urgent.pass")?_this.bpass=true:'';	
+			_this.$store.state.perList.includes("urgent.allot")?_this.ballot=true:'';
+			_this.$store.state.perList.includes("urgent.finish")?_this.bfinish=true:'';
+			_this.$store.state.perList.includes("urgent.close")?_this.bclose=true:'';
+			_this.$store.state.perList.includes("urgent.read")?_this.bread=true:'';				
+			_this.getList();
+		});
 		this.getProject();
 		this.getUser();
+		
 	},
 	methods:{
 		updateOwner(index,row){
@@ -270,6 +289,7 @@ export default({
 				}
 			});
 		},
+		//关闭
 		closeItem(x,y){
 			let that = this;
 			$.ajax({
@@ -283,7 +303,7 @@ export default({
 					if(res.error == 0){
 						that.getList(that.pageIndex)
 					}else{
-						that.$message(data.error_message)
+						that.$message(res.error_message)
 					}
 				}
 			});

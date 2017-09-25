@@ -10,9 +10,9 @@
 			<p v-for="(items,index) in rList" :key="items">
 				<el-button type="primary" style="margin-right:10px;width:120px;" @click="MenuShow(items)" >{{items.title}}</el-button> :
 				<el-button type="info" v-for="(item,ind) in items.children" :key="item" @click="MenuShow(item,items)">{{item.title}}</el-button>
-				<el-button type="success" icon="plus" @click="addResource('add',items)"></el-button>
+				<el-button type="success" icon="plus" @click="addResource('add',items)" v-if="badd"></el-button>
 			</p>
-			<p><el-button type="success" icon="plus" @click="addResource('add')"> 添 加 </el-button></p>
+			<p><el-button type="success" icon="plus" @click="addResource('add')" v-if="badd"> 添 加 </el-button></p>
 		</div>
 		<!--
         	作者：beitafive@163.com
@@ -23,8 +23,8 @@
 			<div class='addUserInfo'>
 				<p>资源名称：{{rtitle}}</p>
 				<p>资源code：{{rCode}}</p>
-				<el-button type="text" @click="addResource('menu')">我想修改这条资源！！！</el-button><br />
-				<el-button type="text" @click="deleteItem">我想删除这条资源！！！</el-button><br />
+				<el-button type="text" @click="addResource('menu')" v-if="bedit">我想修改这条资源！！！</el-button><br />
+				<el-button type="text" @click="deleteItem" v-if="bdel">我想删除这条资源！！！</el-button><br />
 				<el-button type="text" @click="menuTip = false">我想还是算了吧！！！</el-button><br />
 			</div>
 		</el-dialog>
@@ -60,10 +60,22 @@ export default({
         	pid:'',				//父ID
         	
         	pCode:'',			//父Code
+        	
+        	badd:false,
+			bedit:false,
+			bread:false,
+			bdel:false,
 		}
 	},
 	mounted(){
-		this.getList();
+		let _this = this;
+		this.$store.dispatch("getPer",'resource').then(()=>{
+			_this.$store.state.perList.includes("resource.add")?this.badd=true:'';
+			_this.$store.state.perList.includes("resource.edit")?this.bedit=true:'';		
+			_this.$store.state.perList.includes("resource.read")?this.bread=true:'';				
+			_this.$store.state.perList.includes("resource.del")?this.bdel=true:'';
+			_this.getList();
+		})
 	},
 	methods:{
 		//获取列表
@@ -85,15 +97,17 @@ export default({
 		},
 		//菜单弹窗
 		MenuShow(item,items=''){
-			if(items){
-				this.pCode = items.code+'.';
-			}else{
-				this.pCode = '';
+			if(bread){
+				if(items){
+					this.pCode = items.code+'.';
+				}else{
+					this.pCode = '';
+				}
+				this.id = item.resource_id;
+				this.rtitle = item.title;
+				this.rCode = item.code;
+				this.menuTip = true;				
 			}
-			this.id = item.resource_id;
-			this.rtitle = item.title;
-			this.rCode = item.code;
-			this.menuTip = true;
 		},
 		//添加||编辑资源
 		// type 表示 从那里点开的这个弹窗 add-添加 menu-菜单 null-编辑

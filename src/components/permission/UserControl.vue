@@ -1,7 +1,7 @@
 <template>
 	<div class="usercontrol">
 		<h2 style="margin-bottom:20px;">用户管理</h2>
-		<button class="addUser" @click="dialogVisible = true">+ 添加用户</button>
+		<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加用户</button>
 		<div class="tables">
 			<el-table
 			    :data="tableData"
@@ -46,8 +46,8 @@
 			      label="操作"
 			      width="160">
 			      <template scope="scope">
-			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index)">编辑</el-button>
-			        <el-button type="text" size="small" @click="getrolelist(scope.row)">分配角色</el-button>
+			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index)" v-if="bedit">编辑</el-button>
+			        <el-button type="text" size="small" @click="getrolelist(scope.row)" v-if="beditrole">分配角色</el-button>
 			      </template>
 			    </el-table-column>
 			  </el-table>
@@ -167,10 +167,20 @@ export default({
 			//角色
 			roleList:[],
 			user_id:'',
+			
+			badd:false,
+			bedit:false,
+			beditrole:false,
 		}
 	},
 	mounted(){
-		this.getList();
+		let _this = this;
+		this.$store.dispatch("getPer",'user').then(()=>{
+			_this.$store.state.perList.includes("user.add")?this.badd=true:'';
+			_this.$store.state.perList.includes("user.edit")?this.bedit=true:'';
+			_this.$store.state.perList.includes("user.editrole")?this.beditrole=true:'';
+			_this.getList();
+		})
 	},
 	methods:{
 		//获取角色列表

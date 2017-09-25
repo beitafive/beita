@@ -1,6 +1,6 @@
 <template>
 	<div class="w-menu">
-		<el-menu :default-active="menuIndex" :active="menuIndex"  class="el-menu-vertical-demo" @select="menuselect" >
+		<el-menu :default-active="menuIndex" class="el-menu-vertical-demo" @select="menuselect" >
 			<!-- 外层循环渲染 -->
 	      	<el-submenu v-for="(items,indexs) in menuList" :index="indexs.toString()" key="indexs">
 	      		<template slot="title">
@@ -33,8 +33,8 @@ export default({
   	methods: {
 	  	//组件选中
 	    menuselect(index){
-			this.menuIndex = index;
-			sessionStorage.menuIndex = index;
+	    	this.menuIndex = index;
+	    	sessionStorage.menuIndex = index;
 		},
 		//获取MenuList
 		getMenuList(){

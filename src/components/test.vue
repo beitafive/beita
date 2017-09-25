@@ -15,6 +15,9 @@
         {title:'BUG管理',id:'2',checkAll:false,indeterminate:false,resource:[{title:'增',id:'2-1',check:false},{title:'删',id:'2-2',check:false},{title:'改',id:'2-3',check:false},{title:'查',id:'2-4',check:false}]}]
       };
     },
+    mounted(){
+    	this.test()
+    },
     methods: {
       bigchange(item) {
         if(item.checkAll){
@@ -46,7 +49,15 @@
         	})
         })
         console.log(ids.join(','))
+      },
+      test(){
+      	var ceshi = new Promise(function(resolve,reject){
+      		 console.log(resolve)
+      	}).then((res)=>{
+      		console.log(123)
+      	})
       }
     }
+    
   };
 </script>

@@ -19,6 +19,7 @@ import Bugcontrol from '@/components/bug/Bugcontrol'		//bug管理
 import bugcontent from '@/components/bug/bugcontent'		//bug详情页
 import addBug from '@/components/bug/addBug'				//添加bug
 import editbug from '@/components/bug/editBug'				//bug编辑页
+import bugStats from '@/components/bug/bugStats'			//bug统计页
 
 import Api from '@/components/api/Api'						//api管理
 import apiDoc from '@/components/api/apiDoc'				//api详情页
@@ -65,13 +66,16 @@ const routes = [
             requireAuth: true,
         },children:[
     	{path:'/Pandect',component:Pandect},
-    	{path:'/SetInfo',component:SetInfo},
+    	{path:'/SetInfo',component:SetInfo,beforeEnter:(to,from,next)=>{
+    		next();
+    	}},
     	{path:'/Mymission',component:Mymission},
     	{path:'/MissionCenter',component:MissionCenter},
     	{path:'/Mybug',component:Mybug},
     	{path:'/Bugcontrol',component:Bugcontrol},
     	{path:'/addbug',component:addBug},
     	{path:'/editbug',component:editbug},
+    	{path:'/bugstats',component:bugStats},
     	{path:'/Api',component:Api},
     	{path:'/document',component:documentContorl},
     	{path:'/createdoc',component:createDoc},
@@ -113,7 +117,7 @@ const router = new Router({
 }); 
 // 页面刷新时，重新赋值token
 if (window.localStorage.token) {
-    store.commit("login", localStorage.token)
+    store.dispatch("login", localStorage.token)
 }
 
 router.beforeEach((to, from, next) => {
@@ -127,8 +131,7 @@ router.beforeEach((to, from, next) => {
                 query: {redirect: to.fullPath}
             })
         }
-    }
-    else {
+    }else {
         next();
     }
 })

@@ -1,7 +1,7 @@
 <template>
 	<div class="rolecontrol">
 		<h2 style="margin-bottom:20px;">角色管理</h2>
-		<button class="addUser" @click="addTip = true">+ 添加角色</button>
+		<button class="addUser" @click="addTip = true" v-if="badd">+ 添加角色</button>
 		<!--
         	作者：beitafive@163.com
         	时间：2017-09-06
@@ -31,9 +31,9 @@
 			      label="操作"
 			      width="180">
 			      <template scope="scope">
-			        <el-button type="text" size="small" @click="updateUserInfo(scope.row)">编辑</el-button>
-			        <el-button type="text" size="small" @click="updateUserInfo(scope.row,'del')" style="margin-right:10px">删除</el-button>
-			        <router-link :to="{path:'/editpermission',query:{id:scope.row.role_id,name:scope.row.title}}">
+			        <el-button type="text" size="small" @click="updateUserInfo(scope.row)" v-if="bedit">编辑</el-button>
+			        <el-button type="text" size="small" @click="updateUserInfo(scope.row,'del')" style="margin-right:10px" v-if="bdel">删除</el-button>
+			        <router-link v-if="bper" :to="{path:'/editpermission',query:{id:scope.row.role_id,name:scope.row.title}}"      >
 			        	<el-button type="text" size="small">权限管理</el-button>
 			        </router-link>
 			      </template>
@@ -106,10 +106,22 @@ export default({
 			updateId:'',
 			updaterole:'',
 			updatetitle:'',
+			
+			badd:false,
+			bedit:false,
+			bper:false,
+			bdel:false,
 		}
 	},
 	mounted(){
-		this.getList();
+		let _this = this;
+		this.$store.dispatch("getPer",'role').then(()=>{
+			_this.$store.state.perList.includes("role.add")?this.badd=true:'';
+			_this.$store.state.perList.includes("role.edit")?this.bedit=true:'';
+			_this.$store.state.perList.includes("role.per")?this.bper=true:'';
+			_this.$store.state.perList.includes("role.del")?this.bdel=true:'';
+			_this.getList();
+		})
 	},
 	methods:{
 		//获取列表

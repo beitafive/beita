@@ -2,6 +2,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import "babel-polyfill"
+import actions from './actions.js'
+import mutations from './mutations.js'
+import getters from './getters.js'
 
 Vue.use(Vuex)
 
@@ -9,12 +12,11 @@ export default new Vuex.Store({
 	state:{
 		sApi:'',
 		token:null,
+		perList:'',
+		menuIndex:'',
 	},
-	mutations:{
-		login(state,data){
-			state.token = data;
-			localStorage.token = data;
-		}
-	}
+	getters,
+	mutations,
+	actions
 })
 

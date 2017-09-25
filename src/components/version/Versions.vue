@@ -1,7 +1,7 @@
 <template>
 	<div class="w-versions">
 		<h2 style="margin-bottom:20px;">版本管理</h2>
-		<router-link to="/addversion">
+		<router-link to="/addversion" v-if="badd">
 			<button class="addUser">+ 添加版本</button>			
 		</router-link>
 		<p style="margin-top:20px;"><el-cascader
@@ -63,13 +63,13 @@
 			      label="操作"
 			      width="230">
 			      <template scope="scope">
-			      	<el-button type="text" size="small" v-if="role=='developer'&&scope.row.status=='WAIT'" @click="changeItem(scope.row,'FINISHED')" >完成</el-button>
-			      	<el-button type="text" size="small" v-if="role=='tester'&&scope.row.status=='FINISHED'" @click="changeItem(scope.row,'TESTED')">测试通过</el-button>
-			      	<el-button type="text" size="small" v-if="(role=='project_manager'||role=='depart_manager')&&scope.row.status=='TESTED'" @click="changeItem(scope.row,'CLOSED')">关闭</el-button>
-			      	<router-link :to="{path:'editversion',query:{id:scope.row.id}}" v-if="(role=='project_manager'||role=='depart_manager')">
+			      	<el-button type="text" size="small" v-if="bfinish&&scope.row.status=='WAIT'" @click="changeItem(scope.row,'FINISHED')" >完成</el-button>
+			      	<el-button type="text" size="small" v-if="bpass&&scope.row.status=='FINISHED'" @click="changeItem(scope.row,'TESTED')">测试通过</el-button>
+			      	<el-button type="text" size="small" v-if="bclose&&scope.row.status=='TESTED'" @click="changeItem(scope.row,'CLOSED')">关闭</el-button>
+			      	<router-link :to="{path:'editversion',query:{id:scope.row.id}}" v-if="bedit">
 				        <el-button type="text" size="small">编辑</el-button>			  
 			      	</router-link>
-			        &nbsp;<router-link :to="{path:'/VsDoc',query:{id:scope.row.id}}" target="_blank"><el-button type="text" size="small">查看</el-button></router-link>
+			        &nbsp;<router-link :to="{path:'/VsDoc',query:{id:scope.row.id}}" target="_blank" v-if="bread"><el-button type="text" size="small">查看</el-button></router-link>
 			      </template>
 			    </el-table-column>
 			  </el-table>
@@ -115,17 +115,27 @@ export default({
 			updateIndex:'',//编辑 列表下标
 			updateprojectid:'',//编辑项目id
 			projectarr:[],//项目列表数据
-			nowUrl:''//现在域名
+			
+			badd:false,
+			bedit:false,
+			bpass:false,
+			bfinish:false,
+			bclose:false,
+			bread:false
 		}
 	},
 	mounted(){
+		let _this = this;
+		this.$store.dispatch("getPer","version").then(()=>{
+			_this.$store.state.perList.includes("version.add")?this.badd=true:'';
+			_this.$store.state.perList.includes("version.edit")?this.bedit=true:'';		
+			_this.$store.state.perList.includes("version.pass")?this.bpass=true:'';
+			_this.$store.state.perList.includes("version.finish")?this.bfinish=true:'';
+			_this.$store.state.perList.includes("version.close")?this.bclose=true:'';
+			_this.$store.state.perList.includes("version.read")?this.bread=true:'';				
+			_this.getList();
+		});
 		this.getVersions();
-		this.getList();
-		if(!window.location.origin){
-	 		this.nowUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
-	 	}else{
-	 		this.nowUrl = window.location.origin;
-	 	}
 	},
 	methods:{
 		changeItem(row,status){

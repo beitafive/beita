@@ -1,7 +1,7 @@
 <template>
 	<div class="w-project">
 		<h2 style="margin-bottom:20px;">项目管理</h2>
-		<button class="addUser" @click="dialogVisible = true">+ 添加项目</button>
+		<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加项目</button>
 		<div class="tables">
 			<el-table
 			    :data="tableData"
@@ -26,7 +26,7 @@
 			      label="操作"
 			      width="100">
 			      <template scope="scope">
-			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index)">编辑</el-button>
+			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index)" v-if="bedit">编辑</el-button>
 			      </template>
 			    </el-table-column>
 			  </el-table>
@@ -77,11 +77,19 @@ export default({
 			updatetitle:'',
 			updatecontent:'',
 			updateid:'',
-			updateIndex:''
+			updateIndex:'',
+			
+			badd:false,
+			bedit:false,
 		}
 	},
 	mounted(){
-		this.getList();
+		let _this = this;
+		this.$store.dispatch("getPer",'project').then(()=>{
+			_this.$store.state.perList.includes("project.add")?this.badd=true:'';
+			_this.$store.state.perList.includes("project.edit")?this.bedit=true:'';		
+			_this.getList();
+		})
 	},
 	methods:{
 		//获取项目列表

@@ -1,7 +1,7 @@
 <template>
 	<div class="w-document">
 		<h2>文档管理</h2>
-		<router-link to="/createdoc">
+		<router-link to="/createdoc" v-if="badd">
 			<button class="addUser">+ 添加文档</button>			
 		</router-link>
 		<p style="margin-top:20px;">
@@ -28,10 +28,10 @@
 		      label="操作"
 		      width="150">
 		      <template scope="scope">
-		      	<router-link :to="{path:'/editdoc',query:{id:scope.row.id}}">
+		      	<router-link :to="{path:'/editdoc',query:{id:scope.row.id}}" v-if="bedit">
 		      		<el-button type="text" style="margin-right:20px;">编辑</el-button>
 		      	</router-link>	
-		      	<router-link :to="{path:'/doc',query:{id:scope.row.id}}" target="_blank">
+		      	<router-link :to="{path:'/doc',query:{id:scope.row.id}}" target="_blank" v-if="bread">
 			      	<el-button type="text">查看</el-button>		      		
 		      	</router-link>
 		      </template>
@@ -51,10 +51,20 @@
 				f_title:'',			//标题 	- 搜索
 				pageIndex:1,		//当前页
 				allCount:1,			//总数
+				
+				badd:false,
+				bedit:false,
+				bread:false,
 			}
 		},
 		mounted(){
-			this.getlist(1);
+			let _this = this;
+			this.$store.dispatch("getPer",'doc').then(()=>{
+				_this.$store.state.perList.includes("doc.add")?this.badd=true:'';
+				_this.$store.state.perList.includes("doc.edit")?this.bedit=true:'';		
+				_this.$store.state.perList.includes("doc.read")?this.bread=true:'';				
+				_this.getlist(1);
+			})
 		},
 		methods:{
 			//获取列表

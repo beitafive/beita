@@ -6,7 +6,7 @@
     -->
 	<div class="w-api">
 		<h2>API管理</h2>
-		<button class="addUser" @click="dialogVisible = true">+ 添加API</button>
+		<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加API</button>
 		<!--搜索-->
 		<p style="margin-top:20px;"><el-cascader
 		    placeholder="请选择项目"
@@ -67,9 +67,9 @@
 			      label="操作"
 			      width="120">
 			      <template scope="scope">
-			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index,scope.row)">编辑</el-button>
+			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index,scope.row)" v-if="bedit">编辑</el-button>
 			        <router-link :to="{path:'/apidoc',query:{id:scope.row.id}}" target="_blank">
-				        <el-button type="text" size="small" style="margin-left:15px">查看</el-button>			        	
+				        <el-button type="text" size="small" style="margin-left:15px" v-if="bread">查看</el-button>			        	
 			        </router-link>
 			      </template>
 			    </el-table-column>
@@ -220,10 +220,21 @@ export default({
 			updatemethod:[],//更新时的请求方式
 			updatemethodinfo:'',//更新时的请求方式
 			methodarr:[{value:'POST',label:'POST'},{value:'GET',label:'GET'},{value:'PUT',label:'PUT'},{value:'DELETE',label:'DELETE'},{value:'HEAD',label:'HEAD'}],//请求方式列表
+			
+			
+			badd:false,
+			bedit:false,
+			bread:false
 		}
 	},
 	mounted(){
-		this.getList();
+		let _this = this;
+		this.$store.dispatch("getPer",'api').then(()=>{
+			_this.$store.state.perList.includes("task.add")?this.badd=true:'';
+			_this.$store.state.perList.includes("task.edit")?this.bedit=true:'';		
+			_this.$store.state.perList.includes("task.read")?this.bread=true:'';				
+			_this.getList();
+		})
 		this.getProject();
 	},
 	methods:{

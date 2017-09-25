@@ -1,7 +1,7 @@
 <template>
 	<div class="w-needs">
 		<h2 style="margin-bottom:20px;">需求管理</h2>
-		<router-link to="/addneed">
+		<router-link to="/addneed" v-if="badd">
 			<button class="addUser">+ 添加需求</button>			
 		</router-link>
 		<p style="margin-top:20px;"><el-cascader
@@ -65,12 +65,12 @@
 			      label="操作"
 			      width="220">
 			      <template scope="scope">
-			      	<el-button type="text" size="small" v-if="scope.row.status=='WAIT'" @click="finishItem(scope.row)">完成</el-button>
-			      	<router-link :to="{path:'/editneed',query:{id:scope.row.id}}">
+			      	<el-button type="text" size="small" v-if="scope.row.status=='WAIT'&&bfinish" @click="finishItem(scope.row)">完成</el-button>
+			      	<router-link :to="{path:'/editneed',query:{id:scope.row.id}}" v-if="bedit">
 				        <el-button type="text" size="small">编辑</el-button>
 			      	</router-link>
-			        <el-button type="text" size="small" @click="closeItem(scope.$index,scope.row)" style="margin:0 10px">删除</el-button>
-			        <router-link :to="{path:'/needDoc',query:{id:scope.row.id}}" target="_blank">
+			        <el-button type="text" size="small" @click="closeItem(scope.$index,scope.row)" style="margin:0 10px" v-if="bdel">删除</el-button>
+			        <router-link :to="{path:'/needDoc',query:{id:scope.row.id}}" target="_blank" v-if="bread">
 				        <el-button type="text" size="small">查看</el-button>			       
 			        </router-link>
 			      </template>
@@ -124,11 +124,25 @@ export default({
 			fTip:false,			//完成二次确认弹窗
 			bTip:false,			//删除二次确认弹窗
 			id:'',				//完成||删除时需要的id
+			
+			badd:false,				//添加
+			bedit:false,			//编辑
+			bfinish:false,			//完成
+			bdel:false,				//删除
+			bread:false,			//查看
 		}
 	},
 	mounted(){
+		let _this = this;
+		this.$store.dispatch("getPer","need").then((res)=>{
+			_this.$store.state.perList.includes("need.add")?this.badd=true:'';
+			_this.$store.state.perList.includes("need.edit")?this.bedit=true:'';		
+			_this.$store.state.perList.includes("need.finish")?this.bfinish=true:'';
+			_this.$store.state.perList.includes("need.read")?this.bread=true:'';
+			_this.$store.state.perList.includes("need.del")?this.bdel=true:'';				
+			_this.getList();
+		});
 		this.getProject();
-		this.getList();
 	},
 	methods:{
 		//显示确认完成弹窗

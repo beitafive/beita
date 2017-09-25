@@ -16,10 +16,9 @@ Vue.config.productionTip = false
 Vue.use(ElementUI)
 
 
-
 $(document).ajaxSuccess(function(event, xhr, settings,res) {
 	if(res.error == 1 && res.error_code == 'NOT_LOGIN'){
-	 	router.push("/")
+	 	router.push('/')
 	}
 });
 
@@ -28,6 +27,7 @@ $.ajaxSetup({
         request.setRequestHeader("Test", "wuzq");
     },
 });
+
 
 //检测JS错误
 //window.onerror=fnErrorTrap;

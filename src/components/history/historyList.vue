@@ -1,7 +1,7 @@
 <template>
 	<div class="w-history">
 		<h2 style="margin-bottom:20px;">部门历史</h2>
-		<router-link to="/edithistory">
+		<router-link to="/edithistory" v-if="badd">
 			<button class="addUser">+ 添加历史</button>			
 		</router-link>
 		<p style="margin-top:20px;">
@@ -27,10 +27,10 @@
 			      label="操作"
 			      width="150">
 			      <template scope="scope">
-			      	<router-link :to="{path:'/edithistory',query:{id:scope.row.id}}">
+			      	<router-link :to="{path:'/edithistory',query:{id:scope.row.id}}" v-if="bedit">
 			        	<el-button type="text" size="small">编辑</el-button>
 			       </router-link>
-			        <router-link :to="{path:'/historydoc',query:{id:scope.row.id}}" target="_blank">
+			        <router-link :to="{path:'/historydoc',query:{id:scope.row.id}}" target="_blank" v-if="bread">
 				        <el-button type="text" size="small" style="margin-left:20px">查看</el-button>			        	
 			        </router-link>
 			      </template>
@@ -52,10 +52,19 @@ export default({
 			allCount:'',			//总页数
 			f_title:'',				//搜索 - 标题
 			
+			badd:false,
+			bedit:false,
+			bread:false
 		}
 	},
 	mounted(){
-		this.getList();
+		let _this = this;
+		this.$store.dispatch("getPer",'history').then(()=>{
+			_this.$store.state.perList.includes("history.add")?this.badd=true:'';
+			_this.$store.state.perList.includes("history.edit")?this.bedit=true:'';		
+			_this.$store.state.perList.includes("history.read")?this.bread=true:'';				
+			_this.getList();
+		})
 	},
 	methods:{
 		//下一页

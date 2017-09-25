@@ -10,8 +10,8 @@
 		<p><span>ssh（1）<i>:</i></span>{{userData.ssh_pub_key1}}</p>
 		<p><span>ssh（2）<i>:</i></span>{{userData.ssh_pub_key2}}</p>
 		<p><span>ssh（3）<i>:</i></span>{{userData.ssh_pub_key3}}</p>
-		<el-button type="info" icon="edit" style="margin:30px" @click="updateUserInfos = true"> 编 辑 </el-button>
-		<el-button type="info" style="margin-top:30px" @click="editPwd = true"> 修改密码 </el-button>
+		<el-button type="info" icon="edit" style="margin:30px" @click="updateUserInfos = true" v-if="bedit"> 编 辑 </el-button>
+		<el-button type="info" style="margin-top:30px" @click="editPwd = true" v-if="bcpass"> 修改密码 </el-button>
 		<!--编辑个人信息-->
 		<el-dialog title="编辑个人信息" v-model="updateUserInfos" size="tiny">
 			<div class='addUserInfo'>
@@ -77,10 +77,17 @@ export default({
 			updatessh2:'',
 			updatessh3:'',
 			newPwd:'',				//新密码
+			bedit:false,
+			bcpass:false,			
 		}
 	},
 	mounted(){
-		this.getList();
+		let _this = this;
+		this.$store.dispatch("getPer","self").then(()=>{
+			_this.$store.state.perList.includes("self.update")?this.bedit=true:'';
+			_this.$store.state.perList.includes("self.change_pass")?this.bcpass=true:'';							
+			_this.getList();
+		});
 	},
 	methods:{
 		getList(){

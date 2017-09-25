@@ -92,8 +92,8 @@ export default {
     						localStorage.removeItem('password');
     					}
     				}
-    				localStorage.role = data.data.role;
-    				that.$store.commit("login",data.data.user_id)
+    				localStorage.role = data.data.role.toLowerCase();
+    				that.$store.dispatch("login",data.data.user_id)
     				let redirect = decodeURIComponent(that.$route.query.redirect || 'index');
     				that.$router.push({path:redirect})
     			}

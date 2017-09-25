@@ -1,7 +1,7 @@
 <template>
 	<div class="missioncenter">
 		<h2>任务管理</h2>
-		<router-link to="/createtask">
+		<router-link to="/createtask" v-if="badd">
 			<button class="addUser" @click="addmission = true">+ 添加任务</button>			
 		</router-link>
 		<p style="margin-top:20px;"><el-cascader
@@ -144,13 +144,13 @@
 			      label="操作"
 			      width="220">
 			      <template scope="scope">
-			      	<el-button type="text" size="small" @click="updateProgress(scope.row)" v-if="scope.row.status!='FINISHED'">更新进度</el-button>
-			      	<el-button type="text" size="small" @click="updateOwner(scope.$index,scope.row)">分配</el-button>
-			      	<router-link :to="{path:'/edittask',query:{id:scope.row.id}}" v-if="role=='project_manager'||role=='depart_manager'">
+			      	<el-button type="text" size="small" @click="updateProgress(scope.row)" v-if="bUp&&scope.row.status!='FINISHED'">更新进度</el-button>
+			      	<el-button type="text" size="small" @click="updateOwner(scope.$index,scope.row)" v-if="ballot">分配</el-button>
+			      	<router-link :to="{path:'/edittask',query:{id:scope.row.id}}" v-if="bedit">
 			        	<el-button type="text" size="small" >编辑</el-button>
 			      	</router-link>
-			        <el-button type="text" size="small" @click="finishItem(scope.$index,scope.row)" v-if="role=='developer'&&scope.row.status=='WAIT'">完成</el-button>
-			        <el-button type="text" size="small" @click="closeItem(scope.$index,scope.row)" v-if="(role=='project_manager'||role=='depart_manager')&&scope.row.status=='FINISHED'">关闭</el-button>
+			        <el-button type="text" size="small" @click="finishItem(scope.$index,scope.row)" v-if="bfinish && scope.row.status=='WAIT'">完成</el-button>
+			        <el-button type="text" size="small" @click="closeItem(scope.$index,scope.row)" v-if="bclose">关闭</el-button>
 			      </template>
 			    </el-table-column>
 			 </el-table>
@@ -227,10 +227,27 @@ export default({
 			updatePro:'',			//更新进度值
 			beginTime:'',
 			endTime:'',
+			
+			
+			badd:false,				//添加
+			bedit:false,			//编辑
+			ballot:false,			//分配
+			bfinish:false,			//完成
+			bclose:false,			//关闭
+			bUp:false,				//更新进度
 		}
 	},
 	mounted(){
-		this.getList();
+		let _this = this;
+		this.$store.dispatch("getPer","task").then(()=>{
+			_this.$store.state.perList.includes("task.add")?this.badd=true:'';
+			_this.$store.state.perList.includes("task.edit")?this.bedit=true:'';		
+			_this.$store.state.perList.includes("task.allot")?this.ballot=true:'';
+			_this.$store.state.perList.includes("task.finish")?this.bfinish=true:'';
+			_this.$store.state.perList.includes("task.close")?this.bclose=true:'';
+			_this.$store.state.perList.includes("task.Up")?this.bUp=true:'';				
+			_this.getList();
+		});
 		this.getProject();
 		this.getUser();
 	},
@@ -327,7 +344,7 @@ export default({
 					if(res.error == 0){
 						that.getList(that.pageIndex)
 					}else{
-						that.$message(data.error_message)
+						that.$message(res.error_message)
 					}
 				}
 			});
@@ -345,7 +362,7 @@ export default({
 					if(res.error == 0){
 						that.getList(that.pageIndex)
 					}else{
-						that.$message(data.error_message)
+						that.$message(res.error_message)
 					}
 				}
 			});

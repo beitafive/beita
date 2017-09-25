@@ -1,7 +1,7 @@
 <template>
 	<div class="w-account">
 		<h2 style="margin-bottom:20px;">账户管理</h2>
-		<button class="addUser" @click="dialogVisible = true">+ 添加账户</button>
+		<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加账户</button>
 		<p style="margin-top:30px">标题<el-input v-model="f_title" placeholder="请输入内容" style="width:200px;margin:0 15px"></el-input>
 			<el-button type="primary" icon="search" @click="getList('1')">搜索</el-button></p>
 		<div class="tables">
@@ -30,7 +30,7 @@
 			      label="操作"
 			      width="100">
 			      <template scope="scope">
-			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index)">编辑</el-button>
+			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index)" v-if="bedit">编辑</el-button>
 			      </template>
 			    </el-table-column>
 			  </el-table>
@@ -83,11 +83,19 @@ export default({
 			updatetitle:'',
 			updatecontent:'',
 			updateid:'',
-			updateIndex:''
+			updateIndex:'',
+			
+			badd:false,
+			bedit:false
 		}
 	},
 	mounted(){
-		this.getList();
+		let _this = this;
+		this.$store.dispatch("getPer",'account').then(()=>{
+			_this.$store.state.perList.includes("account.add")?this.badd=true:'';
+			_this.$store.state.perList.includes("account.edit")?this.bedit=true:'';
+			_this.getList();
+		})
 	},
 	methods:{
 		//获取账号列表

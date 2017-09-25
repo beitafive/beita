@@ -1,7 +1,7 @@
 <template>
 	<div class="bugcontorl">
 		<h2>BUG管理</h2>
-		<router-link to="/addbug">
+		<router-link to="/addbug" v-if="badd">
 			<button class="addUser">+ 添加BUG</button>			
 		</router-link>
 		<p style="margin-top:20px;"><el-cascader
@@ -116,15 +116,15 @@
 			      label="操作"
 			      width="200">
 			      <template scope="scope">
-			      	<el-button type="text" size="small" v-if="role=='developer'&&scope.row.status=='WAIT'" @click="showTip(scope.row)">完成</el-button>
-			      	<router-link :to="{path:'/editbug',query:{id:scope.row.id}}" v-if="(role=='project_manager'||role=='depart_manager')&&(scope.row.status=='WAIT'||scope.row.status=='FIXED')">
+			      	<el-button type="text" size="small" v-if="bfinish&&scope.row.status==='WAIT'" @click="showTip(scope.row)">完成</el-button>
+			      	<router-link :to="{path:'/editbug',query:{id:scope.row.id}}" v-if="bedit">
 			        	<el-button type="text" size="small" >编辑</el-button>
 			      	</router-link>
-			        <el-button type="text" size="small" @click="editBug(scope.row,'tested')" v-if="role=='tester'&&scope.row.status=='FIXED'">通过</el-button>
-			        <el-button type="text" size="small" @click="editBug(scope.row,'wait')" v-if="role=='tester'&&scope.row.status=='FIXED'">打回</el-button>
-			        <el-button type="text" size="small" @click="editBug(scope.row,'closed')" v-if="(role=='project_manager'||role=='depart_manager')&&scope.row.status=='TESTED'">关闭</el-button>
+			        <el-button type="text" size="small" @click="editBug(scope.row,'tested')" v-if="bpass && scope.row.status=='FIXED'">通过</el-button>
+			        <el-button type="text" size="small" @click="editBug(scope.row,'wait')" v-if="brepulse && scope.row.status=='FIXED'">打回</el-button>
+			        <el-button type="text" size="small" @click="editBug(scope.row,'closed')" v-if="bclose && scope.row.status=='TESTED'">关闭</el-button>
 			        &nbsp;
-			        <router-link :to="{path:'/bugcontent',query:{id:scope.row.id}}" target="_blank">
+			        <router-link :to="{path:'/bugcontent',query:{id:scope.row.id}}" target="_blank" v-if="bread">
 			        <el-button type="text" size="small">
 			        	查看
 			        </el-button></router-link>
@@ -189,10 +189,28 @@ export default({
 			solution:'',
 			finishTip:false,		//完成弹窗
 			finishObj:{},			//完成对象
+			
+			badd:false,				//添加
+			bedit:false,			//编辑
+			bpass:false,			//通过
+			brepulse:false,			//打回
+			bfinish:false,			//完成
+			bclose:false,			//关闭
+			bread:false,			//查看
 		}
 	},
 	mounted(){
-		this.getList();
+		let _this = this;
+		this.$store.dispatch("getPer","bug").then(()=>{
+			_this.$store.state.perList.includes("bug.add")?this.badd=true:'';
+			_this.$store.state.perList.includes("bug.edit")?this.bedit=true:'';	
+			_this.$store.state.perList.includes("bug.pass")?this.bpass=true:'';	
+			_this.$store.state.perList.includes("bug.repulse")?this.brepulse=true:'';
+			_this.$store.state.perList.includes("bug.finish")?this.bfinish=true:'';
+			_this.$store.state.perList.includes("bug.close")?this.bclose=true:'';
+			_this.$store.state.perList.includes("bug.read")?this.bread=true:'';				
+			_this.getList();
+		});
 		this.getProject();
 		this.getUser();
 	},
