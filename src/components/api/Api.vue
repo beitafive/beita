@@ -230,9 +230,9 @@ export default({
 	mounted(){
 		let _this = this;
 		this.$store.dispatch("getPer",'api').then(()=>{
-			_this.$store.state.perList.includes("task.add")?this.badd=true:'';
-			_this.$store.state.perList.includes("task.edit")?this.bedit=true:'';		
-			_this.$store.state.perList.includes("task.read")?this.bread=true:'';				
+			_this.$store.state.perList.includes("api.add")?this.badd=true:'';
+			_this.$store.state.perList.includes("api.edit")?this.bedit=true:'';		
+			_this.$store.state.perList.includes("api.read")?this.bread=true:'';				
 			_this.getList();
 		})
 		this.getProject();
@@ -247,7 +247,7 @@ export default({
 					page:x||1
 				},
 				dataType:'json',
-				url:"/api.php?s=/get_all_project",
+				url:that.$api.get_project_list,
 				success:function(res){
 					let data = res
 					if(data.error==1){
@@ -274,7 +274,7 @@ export default({
 					title:that.f_title
 				},
 				dataType:'json',
-				url:"/api.php?s=/front/get_api_list",
+				url:that.$api.api.getlist,
 				success:function(res){
 					let data = res
 					if(data.error==1){
@@ -303,7 +303,7 @@ export default({
 					response:that.addresponse
 				},
 				dataType:'json',
-				url:"/api.php?s=/front/add_api",
+				url:that.$api.api.add,
 				success:function(res){
 					let data = res
 					if(data.error==1){
@@ -337,7 +337,7 @@ export default({
 			that.updateproject.push(y.project_id);
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/get_all_module",
+				url:that.$api.get_module_list,
 				data:{
 					project_id:y.project_id
 				},
@@ -381,7 +381,7 @@ export default({
 					response:that.updateresponse
 				},
 				dataType:'json',
-				url:"/api.php?s=/front/update_api",
+				url:that.$api.api.update,
 				success:function(res){
 					let data = res
 					if(data.error == 1){
@@ -404,7 +404,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/get_all_module",
+				url:that.$api.get_module_list,
 				data:{
 					project_id:value[0]
 				},
@@ -428,7 +428,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/get_all_module",
+				url:that.$api.get_module_list,
 				data:{
 					project_id:value[0]
 				},
@@ -472,7 +472,7 @@ export default({
 			that.updatemodulearr = [];
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/get_all_module",
+				url:that.$api.get_module_list,
 				data:{
 					project_id:value[0]
 				},

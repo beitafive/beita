@@ -80,7 +80,7 @@
 				}
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/doc/get_list",
+					url:_this.$api.doc.getlist,
 					data:{
 						page:x||1,
 						title:_this.f_title

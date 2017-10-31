@@ -21,7 +21,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/api/requirement/get",
+					url:that.$api.need.get,
 					data:{
 						id:that.$route.query.id
 					},

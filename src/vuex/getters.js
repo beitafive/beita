@@ -7,7 +7,9 @@
  * */
 
 const getters = {
-	setPerList: state => state.perList
+	setPerList: state => state.perList,			//权限列表
+	getList: state => state.tableData,			//数据列表
+	pagination: state => state.pagination,		//分页数据
 }
 
 export default getters;

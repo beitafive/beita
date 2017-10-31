@@ -30,7 +30,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/bug/get",
+					url:that.$api.bug.get,
 					data:{
 						id:that.$route.query.id
 					},

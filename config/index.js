@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
     	'/api.php':{
-        target:'http://10.10.40.190/anchu_OA/api/public/api.php',
+        target:'http://dev.anchumall.cc:9526/api.php',
         changeOrigin:true,
         pathRewrite:{
             '^/api.php':''

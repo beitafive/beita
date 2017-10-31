@@ -1,0 +1,21 @@
+分页设计思路
+
+1.首先就是page.vue组件
+需要计算（computed）pagination属性
+button 切换 当前page，然后调用（dispatch）获取列表数据
+
+2.vuex
+state中 声明 tableData&&pagination;
+
+mutations中 设置方法
+ajax 需要module层来存入vuex，
+然后设置请求参数&&url
+
+getters中 输入 tableData&&pagination;
+
+dispatch中 分发 commit;
+
+3.module
+引入page.vue组件
+需要计算（computed）tableData，这样才能时时获取列表数据
+设置请求参数，存入vuex。

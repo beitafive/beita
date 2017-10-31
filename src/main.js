@@ -6,6 +6,7 @@ import router from './router'
 import 'element-ui/lib/theme-default/index.css'
 import ElementUI from 'element-ui'
 import './assets/css/reset.css'
+import './assets/font/iconfont.css'
 import store from '@/vuex/store'
 import api from '@/api.js'
 
@@ -18,15 +19,17 @@ Vue.use(ElementUI)
 
 $(document).ajaxSuccess(function(event, xhr, settings,res) {
 	if(res.error == 1 && res.error_code == 'NOT_LOGIN'){
+		let path = encodeURIComponent(store.state.routerName);
 	 	router.push('/')
 	}
 });
 
-$.ajaxSetup({
-   beforeSend: function(request) {
-        request.setRequestHeader("Test", "wuzq");
-    },
-});
+//设置响应头
+//$.ajaxSetup({
+// beforeSend: function(request) {
+//      request.setRequestHeader("Test", "wuzq");
+//  },
+//});
 
 
 //检测JS错误

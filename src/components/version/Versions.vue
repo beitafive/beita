@@ -143,7 +143,7 @@ export default({
 			$.ajax({
 				type:"get",
 				dataType:'json',
-				url:"/api.php?s=/version/change_status",
+				url:that.$api.version.change_status,
 				data:{
 					id:row.id,
 					status:status
@@ -164,7 +164,7 @@ export default({
 			$.ajax({
 				type:"get",
 				dataType:'json',
-				url:"/api.php?s=/get_all_project",
+				url:that.$api.get_project_list,
 				success:function(res){
 					let data = res;
 					if(data.error==1){
@@ -191,7 +191,7 @@ export default({
 					title:z
 				},
 				dataType:'json',
-				url:"/api.php?s=/get_version_list",
+				url:that.$api.version.getlist,
 				success:function(res){
 					let data = res;
 					if(data.error==1){

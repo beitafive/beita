@@ -33,7 +33,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=front/version/get_detail",
+					url:that.$api.version.get,
 					data:{
 						id:that.$route.query.id
 					},
@@ -54,7 +54,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/get_all_project",
+					url:that.$api.get_project_list,
 					dataType:'json',
 					success:function(res){
 						let data = res;
@@ -68,12 +68,12 @@
 					}
 				});
 			},
-			//创建文档
+			//编辑
 			editVersion(){
 				let _this = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/update_version",
+					url:that.$api.version.update,
 					dataType:'json',
 					data:{
 						id:_this.$route.query.id,

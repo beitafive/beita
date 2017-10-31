@@ -120,7 +120,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/get_all_project",
+				url:that.$api.get_project_list,
 				dataType:'json',
 				success:function(res){
 					let data = res;
@@ -146,7 +146,7 @@ export default({
 					project_id:y,
 					title:z
 				},
-				url:"/api.php?s=/get_module_list",
+				url:that.$api.module.getlist,
 				dataType:'json',
 				success:function(res){
 					let data = res;
@@ -173,7 +173,7 @@ export default({
 					project_id:that.addcheckInfo,
 					title:that.addtitle
 				},
-				url:"/api.php?s=/add_module",
+				url:that.$api.module.add,
 				dataType:'json',
 				success:function(res){
 					let data = res;
@@ -207,7 +207,7 @@ export default({
 					id:that.updateid,
 					title:that.updatetitle
 				},
-				url:"/api.php?s=/update_module",
+				url:that.$api.module.update,
 				dataType:'json',
 				success:function(res){
 					let data = res;

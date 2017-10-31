@@ -41,11 +41,11 @@ export default({
 			let _this = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=front/menu/get_menu",
+				url:_this.$api.get_menu_list,
 				dataType:"json",
 				success:(res)=>{
 					if(res.error == 0){
-						_this.menuList = JSON.parse(res.data);
+						_this.menuList = res.data;
 						setTimeout(()=>{
 							_this.menuIndex = sessionStorage.menuIndex;						
 						},200)

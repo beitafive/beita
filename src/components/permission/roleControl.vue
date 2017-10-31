@@ -133,7 +133,7 @@ export default({
 			}
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/api/role/get_list",
+				url:that.$api.role.getlist,
 				dataType:'json',
 				success:function(res){
 					let data = res;
@@ -160,7 +160,7 @@ export default({
 					title:that.addtitle,
 					code:that.addrole,
 				},
-				url:"/api.php?s=/api/role/create",
+				url:that.$api.role.add,
 				success:function(res){
 					let data = res;
 					if(data.error==1){
@@ -199,7 +199,7 @@ export default({
 					code:that.updaterole,
 					title:that.updatetitle
 				},
-				url:"/api.php?s=/api/role/create",
+				url:that.$api.role.add,
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
@@ -222,7 +222,7 @@ export default({
 				data:{
 					id:that.updateId,
 				},
-				url:"/api.php?s=/api/role/del",
+				url:that.$api.role.del,
 				success:function(res){
 					let data = res;
 					if(data.error == 1){

@@ -154,7 +154,7 @@
 			      </template>
 			    </el-table-column>
 			 </el-table>
-			 <p><span style="margin-right:100px;">任务总数：{{count}}</span><el-button type="primary" icon="arrow-left" @click="prePage">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button type="primary" @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
+			 <p v-if="tableData.length"><span style="margin-right:100px;">任务总数：{{count}}</span><el-button type="primary" icon="arrow-left" @click="prePage">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button type="primary" @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
 		</div>
 		<!--分配任务-->
 		<el-dialog title="分配任务" v-model="updateOwnerTip" size="tiny">
@@ -267,7 +267,7 @@ export default({
 					id:that.updateid,
 					progress:that.updatePro,
 				},
-				url:"/api.php?s=front/task/update_progress",
+				url:that.$api.task.update_progress,
 				dataType:'json',
 				success:function(res){
 					let data = res;
@@ -297,7 +297,7 @@ export default({
 					id:that.updateid,
 					owner_id:that.newowner,
 				},
-				url:"/api.php?s=/front/distribute",
+				url:that.$api.task.distribute,
 				dataType:'json',
 				success:function(res){
 					let data = res;
@@ -335,7 +335,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/front/finish",
+				url:that.$api.task.finish,
 				data:{
 					id:y.id
 				},
@@ -353,7 +353,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=front/task/close",
+				url:that.$api.task.close,
 				data:{
 					id:y.id
 				},
@@ -372,7 +372,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/front/get_all_user",
+				url:that.$api.get_user_list,
 				dataType:'json',
 				success:function(res){
 					let data = res
@@ -391,7 +391,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/get_all_project",
+				url:that.$api.get_project_list,
 				dataType:'json',
 				success:function(res){
 					let data = res;
@@ -433,7 +433,7 @@ export default({
 					finished_start:sTime,
 					finished_end:eTime
 				},
-				url:"/api.php?s=/front/get_task_list",
+				url:that.$api.task.getlist,
 				dataType:'json',
 				success:function(res){
 					let data = res
@@ -465,7 +465,7 @@ export default({
 			//获取项目下的模块
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/get_all_module",
+				url:that.$api.get_module_list,
 				data:{
 					project_id:value[0]
 				},
@@ -482,7 +482,7 @@ export default({
 			});
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=front/version/get_options",
+				url:that.$api.get_version_list,
 				data:{
 					project_id:value[0]
 				},

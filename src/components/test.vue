@@ -52,7 +52,7 @@
       },
       test(){
       	var ceshi = new Promise(function(resolve,reject){
-      		 console.log(resolve)
+      		console.log(resolve)
       	}).then((res)=>{
       		console.log(123)
       	})

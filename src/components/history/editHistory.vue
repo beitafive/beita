@@ -31,7 +31,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/get_history_detail",
+					url:that.$api.history.get,
 					data:{
 						id:that.$route.query.id
 					},
@@ -55,7 +55,7 @@
 						content:that.msg.content,
 					},
 					dataType:'json',
-					url:"/api.php?s=/front/get_history_addandedit",
+					url:that.$api.history.addandedit,
 					success:function(res){
 						let data = res
 						if(data.error==1){

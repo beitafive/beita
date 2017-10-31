@@ -59,7 +59,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/api/requirement/get",
+					url:that.$api.need.get,
 					dataType:'json',
 					data:{
 						id:that.$route.query.id
@@ -77,7 +77,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/get_all_project",
+					url:that.$api.get_project_list,
 					dataType:'json',
 					success:function(res){
 						let data = res;
@@ -96,7 +96,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/get_all_user",
+					url:that.$api.get_user_list,
 					dataType:'json',
 					success:function(res){
 						let data = res
@@ -123,7 +123,7 @@
 					ep:that.msg.ep,
 					submit_user_id:that.msg.submit_user_id
 				},
-				url:"/api.php?s=/update_requirement",
+				url:that.$api.need.update,
 				dataType:'json',
 				success:function(res){
 					let data = res;

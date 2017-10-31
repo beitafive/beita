@@ -57,7 +57,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/get_all_project",
+					url:that.$api.get_project_list,
 					dataType:'json',
 					success:function(res){
 						let data = res;
@@ -76,7 +76,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/get_all_user",
+					url:that.$api.get_user_list,
 					dataType:'json',
 					success:function(res){
 						let data = res
@@ -102,7 +102,7 @@
 					submit_user_id:that.owner_id,
 					content:that.content,
 				},
-				url:"/api.php?s=/add_requirement",
+				url:that.$api.need.add,
 				dataType:'json',
 				success:function(res){
 					let data = res;

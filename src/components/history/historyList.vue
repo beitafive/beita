@@ -94,7 +94,7 @@ export default({
 					page:x||1,
 					title:that.f_title,
 				},
-				url:"/api.php?s=/front/get_history_list",
+				url:that.$api.history.getlist,
 				dataType:'json',
 				success:function(res){
 					let data = res;

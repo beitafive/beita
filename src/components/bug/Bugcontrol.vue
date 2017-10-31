@@ -131,7 +131,7 @@
 			      </template>
 			    </el-table-column>
 			 </el-table>
-			 <p><span style="margin-right:100px;">BUG总数：{{count}}</span><el-button type="primary" icon="arrow-left" @click="prePage">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button type="primary" @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
+			 <p v-if="tableData.length"><span style="margin-right:100px;">BUG总数：{{count}}</span><el-button type="primary" icon="arrow-left" @click="prePage">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button type="primary" @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
 		</div>
 		<!--完成弹窗-->
 		<el-dialog title="请填写原因和解决方案" :visible.sync="finishTip" size="tiny">
@@ -242,7 +242,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/front/bug/set_status",
+				url:that.$api.bug.set_status,
 				dataType:'json',
 				data:{
 					id:row.id,
@@ -272,7 +272,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/front/get_all_user",
+				url:that.$api.get_uset_list,
 				dataType:'json',
 				success:function(res){
 					let data = res
@@ -291,7 +291,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/get_all_project",
+				url:that.$api.get_project_list,
 				dataType:'json',
 				success:function(res){
 					let data = res
@@ -320,7 +320,7 @@ export default({
 					status:that.findstatus,
 					version:that.version_id,
 				},
-				url:"/api.php?s=/front/get_bug_list",
+				url:that.$api.bug.getlist,
 				dataType:'json',
 				success:function(res){
 					let data = res
@@ -349,7 +349,7 @@ export default({
 			//获取项目下的模块
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/get_all_module",
+				url:that.$api.get_module_list,
 				data:{
 					project_id:value[0]
 				},
@@ -366,7 +366,7 @@ export default({
 			});
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=front/version/get_options",
+				url:that.$api.get_version_list,
 				data:{
 					project_id:value[0]
 				},

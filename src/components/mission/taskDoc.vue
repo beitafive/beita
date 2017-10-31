@@ -25,7 +25,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/task/get",
+					url:that.$api.task.get,
 					data:{
 						id:that.$route.query.id
 					},

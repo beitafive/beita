@@ -50,7 +50,7 @@
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=front/version/get_detail",
+				url:that.$api.version.get,
 				data:{
 					id:that.id
 				},

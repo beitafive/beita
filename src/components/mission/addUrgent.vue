@@ -88,7 +88,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/get_all_project",
+					url:that.$api.get_project_list,
 					dataType:'json',
 					success:function(res){
 						let data = res;
@@ -107,7 +107,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/get_all_user",
+					url:that.$api.get_user_list,
 					dataType:'json',
 					success:function(res){
 						let data = res
@@ -138,7 +138,7 @@
 						submit_user_id:that.submit_user_id
 					},
 					dataType:'json',
-					url:"/api.php?s=/front/quicktask/add_task",
+					url:that.$api.quicktask.add,
 					success:function(res){
 						let data = res
 						if(data.error==1){
@@ -163,7 +163,7 @@
 				that.add_version = '';
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/get_all_module",
+					url:that.$api.get_module_list,
 					data:{
 						project_id:value[0]
 					},
@@ -180,7 +180,7 @@
 				});
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=front/version/get_options",
+					url:that.$api.get_version_list,
 					dataType:'json',
 					data:{
 						project_id:value[0]

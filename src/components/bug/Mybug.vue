@@ -114,7 +114,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/front/get_all_user",
+				url:that.api.get_user_list,
 				dataType:'json',
 				success:function(res){
 					let data = res;

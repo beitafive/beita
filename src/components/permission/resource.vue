@@ -97,7 +97,7 @@ export default({
 		},
 		//菜单弹窗
 		MenuShow(item,items=''){
-			if(bread){
+			if(this.bread){
 				if(items){
 					this.pCode = items.code+'.';
 				}else{

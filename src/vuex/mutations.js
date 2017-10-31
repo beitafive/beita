@@ -12,7 +12,7 @@ var mutations = {
 	GET_PER:(state,data)=>{
 		$.ajax({
 			type:'get',
-			url:'/api.php?s=/front/base/code_get_resource',
+			url:'/api.php?s=api/base/code_get_resource',
 			data:{
 				code:data
 			},
@@ -25,6 +25,59 @@ var mutations = {
 				}
 			}
 		})
+	},
+	//改变路由
+	CHANGE_ROUTE:(state,data)=>{
+		state.routerName = data;
+	},
+	//page组件数据
+	PAGE_GO:(state)=>{
+		state.bload = true;  
+		$.ajax({
+			type:"get",
+			url:state.params.url+"&page="+state.pagination.page+state.params.data,
+			dataType:'json',
+			async:false,
+			success:(res)=>{
+				if(res.error == 0){
+					state.pagination = res.data.pagination;
+					state.tableData = res.data.rows;
+				}else{
+					state.tableData = [];
+					//以后可以调用自己写的提示组件
+				}
+				state.bload = false;
+			}
+		});
+	},
+	//获取请求地址&&参数  -- 列表
+	GETPARAMS:(state,data)=>{
+		state.params = data;
+		state.tableData = [];
+	},
+	//改变分页
+	CHANGE_PAGE:(state,data)=>{
+		if(data instanceof Object){
+			state.pagination = data
+		}else{
+			state.pagination.page = data;			
+		}
+	},
+	//获取页面的信息
+	GET_PAGE_INFO:(state,data)=>{
+		$.ajax({
+			type:"get",
+			url:"/api.php?s=api/user/get_page",
+			dataType:'json',
+			async:false,
+			success:(res)=>{
+				if(res.error == 0){
+					state.pageInfo = res.data;
+				}else{
+					//以后可以调用自己写的提示组件
+				}
+			}
+		});
 	}
 }
 export default mutations;

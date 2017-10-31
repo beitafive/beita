@@ -1,46 +1,59 @@
 <template>
-	<div class="usercontrol">
-		<h2 style="margin-bottom:20px;">用户管理</h2>
-		<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加用户</button>
+	<div class="usercontrol" v-if="bload">
+		<h2 style="margin-bottom:20px;">{{pageInfo.basic.page_title}}</h2>
+		<button class="addUser" @click="dialogVisible = true" v-if="badd&&pageInfo.operate_area.add">+ 添加用户</button>
+		<p style="margin-top:30px">
+			<span v-if="pageInfo.search_area.id">{{pageInfo.search_area.id.id}}<el-input v-model="find_id" placeholder="请输入内容" style="width:200px;margin:0 15px"></el-input></span>
+			<span v-if="pageInfo.search_area.username">{{pageInfo.search_area.username.username}}<el-input v-model="find_username" placeholder="请输入内容" style="width:200px;margin:0 15px"></el-input></span>
+			<el-button type="primary" icon="search" @click="getList()">搜索</el-button></p>
 		<div class="tables">
 			<el-table
 			    :data="tableData"
 			    border
+			    v-loading="$store.state.bload"
+    			element-loading-text="这应该是网络的问题..."
 			    style="width: 100%">
 			    <el-table-column
+		    	  v-if="pageInfo.data_area.id"
 			      prop="id"
-			      label="ID"
-			      width="80">
+			      :label="pageInfo.data_area.id.label"
+			      :width="pageInfo.data_area.id.width">
 			    </el-table-column>
 			    <el-table-column
+			      v-if="pageInfo.data_area.username"
 			      prop="username"
-			      label="用户名"
-			      width="120">
+			      :label="pageInfo.data_area.username.label"
+			      :width="pageInfo.data_area.username.width">
 			    </el-table-column>
 			    <el-table-column
+			      v-if="pageInfo.data_area.realname"
 			      prop="realname"
-			      label="姓名"
-			      width="120">
+			      :label="pageInfo.data_area.realname.label"
+			      :width="pageInfo.data_area.realname.width">
 			    </el-table-column>
 			    <el-table-column
-			      prop="email"
-			      label="邮箱"
-			      width="250">
+			      v-if="pageInfo.data_area.email"
+			      :label="pageInfo.data_area.email.label"
+			      :width="pageInfo.data_area.email.width"
+			      prop="email">
 			    </el-table-column>
 			    <el-table-column
-			      prop="mobile"
-			      label="手机号"
-			      width="150">
+			      v-if="pageInfo.data_area.mobile"
+			      :label="pageInfo.data_area.mobile.label"
+			      :width="pageInfo.data_area.mobile.width"
+			      prop="mobile">
 			    </el-table-column>
 			    <el-table-column
-			      prop="enter_at"
-			      label="入职时间"
-			      width="180">
+			      v-if="pageInfo.data_area.enter_at"
+			      :label="pageInfo.data_area.enter_at.label"
+			      :width="pageInfo.data_area.enter_at.width"
+			      prop="enter_at">
 			    </el-table-column>
 			    <el-table-column
-			      prop="leave_at"
-			      label="离职时间"
-			      width="180">
+			      v-if="pageInfo.data_area.leave_at"
+			      :label="pageInfo.data_area.leave_at.label"
+			      :width="pageInfo.data_area.leave_at.width"
+			      prop="leave_at">
 			    </el-table-column>
 			    <el-table-column
 			      label="操作"
@@ -51,7 +64,7 @@
 			      </template>
 			    </el-table-column>
 			  </el-table>
-			  <p><button @click="getList(+pageIndex-1,10)">上一页</button>{{+pageIndex}}/{{allCount}}<button @click="getList(+pageIndex+1,10)">下一页</button>总人数：{{count}}</p>
+			  <p><w-page></w-page></p>
 		</div>
 		<!--
         	作者：beitafive@163.com
@@ -129,11 +142,18 @@
 </template>
 
 <script>
+	import wPage from '../common/page'
+	
 export default({
 	name:'Pandect',
+	components:{
+		wPage
+	},
 	data(){
 		return{
-			tableData:[],				//列表数据
+			bload:false,
+			find_id:'',
+			find_username:'',
 			count:'',
 			pageIndex:1,				//当前页数
 			allCount:'',				//总页数
@@ -163,6 +183,12 @@ export default({
 			updatessh1:'',
 			updatessh2:'',
 			updatessh3:'',
+			params:{
+				url:'',
+				data:{
+					
+				}
+			},
 			
 			//角色
 			roleList:[],
@@ -171,7 +197,12 @@ export default({
 			badd:false,
 			bedit:false,
 			beditrole:false,
+			
+			pageInfo:""
 		}
+	},
+	beforeMount(){
+		this.getList();	
 	},
 	mounted(){
 		let _this = this;
@@ -179,8 +210,13 @@ export default({
 			_this.$store.state.perList.includes("user.add")?this.badd=true:'';
 			_this.$store.state.perList.includes("user.edit")?this.bedit=true:'';
 			_this.$store.state.perList.includes("user.editrole")?this.beditrole=true:'';
-			_this.getList();
 		})
+
+	},
+	computed:{
+		tableData(){
+			return this.$store.getters.getList;
+		}
 	},
 	methods:{
 		//获取角色列表
@@ -235,33 +271,14 @@ export default({
 		},
 		//获取列表
 		getList(x){
-			let that = this;
-			if(x=="0"){
-				this.$message("没有上一页")
-				return;
-			}
-			$.ajax({
-				type:"get",
-				data:{
-					page:x||1
-				},
-				url:that.$api.usercontrol.getlist,
-				dataType:'json',
-				success:function(res){
-					let data = res;
-					if(data.error==1){
-						that.$message(data.error_message)
-						if(that.allCount!="" && x<=that.allCount){
-							that.tableData = [];
-						}
-						return;
-					}
-					that.count = data.data.count;
-					that.allCount = Math.ceil(data.data.count/10);
-					that.tableData = data.data.user_arr;
-					that.pageIndex = x || 1;
-				}
-			});
+			let _this = this;
+			this.params.url = this.$api.usercontrol.getlist;
+			this.params.data = "&search[id]="+this.find_id+'&search[username]='+this.find_username;
+			_this.$store.dispatch("get_page_info",_this.params).then((data)=>{
+				_this.pageInfo = data;
+				_this.$store.dispatch("page_go")
+				_this.bload = true;
+			})
 		},
 		//添加新用户功能
 		addNewUser(){
@@ -285,7 +302,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message);
+						that.$message(data.error_msg);
 						return;
 					}
 					if(data.error==0){
@@ -379,6 +396,8 @@ export default({
 	.usercontrol{
 		float:left;
 		width:85%;
+		height:90%;
+		position: relative;
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;
@@ -421,7 +440,7 @@ export default({
 		text-align: center;
 		font-size:14px;
 	}
-	.usercontrol .tables p button{
+	/*.usercontrol .tables p button{
 		width:68px;height:28px;
 		margin:0 20px;
 		background:#fff;
@@ -429,7 +448,7 @@ export default({
 		font-size:14px;
 		color:#333;
 		border-radius:3px;
-	}
+	}*/
 	.usercontrol .updateContent{
 		width:75%;
 		height:120px;
@@ -438,4 +457,9 @@ export default({
 		resize:none;
 		/*margin-top:10px;*/
 	}
+	.el-loading-spinner .circular {
+		width:80px!important;
+		height:80px!important;
+	}
+
 </style>

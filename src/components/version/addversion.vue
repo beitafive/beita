@@ -44,7 +44,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/get_all_project",
+					url:that.$api.get_project_list,
 					dataType:'json',
 					success:function(res){
 						let data = res;
@@ -63,7 +63,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/add_version",
+					url:that.$api.version.add,
 					dataType:'json',
 					data:{
 						project_id:that.project_id,

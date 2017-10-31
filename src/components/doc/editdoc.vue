@@ -31,7 +31,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/doc/get",
+					url:that.$api.doc.get,
 					data:{
 						id:that.$route.query.id
 					},
@@ -51,7 +51,7 @@
 				let that = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/doc/update",
+					url:that.$api.doc.update,
 					dataType:'json',
 					data:{
 						id:that.$route.query.id,

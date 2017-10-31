@@ -76,7 +76,7 @@
 			      </template>
 			    </el-table-column>
 			 </el-table>
-			  <p><span style="margin-right:100px;">需求总数：{{count}}</span><el-button type="primary" icon="arrow-left" @click="prePage">上一页</el-button> {{pageIndex}} / {{allCount}} <el-button type="primary" @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
+			  <p v-if="tableData.length"><span style="margin-right:100px;">需求总数：{{count}}</span><el-button type="primary" icon="arrow-left" @click="prePage">上一页</el-button> {{pageIndex}} / {{allCount}} <el-button type="primary" @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
 		</div>
 		<!--完成弹窗-->
 		<el-dialog
@@ -154,7 +154,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"post",
-				url:"/api.php?s=/requirement/change_status",
+				url:that.$api.need.change_status,
 				dataType:'json',
 				data:{
 					id:that.id
@@ -179,7 +179,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"post",
-				url:"/api.php?s=api/requirement/delete",
+				url:that.$api.meed.del,
 				dataType:'json',
 				data:{
 					id:that.id
@@ -200,7 +200,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/get_all_project",
+				url:that.$api.get_project_list,
 				dataType:'json',
 				success:function(res){
 					let data = res;
@@ -241,7 +241,7 @@ export default({
 					title:that.f_title,
 					status:that.findStatus
 				},
-				url:"/api.php?s=/get_requirement_list",
+				url:that.$api.need.getlist,
 				dataType:'json',
 				success:function(res){
 					let data = res;

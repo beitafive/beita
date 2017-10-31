@@ -122,7 +122,7 @@
 			      </template>
 			    </el-table-column>
 			 </el-table>
-			 <p><span style="margin-right:100px;">任务总数：{{count}}</span><el-button type="primary" icon="arrow-left" @click="prePage">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button type="primary" @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
+			 <p v-if="tableData.length"><span style="margin-right:100px;">任务总数：{{count}}</span><el-button type="primary" icon="arrow-left" @click="prePage">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button type="primary" @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
 		</div>
 		<!--分配任务-->
 		<el-dialog title="分配任务" v-model="updateOwnerTip" size="tiny">

@@ -121,11 +121,15 @@ if (window.localStorage.token) {
 }
 
 router.beforeEach((to, from, next) => {
+	if(to.fullPath != '/'){
+		store.dispatch("changeRoute",to.fullPath)		
+	}
     if (to.matched.some(r => r.meta.requireAuth)) {
+    	let params = {page:1,page_count:10,page_total:0,item_total:0}
+    	store.dispatch("change_page",params)
         if (store.state.token) {
             next();
-        }
-        else {
+        }else {
             next({
                 path: '/',
                 query: {redirect: to.fullPath}

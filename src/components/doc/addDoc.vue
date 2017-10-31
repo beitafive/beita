@@ -27,7 +27,7 @@
 				let _this = this;
 				$.ajax({
 					type:"get",
-					url:"/api.php?s=/front/doc/create",
+					url:that.$api.doc.add,
 					dataType:'json',
 					data:{
 						title:_this.title,

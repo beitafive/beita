@@ -71,16 +71,16 @@ export default {
     			'username':this.username,
     			'password':this.password
     		},
-				url:"/api.php?s=/front/login",
+				url:that.$api.login,
 				dataType:'json',
     		success:function(res){
     			let data = res
     			if(data.error=="1"){
-    				that.$message(data.error_message)
+    				that.$message(data.error_msg)
     			}
     			if(data.error=="0"){
     				that.$message("登录成功")
-    				sessionStorage.userid = data.data.user_id;
+    				sessionStorage.userid = data.data.id || '';
     				//记住密码 选中
     				if(that.remeberMe){
     					localStorage.username = that.username;
@@ -93,9 +93,13 @@ export default {
     					}
     				}
     				localStorage.role = data.data.role.toLowerCase();
-    				that.$store.dispatch("login",data.data.user_id)
-    				let redirect = decodeURIComponent(that.$route.query.redirect || 'index');
-    				that.$router.push({path:redirect})
+    				that.$store.dispatch("login",data.data.id)
+    				if(that.$store.state.routerName){
+    					that.$router.push({path:that.$store.state.routerName})
+    				}else{
+	    				let redirect = decodeURIComponent(that.$route.query.redirect || 'index');
+	    				that.$router.push({path:redirect})    					
+    				}
     			}
     		}
     	});

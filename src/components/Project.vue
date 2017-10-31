@@ -105,7 +105,7 @@ export default({
 				data:{
 					page:x||1
 				},
-				url:"/api.php?s=/get_project_list",
+				url:that.$api.project.getlist,
 				success:function(res){
 					let data = res;
 					if(data.error==1){
@@ -132,7 +132,7 @@ export default({
 					title:that.addtitle,
 					content:that.addcontent,
 				},
-				url:"/api.php?s=/add_project",
+				url:that.$api.project.add,
 				success:function(res){
 					let data = res;
 					if(data.error==1){
@@ -169,7 +169,7 @@ export default({
 					title:that.updatetitle,
 					content:that.updatecontent
 				},
-				url:"/api.php?s=/update_project",
+				url:that.$api.project.update,
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
