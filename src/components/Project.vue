@@ -1,8 +1,12 @@
 <template>
 	<div class="w-project">
-		<h2 style="margin-bottom:20px;">项目管理</h2>
-		<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加项目</button>
-		<div class="tables">
+		<div class="anchu-inner-head">
+			<h2 class="anchu-head-title">
+				项目管理
+				<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加项目</button>			
+			</h2>
+		</div>
+		<div class="anchu-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -10,12 +14,12 @@
 			    <el-table-column
 			      prop="id"
 			      label="ID"
-			      width="120">
+			      width="70">
 			    </el-table-column>
 			    <el-table-column
 			      prop="title"
 			      label="标题"
-			      width="200">
+			      >
 			    </el-table-column>
 			    <el-table-column
 			      prop="content"
@@ -24,13 +28,15 @@
 			    </el-table-column>
 			    <el-table-column
 			      label="操作"
-			      width="100">
+			      width="200">
 			      <template scope="scope">
 			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index)" v-if="bedit">编辑</el-button>
 			      </template>
 			    </el-table-column>
 			  </el-table>
-			  <p><button @click="getList(pageIndex-1)">上一页</button>{{pageIndex}}/{{allCount}}<button @click="getList(pageIndex+1)">下一页</button></p>
+			  <p  class="anchu-page">
+			  		<el-button  icon="arrow-left" @click="getList(pageIndex-1)" style="margin-right: 10px;">上一页</el-button>{{pageIndex}} / {{allCount}}<el-button  @click="getList(pageIndex+1)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+			  	</p>
 		</div>
 		<el-dialog title="添加项目" v-model="dialogVisible" size="tiny">
 			<div class='addUserInfo'>
@@ -109,7 +115,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						if(that.allCount!="" && x<=that.allCount){
 							that.tableData = [];
 						}
@@ -136,7 +142,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message);
+						that.$message(data.error_msg);
 						return;
 					}
 					if(data.error==0){
@@ -173,7 +179,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){
@@ -197,13 +203,7 @@ export default({
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;
 	}
-	.w-project .addUser{
-		font-size:14px;
-		width:98px;height:28px;
-		border:1px solid #ddd;
-		background-color: #fff;
-		border-radius:3px;
-	}
+
 	.w-project .addUserInfo{
 		box-sizing: border-box;
 		padding:0 50px;

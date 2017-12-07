@@ -1,20 +1,32 @@
 <template>
 	<div class="w-module">
-		<h2 style="margin-bottom:20px;">模块管理</h2>
-		<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加模块</button>
-		<p style="margin-top:20px;"><el-cascader
-		    placeholder="请选择项目"
-		    :options="options"
-		    filterable
-		    style="width:200px;"
-		    v-model="selectProject"
-		    @change="checkChange"
-		  ></el-cascader>
-		  <el-input v-model="f_title" placeholder="请输入搜索标题" style="width:200px;margin: 0 100px;"></el-input>
-		   <el-button type="primary" icon="circle-cross" @click="clearSearch">清空</el-button>
-		  <el-button type="primary" icon="search" @click="getList('1',checkInfo,f_title)">搜索</el-button>
-		</p>
-		<div class="tables">
+		<div class="anchu-inner-head">
+			<h2 class="anchu-head-title">
+				模块管理
+				<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加模块</button>
+			</h2>
+			<p style="margin-top:20px;" class="anchu-search-wrap">
+				<span class="anchu-search-condition">
+					<span class="anchu-search-name">项目</span>
+					<el-cascader
+				    placeholder="请选择项目"
+				    :options="options"
+				    filterable
+				    style="width:200px;;padding-right: 12px;"
+				    v-model="selectProject"
+				    @change="checkChange"
+				  ></el-cascader>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">标题</span>
+				  <el-input v-model="f_title" placeholder="请输入搜索标题" style="width:200px;padding-right: 12px;"></el-input>					
+				</span>
+			   <el-button type="primary" icon="circle-cross" @click="clearSearch">清空</el-button>
+			  <el-button type="primary" icon="search" @click="getList('1',checkInfo,f_title)">搜索</el-button>
+			</p>
+		</div>
+		
+		<div class="anchu-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -32,7 +44,7 @@
 			    <el-table-column
 			      prop="title"
 			      label="标题"
-			      width="200">
+			      >
 			    </el-table-column>
 			    <el-table-column
 			      prop="created_at"
@@ -41,13 +53,15 @@
 			    </el-table-column>
 			    <el-table-column
 			      label="操作"
-			      width="100">
+			     width="200">
 			      <template scope="scope">
 			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index)" v-if="bedit">编辑</el-button>
 			      </template>
 			    </el-table-column>
 			  </el-table>
-			  <p><button @click="getList(+pageIndex-1,checkInfo,f_title)">上一页</button>{{+pageIndex}}/{{allCount}}<button @click="getList(+pageIndex+1,checkInfo,f_title)">下一页</button></p>
+			  <p class="anchu-page">
+			  	<el-button  icon="arrow-left" @click="getList(+pageIndex-1,checkInfo,f_title)" style="margin-right: 10px;">上一页</el-button>{{+pageIndex}}/{{allCount}}<el-button  @click="getList(+pageIndex+1,checkInfo,f_title)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+			  </p>
 		</div>
 		<el-dialog title="添加模块" v-model="dialogVisible" size="tiny">
 			<div class='addUserInfo'>
@@ -125,7 +139,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					that.options = data.data.project_arr;
@@ -151,7 +165,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						if(that.allCount!="" && x<=that.allCount){
 							that.tableData = [];
 						};
@@ -164,9 +178,13 @@ export default({
 				}
 			});
 		},
-		//添加需求功能
+		//添加模块
 		addNewUser(){
 			let that = this;
+			if(this.addtitle == ''){
+				this.$message.error("请填写标题！");
+				return null;
+			}
 			$.ajax({
 				type:"post",
 				data:{
@@ -178,7 +196,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message);
+						that.$message(data.error_msg);
 						return;
 					}
 					if(data.error==0){
@@ -201,6 +219,10 @@ export default({
 		//发送更新用户信息功能
 		updateUser(){
 			let that = this;
+			if(this.updatetitle == ''){
+				this.$message.error("请填写标题！");
+				return null;
+			}
 			$.ajax({
 				type:"post",
 				data:{
@@ -212,7 +234,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){
@@ -248,32 +270,6 @@ export default({
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;
-	}
-	.w-module .addUser{
-		font-size:14px;
-		width:98px;height:28px;
-		border:1px solid #ddd;
-		background-color: #fff;
-		border-radius:3px;
-	}
-	.w-module .addUserInfo{
-		box-sizing: border-box;
-		padding:0 50px;
-	}
-	.w-module .addUserInfo p{
-		height:40px;
-		margin:10px 0;
-		line-height:40px;
-		font-size:16px;
-		color:#333;
-	}
-	.w-module .addUserInfo input:nth-child(1){
-		width:75%;
-		height:38px;
-		border:1px solid #ddd;
-		float:right;
-		margin-left:10px;
-		border-radius:4px;
 	}
 	.w-module .tables{
 		width:100%;

@@ -1,79 +1,96 @@
 <template>
 	<div class="missioncenter">
-		<h2>任务管理</h2>
-		<router-link to="/createtask" v-if="badd">
-			<button class="addUser" @click="addmission = true">+ 添加任务</button>			
-		</router-link>
-		<p style="margin-top:20px;"><el-cascader
-		    placeholder="请选择项目"
-		    :options="projectarr"
-		    filterable
-		    style="width:200px;"
-		    v-model="findproject"
-		    @change="findprojectchange"
-		  ></el-cascader>
-		  <el-select v-model="find_version" placeholder="请选择版本" style="width:200px;">
-		    <el-option
-		      v-for="item in find_versionArr"
-		      :key="item.value"
-		      :label="item.label"
-		      :value="item.value">
-		    </el-option>
-		  </el-select>
-		  <el-cascader
-		    placeholder="请选择模块"
-		    :options="findmodulearr"
-		    filterable
-		    style="width:200px;"
-		    v-model="findmodule"
-		    @change="findmodulechange"
-		  ></el-cascader>
-		  <el-tooltip class="item" effect="dark" content="根据任务状态搜索" placement="top">
-		  <el-select v-model="findstatus" placeholder="请选择任务状态">
-		    <el-option
-		      v-for="item in statusArr"
-		      :key="item.value"
-		      :label="item.label"
-		      :value="item.value">
-		    </el-option>
-		  </el-select>
-		  </el-tooltip><br /><br />
-		  <el-tooltip class="item" effect="dark" content="根据执行者搜索" placement="bottom">
-		  <el-cascader
-		    placeholder="请选择执行者"
-		    :options="ownerarr"
-		    filterable
-		    style="width:200px;"
-		    v-model="findowner"
-		    @change="findownerchange"
-		  ></el-cascader>
-		  </el-tooltip>
-		  <el-input v-model="f_title" placeholder="请输入标题" style="width:200px;"></el-input>
-		  <el-tooltip class="item" effect="dark" content="根据完成日期搜索" placement="bottom">
-		  <el-date-picker
-	      v-model="beginTime"
-	      style="width:200px"
-	      type="date"
-	      placeholder="选择开始日期"
-	      :picker-options="pickerOptions0">
-	    </el-date-picker>
-	    </el-tooltip>
-	     <el-tooltip class="item" effect="dark" content="根据完成日期搜索" placement="bottom">
-	     <el-date-picker
-	      v-model="endTime"
-	      style="width:200px"
-	      type="date"
-	      placeholder="选择结束日期"
-	      :picker-options="pickerOptions0">
-	    </el-date-picker>
-	    </el-tooltip>
-		   <el-button type="primary" icon="circle-cross" @click="clearSearch">清空</el-button>
-		  <el-button type="primary" icon="search" @click="getList(1)">搜索</el-button>
+		<div class="anchu-inner-head">
+			<h2 class="anchu-head-title">
+				任务管理
+				<router-link to="/createtask" v-if="badd">
+					<button class="addUser" @click="addmission = true">+ 添加任务</button>			
+				</router-link>
+			</h2>
+			<p style="margin-top:20px;"  class="anchu-search-wrap">
+				<span class="anchu-search-condition">
+					<span class="anchu-search-name">项目</span>
+					<el-cascader
+				    placeholder="请选择项目"
+				    :options="projectarr"
+				    filterable
+				    style="width:200px;padding-right: 12px;"
+				    v-model="findproject"
+				    @change="findprojectchange"
+				  ></el-cascader>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">版本</span>
+				  <el-select v-model="find_version" placeholder="请选择版本" style="width:200px;padding-right: 12px;">
+				    <el-option
+				      v-for="item in find_versionArr"
+				      :key="item.value"
+				      :label="item.label"
+				      :value="item.value">
+				    </el-option>
+				  </el-select>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">模块</span>
+				  <el-cascader
+				    placeholder="请选择模块"
+				    :options="findmodulearr"
+				    filterable
+				    style="width:200px;padding-right: 12px;"
+				    v-model="findmodule"
+				    @change="findmodulechange"
+				  ></el-cascader>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">状态</span>
+				  <el-select v-model="findstatus" placeholder="请选择任务状态" style="padding-right: 12px;">
+				    <el-option
+				      v-for="item in statusArr"
+				      :key="item.value"
+				      :label="item.label"
+				      :value="item.value">
+				    </el-option>
+				  </el-select>
+				  </el-tooltip>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">执行者</span>
+				  <el-cascader
+				    placeholder="请选择执行者"
+				    :options="ownerarr"
+				    filterable
+				    style="width:200px;padding-right: 12px;"
+				    v-model="findowner"
+				    @change="findownerchange"
+				  ></el-cascader>
+				  </el-tooltip>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">标题</span>
+				  <el-input v-model="f_title" placeholder="请输入标题" style="width:200px;padding-right: 12px;"></el-input>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">日期</span>
+				     <!-- <el-tooltip class="item" effect="dark" content="根据完成日期搜索" placement="bottom"> -->
+				     <el-date-picker
+				      v-model="endTime"
+				      style="width:200px;"
+				      type="date"
+				      placeholder="选择结束日期">
+				    </el-date-picker>
+				    </el-tooltip>
+				</span>
+			   <el-button type="primary" icon="circle-cross" @click="clearSearch" style="margin-left: 12px;">清空</el-button>
+			  <el-button type="primary" icon="search" @click="getList(1)">搜索</el-button>
+			</p>
+		</div>
+		<span class="page-info">任务总数：{{count}}</span>
 		<!--列表展示-->
-		<div class="tables">
+		<div class="anchu-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
+			     @sort-change="projectSort"
 			    style="width: 100%">
 			    <el-table-column
 			      label="ID"
@@ -87,6 +104,8 @@
 			    <el-table-column
 			      prop="project"
 			      label="项目"
+			      sortable="custom"
+			     			     
 			      width="100">
 			    </el-table-column>
 			    <el-table-column
@@ -101,7 +120,7 @@
 			    </el-table-column>
 			    <el-table-column
 			      label="标题"
-			      width="200">
+			      >
 			      <template scope="scope">
 			      	<router-link :to="{path:'/taskDoc',query:{id:scope.row.id}}" target="_blank" style="cursor:pointer;color:#1D8CE0">
 				        <span>{{scope.row.title}}</span>
@@ -115,7 +134,8 @@
 			    </el-table-column>
 			    <el-table-column
 			      prop="realname"
-			      label="执行者"
+			      label="执行者"	
+			       sortable="custom"		     
 			      width="100">
 			    </el-table-column>
 			    <el-table-column
@@ -138,6 +158,7 @@
 			    <el-table-column
 			      prop="expire_at"
 			      label="截止日期"
+			       sortable="custom"		      
 			      width="130">
 			    </el-table-column>
 			    <el-table-column
@@ -150,11 +171,16 @@
 			        	<el-button type="text" size="small" >编辑</el-button>
 			      	</router-link>
 			        <el-button type="text" size="small" @click="finishItem(scope.$index,scope.row)" v-if="bfinish && scope.row.status=='WAIT'">完成</el-button>
-			        <el-button type="text" size="small" @click="closeItem(scope.$index,scope.row)" v-if="bclose">关闭</el-button>
+			        <el-button type="text" size="small" @click="testedItem(scope.$index,scope.row)" v-if="bpass && scope.row.status=='FINISHED'">测试通过</el-button>
+			        <el-button type="text" size="small" @click="onlineItem(scope.$index,scope.row)" v-if="bline && scope.row.status=='TESTED'">上线</el-button>
+			        <el-button type="text" size="small" @click="closeItem(scope.$index,scope.row)" v-if="bclose && scope.row.status=='ONLINE'">关闭</el-button>
 			      </template>
 			    </el-table-column>
 			 </el-table>
-			 <p v-if="tableData.length"><span style="margin-right:100px;">任务总数：{{count}}</span><el-button type="primary" icon="arrow-left" @click="prePage">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button type="primary" @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
+			 <p v-if="tableData.length"  class="anchu-page">
+			 	
+			 	<el-button  icon="arrow-left" @click="prePage" style="margin-right:10px;">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button  @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+			 </p>
 		</div>
 		<!--分配任务-->
 		<el-dialog title="分配任务" v-model="updateOwnerTip" size="tiny">
@@ -213,11 +239,11 @@ export default({
 			findmodulearr:[],
 			findmodule:[],
 			//搜索，状态
-			findstatus:'WAIT',
-			statusArr:[{value:'WAIT',label:'等待中'},{value:'FINISHED',label:'已完成'},{value:'CLOSED',label:'已关闭'}],
+			findstatus:'',
+			statusArr:[{value:'WAIT',label:'进行中'},{value:'FINISHED',label:'已完成'},{value:'TESTED',label:'测试通过'},{value:'ONLINE',label:'已上线'},{value:'CLOSED',label:'已关闭'}],
 			//搜索，执行者
-			findowner:[localStorage.token],
-			findownerinfo:localStorage.token,
+			findowner:[],
+			findownerinfo:'',
 			findownerarr:[],
 			//分配 任务
 			updateOwnerTip:false,
@@ -234,7 +260,12 @@ export default({
 			ballot:false,			//分配
 			bfinish:false,			//完成
 			bclose:false,			//关闭
+			bline:false,			//上线
+			bpass:false, 			//测试通过
 			bUp:false,				//更新进度
+			order_project: 0,		//按照项目排序
+			order_user: 0,			//按照人员排序
+			order_expire_at: 0		//按照截止日期排序
 		}
 	},
 	mounted(){
@@ -245,7 +276,9 @@ export default({
 			_this.$store.state.perList.includes("task.allot")?this.ballot=true:'';
 			_this.$store.state.perList.includes("task.finish")?this.bfinish=true:'';
 			_this.$store.state.perList.includes("task.close")?this.bclose=true:'';
-			_this.$store.state.perList.includes("task.Up")?this.bUp=true:'';				
+			_this.$store.state.perList.includes("task.pass")?this.bpass=true:'';
+			_this.$store.state.perList.includes("task.line")?this.bline=true:'';
+			_this.$store.state.perList.includes("task.Up")?this.bUp=true:'';			
 			_this.getList();
 		});
 		this.getProject();
@@ -272,7 +305,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
-						that.$message.error(data.error_message)
+						that.$message.error(data.error_msg)
 						return;
 					}
 					if(data.error == 0){
@@ -302,7 +335,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){
@@ -331,41 +364,45 @@ export default({
 			this.pageIndex--;
 			this.getList(this.pageIndex)
 		},
-		finishItem(x,y){
+		//更改任务状态
+		changeTaskStatus(status,id,log){
 			let that = this;
 			$.ajax({
-				type:"get",
-				url:that.$api.task.finish,
-				data:{
-					id:y.id
-				},
+				type:"post",
+				url:that.$api.task.change_status,
 				dataType:'json',
+				data:{
+					status:status,
+					id:id,
+				},
 				success:(res)=>{
 					if(res.error == 0){
-						that.getList(that.pageIndex)
+						that.getList(that.pageIndex);
 					}else{
-						that.$message(res.error_message)
+						that.$message.error(res.error_msg)
 					}
 				}
 			});
 		},
+		//任务完成
+		finishItem(x,y){
+			this.taskStatus = 'FINISHED';
+			this.changeTaskStatus(this.taskStatus,y.id);
+		},
+		//任务关闭
 		closeItem(x,y){
-			let that = this;
-			$.ajax({
-				type:"get",
-				url:that.$api.task.close,
-				data:{
-					id:y.id
-				},
-				dataType:'json',
-				success:(res)=>{
-					if(res.error == 0){
-						that.getList(that.pageIndex)
-					}else{
-						that.$message(res.error_message)
-					}
-				}
-			});
+			this.taskStatus = 'CLOSED';
+			this.changeTaskStatus(this.taskStatus,y.id);
+		},
+		//测试通过
+		testedItem(x,y){
+			this.taskStatus = 'TESTED';
+			this.changeTaskStatus(this.taskStatus,y.id);
+		},
+		//上线
+		onlineItem(x,y){
+			this.taskStatus = 'ONLINE';
+			this.changeTaskStatus(this.taskStatus,y.id);
 		},
 		//获取执行者列表
 		getUser(){
@@ -377,7 +414,7 @@ export default({
 				success:function(res){
 					let data = res
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){	
@@ -396,7 +433,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){
@@ -406,7 +443,7 @@ export default({
 			});
 		},
 		//获取任务列表
-		getList(x){
+		getList(x,){
 			let that = this;
 			let sTime,eTime;
 			if(that.beginTime != ''){
@@ -419,6 +456,7 @@ export default({
 			}else{
 				eTime = '';
 			}
+			
 			$.ajax({
 				type:"get",
 				data:{
@@ -431,15 +469,20 @@ export default({
 					version_id:that.find_version,
 					status:that.findstatus,
 					finished_start:sTime,
-					finished_end:eTime
+					finished_end:eTime,
+					order_project: that.order_project,
+					order_user: that.order_user,
+					order_expire_at: that.order_expire_at,
+					taskStatus:'',	//更改任务状态
 				},
 				url:that.$api.task.getlist,
 				dataType:'json',
 				success:function(res){
 					let data = res
 					if(data.error==1){
+						that.count = 0;
 						that.tableData = [];
-						that.$message(data.error_message)
+						// that.$message(data.error_msg)
 					}
 					if(data.error == 0){
 						that.tableData=data.data.task_arr;
@@ -476,7 +519,7 @@ export default({
 						that.findmodulearr = data.data.module_arr;
 					}
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 				}
 			});
@@ -493,7 +536,7 @@ export default({
 						that.find_versionArr = data.data;
 					}
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 				}
 			});
@@ -526,6 +569,52 @@ export default({
 			this.f_title = '';
 			this.beginTime = '';
 			this.endTime = '';
+		},
+		//排序
+		projectSort(e){
+			if(e.prop == "project"){
+				this.projectSortSwitch = !this.projectSortSwitch
+				if(this.projectSortSwitch == true){
+					this.order_project = 1;
+					this.order_user = 0;
+					this.order_expire_at = 0;
+				}else{
+					this.order_project = 2;
+					this.order_user = 0;
+					this.order_expire_at = 0;
+				}
+				
+				this.getList();
+			}else if(e.prop == "realname"){
+				this.userSortSwitch = !this.userSortSwitch
+				if(this.userSortSwitch == true){
+					this.order_project = 0;
+					this.order_user = 1;
+					this.order_expire_at = 0;
+					
+				}else{
+					this.order_project = 0;
+					this.order_user = 2;
+					this.order_expire_at = 0;
+				}
+				this.getList();
+			}else if(e.prop == "expire_at"){
+				this.expireSortSwitch = !this.expireSortSwitch
+				if(this.expireSortSwitch == true){
+					this.order_project = 0;
+					this.order_user = 0;
+					this.order_expire_at = 1;
+					
+				}else{
+					this.order_project = 0;
+					this.order_user = 0;
+					this.order_expire_at = 2;
+				}
+				this.getList();
+			}else{
+				return ;
+			}
+			
 		}
 	}
 })
@@ -538,35 +627,6 @@ export default({
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;
-	}
-	.missioncenter .addUser{
-		font-size:14px;
-		margin-top:20px;
-		width:98px;height:28px;
-		border:1px solid #ddd;
-		background-color: #fff;
-		border-radius:3px;
-		cursor:pointer;
-	}
-	.missioncenter .addUserInfo{
-		box-sizing: border-box;
-		padding:0 50px;
-	}
-	.missioncenter .addUserInfo p{
-		height:40px;
-		margin:10px 0;
-		line-height:40px;
-		font-size:14px;
-		color:#333;
-	}
-	.missioncenter .addUserInfo input:first-child{
-		width:75%;
-		height:38px;
-		border:1px solid #ddd;
-		float:right;
-		box-sizing: border-box;
-		padding:10px;
-		border-radius:4px;
 	}
 	.missioncenter .tables{
 		width:100%;

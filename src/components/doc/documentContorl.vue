@@ -1,15 +1,23 @@
 <template>
 	<div class="w-document">
-		<h2>文档管理</h2>
-		<router-link to="/createdoc" v-if="badd">
-			<button class="addUser">+ 添加文档</button>			
-		</router-link>
-		<p style="margin-top:20px;">
-		  <el-input v-model="f_title" placeholder="请输入标题" style="width:200px;margin-right:50px;"></el-input>
-		  <el-button type="primary" icon="search" @click="getlist(1)">搜索</el-button>
-		</p>
+		<div  class="anchu-inner-head">
+			<h2 class="anchu-head-title">
+			文档管理
+				<router-link to="/createdoc" v-if="badd">
+					<button class="addUser">+ 添加文档</button>			
+				</router-link>
+			</h2>
+			<p style="margin-top:20px;" class="anchu-search-wrap">
+				<span class="anchu-search-condition">
+					<span class="anchu-search-name">标题</span>
+				  	<el-input v-model="f_title" placeholder="请输入标题" style="width:200px;margin-right:12px;"></el-input>					
+				</span>
+			  <el-button type="primary" icon="search" @click="getlist(1)">搜索</el-button>
+			</p>
+		</div>
+		
 		<!--列表展示-->
-		<div class="tables">
+		<div class="anchu-inner-content">
 			<el-table
 		    :data="tableData"
 		    border
@@ -17,16 +25,21 @@
 		    <el-table-column
 		      prop="id"
 		      label="ID"
-		      width="120">
+		     width="70">
 		    </el-table-column>
 		    <el-table-column
 		      prop="title"
 		      label="标题"
-		      width="180">
+		     >
+		    </el-table-column>
+		    <el-table-column
+		      prop="created_at"
+		      label="创建日期"
+		       width="150">
 		    </el-table-column>
 		     <el-table-column
 		      label="操作"
-		      width="150">
+		     width="150">
 		      <template scope="scope">
 		      	<router-link :to="{path:'/editdoc',query:{id:scope.row.id}}" v-if="bedit">
 		      		<el-button type="text" style="margin-right:20px;">编辑</el-button>
@@ -37,7 +50,9 @@
 		      </template>
 		    </el-table-column>
 		  </el-table>
-		  <p><button @click="getlist(+pageIndex-1)">上一页</button>{{+pageIndex}}/{{allCount}}<button @click="getlist(+pageIndex+1)">下一页</button></p>
+		  <p class="anchu-page">
+		  	<el-button  icon="arrow-left" @click="getlist(+pageIndex-1)" style="margin-right: 10px;">上一页</el-button>{{+pageIndex}}/{{allCount}}<el-button  @click="getlist(+pageIndex+1)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+		  </p>
 		</div>
 	</div>
 </template>
@@ -104,39 +119,9 @@
 <style scoped>
 	.w-document{
 		float:left;
-		width:85%;
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;
-	}
-	.w-document .addUser{
-		font-size:14px;
-		margin-top:20px;
-		width:98px;height:28px;
-		border:1px solid #ddd;
-		background-color: #fff;
-		border-radius:3px;
-		cursor: pointer;
-	}
-	.w-document .addDoc{
-		box-sizing: border-box;
-		padding:0 50px;
-	}
-	.w-document .addDoc p{
-		height:40px;
-		margin:10px 0;
-		line-height:40px;
-		font-size:14px;
-		color:#333;
-	}
-	.w-document .addDoc input:first-child{
-		width:75%;
-		height:38px;
-		border:1px solid #ddd;
-		float:right;
-		box-sizing: border-box;
-		padding:10px;
-		border-radius:4px;
 	}
 	.tables{
 		width:100%;
@@ -157,12 +142,5 @@
 		font-size:14px;
 		color:#333;
 		border-radius:3px;
-	}
-	.content{
-		width:75%;
-		height:160px;
-		float:right;
-		border:1px solid #DDDDDD;
-		resize:none;
 	}
 </style>

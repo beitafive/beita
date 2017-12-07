@@ -1,54 +1,79 @@
 <template>
 	<div class="w-urgenttask">
-		<h2>紧急任务</h2>
-		<router-link to="/addurgent" v-if="badd">
-			<button class="addUser">+ 添加任务</button>			
-		</router-link>
-		<p style="margin-top:20px;"><el-cascader
-		    placeholder="请选择项目"
-		    :options="projectarr"
-		    filterable
-		    style="width:200px;"
-		    v-model="findproject"
-		    @change="findprojectchange"
-		  ></el-cascader>
-		  <el-select v-model="find_version" placeholder="请选择版本" style="width:200px;">
-		    <el-option
-		      v-for="item in find_versionArr"
-		      :key="item.value"
-		      :label="item.label"
-		      :value="item.value">
-		    </el-option>
-		  </el-select>
-		  <el-cascader
-		    placeholder="请选择模块"
-		    :options="findmodulearr"
-		    filterable
-		    style="width:200px;"
-		    v-model="findmodule"
-		    @change="findmodulechange"
-		  ></el-cascader><br /><br />
-		  <el-select v-model="findstatus" placeholder="请选择任务状态">
-		    <el-option
-		      v-for="item in statusArr"
-		      :key="item.value"
-		      :label="item.label"
-		      :value="item.value">
-		    </el-option>
-		  </el-select>
-		  <el-cascader
-		    placeholder="请选择执行者"
-		    :options="ownerarr"
-		    filterable
-		    style="width:200px;"
-		    v-model="findowner"
-		    @change="findownerchange"
-		  ></el-cascader>
-		  <el-input v-model="f_title" placeholder="请输入标题" style="width:200px;"></el-input>
-		   <el-button type="primary" icon="circle-cross" @click="clearSearch">清空</el-button>
-		  <el-button type="primary" icon="search" @click="getList(1)">搜索</el-button>
+		<div class="anchu-inner-head">
+			<h2 class="anchu-head-title">
+				紧急任务
+				<router-link to="/addurgent" v-if="badd">
+					<button class="addUser">+ 添加任务</button>			
+				</router-link>
+			</h2>
+			<p style="margin-top:20px;" class="anchu-search-wrap">
+				<span class="anchu-search-condition">
+					<span class="anchu-search-name">项目</span>
+					<el-cascader
+				    placeholder="请选择项目"
+				    :options="projectarr"
+				    filterable
+				    style="width:200px;padding-right: 12px;"
+				    v-model="findproject"
+				    @change="findprojectchange"
+				  ></el-cascader>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">版本</span>
+				  <el-select v-model="find_version" placeholder="请选择版本" style="width:200px;padding-right: 12px;">
+				    <el-option
+				      v-for="item in find_versionArr"
+				      :key="item.value"
+				      :label="item.label"
+				      :value="item.value">
+				    </el-option>
+				  </el-select>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">模块</span>
+				  <el-cascader
+				    placeholder="请选择模块"
+				    :options="findmodulearr"
+				    filterable
+				    style="width:200px;padding-right: 12px;"
+				    v-model="findmodule"
+				    @change="findmodulechange"
+				  ></el-cascader>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">状态</span>
+				  <el-select v-model="findstatus" placeholder="请选择任务状态" style="width:200px;padding-right: 12px;">
+				    <el-option
+				      v-for="item in statusArr"
+				      :key="item.value"
+				      :label="item.label"
+				      :value="item.value">
+				    </el-option>
+				  </el-select>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">执行者</span>
+				  <el-cascader
+				    placeholder="请选择执行者"
+				    :options="ownerarr"
+				    filterable
+				    style="width:200px;padding-right: 12px;"
+				    v-model="findowner"
+				    @change="findownerchange"
+				  ></el-cascader>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">标题</span>
+				  <el-input v-model="f_title" placeholder="请输入标题" style="width:200px;padding-right: 12px;"></el-input>					
+				</span>
+			   <el-button type="primary" icon="circle-cross" @click="clearSearch">清空</el-button>
+			  <el-button type="primary" icon="search" @click="getList(1)">搜索</el-button>
+			</p>
+		</div>
+		<span class="page-info">任务总数：{{count}}</span>
 		<!--列表展示-->
-		<div class="tables">
+		<div class="anchu-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -76,7 +101,7 @@
 			    <el-table-column
 			      prop="title"
 			      label="标题"
-			      width="200">
+			      >
 			    </el-table-column>
 			    <el-table-column
 			      label="状态"
@@ -113,16 +138,20 @@
 			      	<router-link :to="{path:'/editurgent',query:{id:scope.row.id}}" v-if="bedit">
 				        <el-button type="text" size="small">编辑</el-button>			     
 			      	</router-link>
-			        <el-button type="text" size="small" @click="finishItem(scope.$index,scope.row)" v-if="bfinish && scope.row.status=='WAIT'">完成</el-button>
-			        <el-button type="text" size="small" @click="closeItem(scope.$index,scope.row)" v-if="bclose && scope.row.status=='TESTED'">关闭</el-button>
+			        <el-button type="text" size="small" @click="finishItem(scope.row)" v-if="bfinish && scope.row.status=='WAIT'">完成</el-button>
 			        <el-button type="text" size="small" @click="testedItem(scope.row)" v-if="bpass && scope.row.status=='FINISHED'">测试通过</el-button>
+			        <el-button type="text" size="small" @click="onlineItem(scope.row)" v-if="bline && scope.row.status=='TESTED'">上线</el-button>
+			        <el-button type="text" size="small" @click="closeItem(scope.row)" v-if="bclose && scope.row.status=='ONLINE'">关闭</el-button>
 			        <router-link :to="{path:'/taskDoc',query:{id:scope.row.id}}" target="_blank" v-if="bread">
 				        <el-button type="text" size="small" style="margin-left:20px">查看</el-button>
 			        </router-link>
 			      </template>
 			    </el-table-column>
 			 </el-table>
-			 <p v-if="tableData.length"><span style="margin-right:100px;">任务总数：{{count}}</span><el-button type="primary" icon="arrow-left" @click="prePage">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button type="primary" @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
+			 <p v-if="tableData.length" class="anchu-page">
+			 	
+			 	<el-button icon="arrow-left" @click="prePage" style="margin-right: 10px;">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button  @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+			 </p>
 		</div>
 		<!--分配任务-->
 		<el-dialog title="分配任务" v-model="updateOwnerTip" size="tiny">
@@ -172,7 +201,7 @@ export default({
 			findmodule:[],
 			//搜索，状态
 			findstatus:'',
-			statusArr:[{value:'WAIT',label:'等待中'},{value:'FINISHED',label:'已完成'},{value:'TESTED',label:'测试通过'},{value:'CLOSED',label:'已关闭'}],
+			statusArr:[{value:'WAIT',label:'进行中'},{value:'FINISHED',label:'已完成'},{value:'TESTED',label:'测试通过'},{value:'ONLINE',label:'已上线'},{value:'CLOSED',label:'已关闭'}],
 			//搜索，执行者
 			findowner:[],
 			findownerinfo:'',
@@ -180,6 +209,7 @@ export default({
 			//分配 任务
 			updateOwnerTip:false,
 			newowner:'',
+			taskStatus:'',			//任务状态
 			
 			badd:false,				//添加
 			bedit:false,			//编辑
@@ -188,6 +218,7 @@ export default({
 			bfinish:false,			//完成
 			bclose:false,			//关闭
 			bread:false,			//查看
+			bline:false,			//上线
 		}
 	},
 	mounted(){
@@ -199,6 +230,7 @@ export default({
 			_this.$store.state.perList.includes("urgent.allot")?_this.ballot=true:'';
 			_this.$store.state.perList.includes("urgent.finish")?_this.bfinish=true:'';
 			_this.$store.state.perList.includes("urgent.close")?_this.bclose=true:'';
+			_this.$store.state.perList.includes("urgent.line")?_this.bline=true:'';
 			_this.$store.state.perList.includes("urgent.read")?_this.bread=true:'';				
 			_this.getList();
 		});
@@ -219,12 +251,12 @@ export default({
 					id:that.updateid,
 					owner_id:that.newowner,
 				},
-				url:"/api.php?s=/front/distribute",
+				url:that.$api.quicktask.distribute,
 				dataType:'json',
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){
@@ -253,72 +285,58 @@ export default({
 			this.pageIndex--;
 			this.getList(this.pageIndex)
 		},
-		testedItem(row){
+		//更改任务状态
+		changeTaskStatus(status,id,log){
 			let that = this;
 			$.ajax({
-				type:"get",
-				url:"/api.php?s=/front/tested",
-				data:{
-					id:row.id
-				},
+				type:"post",
+				url:that.$api.task.change_status,
 				dataType:'json',
+				data:{
+					status:status,
+					id:id,
+				},
 				success:(res)=>{
 					if(res.error == 0){
-						that.getList(that.pageIndex)
+						that.getList(that.pageIndex);
 					}else{
-						that.$message(res.error_message)
+						that.$message.error(res.error_msg)
 					}
 				}
 			});
 		},
-		finishItem(x,y){
-			let that = this;
-			$.ajax({
-				type:"get",
-				url:"/api.php?s=/front/finish",
-				data:{
-					id:y.id
-				},
-				dataType:'json',
-				success:(res)=>{
-					if(res.error == 0){
-						that.getList(that.pageIndex)
-					}else{
-						that.$message(res.error_message)
-					}
-				}
-			});
+		//任务完成
+		finishItem(y){
+			this.taskStatus = 'FINISHED';
+			this.changeTaskStatus(this.taskStatus,y.id);
 		},
-		//关闭
-		closeItem(x,y){
-			let that = this;
-			$.ajax({
-				type:"get",
-				url:"/api.php?s=front/task/close",
-				data:{
-					id:y.id
-				},
-				dataType:'json',
-				success:(res)=>{
-					if(res.error == 0){
-						that.getList(that.pageIndex)
-					}else{
-						that.$message(res.error_message)
-					}
-				}
-			});
+		//任务关闭
+		closeItem(y){
+			console.log(y);
+			this.taskStatus = 'CLOSED';
+			this.changeTaskStatus(this.taskStatus,y.id);
+		},
+		//测试通过
+		testedItem(y){
+			this.taskStatus = 'TESTED';
+			this.changeTaskStatus(this.taskStatus,y.id);
+		},
+		//上线
+		onlineItem(y){
+			this.taskStatus = 'ONLINE';
+			this.changeTaskStatus(this.taskStatus,y.id);
 		},
 		//获取执行者列表
 		getUser(){
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/front/get_all_user",
+				url:that.$api.get_user_list,
 				dataType:'json',
 				success:function(res){
-					let data = res
+					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){	
@@ -332,12 +350,12 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/get_all_project",
+				url:that.$api.get_project_list,
 				dataType:'json',
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){
@@ -361,13 +379,14 @@ export default({
 					version_id:that.find_version,
 					status:that.findstatus,
 				},
-				url:"/api.php?s=front/quicktask/getlist",
+				url:that.$api.quicktask.getlist,
 				dataType:'json',
 				success:function(res){
 					let data = res
 					if(data.error==1){
+						that.count = 0;
 						that.tableData = [];
-						that.$message(data.error_message)
+						// that.$message(data.error_msg)
 					}
 					if(data.error == 0){
 						that.tableData=data.data.task_arr;
@@ -393,7 +412,7 @@ export default({
 			//获取项目下的模块
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=/get_all_module",
+				url:that.$api.get_module_list,
 				data:{
 					project_id:value[0]
 				},
@@ -404,13 +423,13 @@ export default({
 						that.findmodulearr = data.data.module_arr;
 					}
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 				}
 			});
 			$.ajax({
 				type:"get",
-				url:"/api.php?s=front/version/get_options",
+				url:that.$api.get_version_list,
 				data:{
 					project_id:value[0]
 				},
@@ -421,7 +440,7 @@ export default({
 						that.find_versionArr = data.data;
 					}
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 				}
 			});
@@ -464,34 +483,6 @@ export default({
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;
-	}
-	.w-urgenttask .addUser{
-		font-size:14px;
-		margin-top:20px;
-		width:98px;height:28px;
-		border:1px solid #ddd;
-		background-color: #fff;
-		border-radius:3px;
-	}
-	.w-urgenttask .addUserInfo{
-		box-sizing: border-box;
-		padding:0 50px;
-	}
-	.w-urgenttask .addUserInfo p{
-		height:40px;
-		margin:10px 0;
-		line-height:40px;
-		font-size:14px;
-		color:#333;
-	}
-	.w-urgenttask .addUserInfo input:first-child{
-		width:75%;
-		height:38px;
-		border:1px solid #ddd;
-		float:right;
-		box-sizing: border-box;
-		padding:10px;
-		border-radius:4px;
 	}
 	.w-urgenttask .tables{
 		width:100%;

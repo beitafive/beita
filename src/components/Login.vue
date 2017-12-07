@@ -79,7 +79,7 @@ export default {
     				that.$message(data.error_msg)
     			}
     			if(data.error=="0"){
-    				that.$message("登录成功")
+    				// that.$message("登录成功")
     				sessionStorage.userid = data.data.id || '';
     				//记住密码 选中
     				if(that.remeberMe){
@@ -97,8 +97,7 @@ export default {
     				if(that.$store.state.routerName){
     					that.$router.push({path:that.$store.state.routerName})
     				}else{
-	    				let redirect = decodeURIComponent(that.$route.query.redirect || 'index');
-	    				that.$router.push({path:redirect})    					
+	    				that.$router.push('/index')    					
     				}
     			}
     		}
@@ -139,6 +138,7 @@ export default {
 		height:40px;line-height:40px;
 		border:1px solid #ddd;
 		border-bottom:none;
+    margin:0;
 	}
 	.oa_login .login_form .loginInfo{
 		border:1px solid #ddd;

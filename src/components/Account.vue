@@ -1,10 +1,20 @@
 <template>
 	<div class="w-account">
-		<h2 style="margin-bottom:20px;">账户管理</h2>
-		<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加账户</button>
-		<p style="margin-top:30px">标题<el-input v-model="f_title" placeholder="请输入内容" style="width:200px;margin:0 15px"></el-input>
-			<el-button type="primary" icon="search" @click="getList('1')">搜索</el-button></p>
-		<div class="tables">
+		<div class="anchu-inner-head">
+			<h2 class="anchu-head-title">
+				账户管理
+				<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加账户</button>
+			</h2>
+			<p style="margin-top:30px" class="anchu-search-wrap">
+				<span class="anchu-search-condition">
+					<span class="anchu-search-name">标题</span>
+					<el-input v-model="f_title" placeholder="请输入内容" style="width:200px;margin:0 15px"></el-input>					
+				</span>
+				<el-button type="primary" icon="search" @click="getList('1')">搜索</el-button>
+			</p>
+		</div>
+		
+		<div class="anchu-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -12,30 +22,32 @@
 			    <el-table-column
 			      prop="id"
 			      label="ID"
-			      width="120">
+			      width="70">
 			    </el-table-column>
 			    <el-table-column
 			      prop="title"
 			      label="标题"
-			      width="200">
+			      width="400">
 			    </el-table-column>
 			    <el-table-column
 			      label="内容"
-			      width="400">
+			     >
 			      <template scope="scope">
 			      	<div v-html="scope.row.content"></div>
 			      </template>
 			    </el-table-column>
 			    <el-table-column
 			      label="操作"
-			      width="100">
+			     width="200">
 			      <template scope="scope">
 			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index)" v-if="bedit">编辑</el-button>
 			      </template>
 			    </el-table-column>
 			  </el-table>
-			  <p class="contor"><el-button type="primary" icon="arrow-left" @click="getList(+pageIndex-1)">上一页</el-button>{{+pageIndex}}/{{allCount}}
-			  	<el-button type="primary" @click="getList(+pageIndex+1)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
+			  <p class="anchu-page">
+			  	<el-button  icon="arrow-left" @click="getList(+pageIndex-1)" style="margin-right: 10px;">上一页</el-button>{{+pageIndex}}/{{allCount}}
+			  	<el-button  @click="getList(+pageIndex+1)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+			  </p>
 		</div>
 		<el-dialog title="添加账户" v-model="dialogVisible" size="tiny">
 			<div class='addUserInfo'>
@@ -112,11 +124,11 @@ export default({
 					title:that.f_title
 				},
 				dataType:'json',
-				url:"/api.php?s=/get_account_list",
+				url:that.$api.account.getlist,
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message);
+						that.$message(data.error_msg);
 						if(that.allCount!="" && x<=that.allCount){
 							that.tableData = [];
 						}
@@ -139,11 +151,11 @@ export default({
 					content:that.addcontent,
 				},
 				dataType:'json',
-				url:"/api.php?s=/add_account",
+				url:that.$api.account.add,
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message);
+						that.$message(data.error_msg);
 						return;
 					}
 					if(data.error==0){
@@ -176,11 +188,11 @@ export default({
 					content:that.updatecontent
 				},
 				dataType:'json',
-				url:"/api.php?s=/update_account",
+				url:that.$api.account.update,
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){
@@ -203,13 +215,6 @@ export default({
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;
-	}
-	.w-account .addUser{
-		font-size:14px;
-		width:98px;height:28px;
-		border:1px solid #ddd;
-		background-color: #fff;
-		border-radius:3px;
 	}
 	.w-account .addUserInfo{
 		box-sizing: border-box;

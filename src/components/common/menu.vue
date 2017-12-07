@@ -4,17 +4,16 @@
 			<!-- 外层循环渲染 -->
 	      	<el-submenu v-for="(items,indexs) in menuList" :index="indexs.toString()" key="indexs">
 	      		<template slot="title">
-	      			{{items.name}}
+	      			<i class="iconfont" v-html="items.icon"></i>&nbsp; {{items.name}}
 	      		</template>
 	      		<!-- 内层循环渲染 -->
 	      		<el-menu-item v-for="(item,index) in items.children" :index="item.index" key="index">
 	      			<router-link tag="span" :to="item.router">
-	      				&nbsp;&nbsp;{{item.name}}
+	      				&nbsp;&nbsp;<i class="iconfont" v-html="item.icon"></i>&nbsp;{{item.name}}
 	      			</router-link>
 	      		</el-menu-item>
 	      	</el-submenu>
-	   </el-menu>
-		   
+	   </el-menu>  
 	</div>
 </template>
 
@@ -61,10 +60,19 @@ export default({
 	.w-menu{
 		float:left;
 		width:15%;
-		height:500px;
-		/*border:1px solid #e7e7e7;*/
+		height:100%;
+		background: #eef1f6;
+		position: fixed;
+		top: 60px;
+		width: 200px;
+		overflow-y: scroll;
 	}
+	
 	.w-menu span{
 		display: block;
 	}
+	.w-menu i{
+		font-size: 14px;
+	}
+	
 </style>

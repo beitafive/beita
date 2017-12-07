@@ -48,7 +48,7 @@
 		    @change="changestatus"
 		  ></el-cascader></p>
 		<p><span>工时</span> <input type="text" v-model="update_point" /></p>
-		<p><span>难度</span> <input type="text" v-model="update_dp" /></p>
+		<!-- <p><span>难度</span> <input type="text" v-model="update_dp" /></p> -->
 		<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
 		    <span style="float:left">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="updatecontent"></textarea>
 		</p>
@@ -127,7 +127,7 @@
 										that.updatemodulearr = data.data.module_arr;						
 									}
 									if(data.error == 1){
-										that.$message(data.error_message)
+										that.$message(data.error_msg)
 									}
 								}
 							});
@@ -144,7 +144,7 @@
 										that.update_versionArr = data.data;
 									}
 									if(data.error == 1){
-										that.$message(data.error_message)
+										that.$message(data.error_msg)
 									}
 								}
 							});
@@ -170,7 +170,7 @@
 							that.update_point = y.point;
 						}
 						if(data.error == 1){
-							that.$message(data.error_message);
+							that.$message(data.error_msg);
 						}
 					}
 				});
@@ -185,7 +185,7 @@
 					success:function(res){
 						let data = res;
 						if(data.error==1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){
@@ -204,7 +204,7 @@
 					success:function(res){
 						let data = res
 						if(data.error==1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){	
@@ -235,12 +235,13 @@
 					success:function(res){
 						let data = res
 						if(data.error == 1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){
 							that.$message("更新成功");
-							that.$router.push("/urgenttask");
+							// that.$router.push("/urgenttask");
+							that.$router.go(-1);
 						}
 					}
 				});
@@ -271,7 +272,7 @@
 							that.updatemodulearr = data.data.module_arr;						
 						}
 						if(data.error == 1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 						}
 					}
 				});
@@ -288,7 +289,7 @@
 							that.update_versionArr = data.data;
 						}
 						if(data.error == 1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 						}
 					}
 				});

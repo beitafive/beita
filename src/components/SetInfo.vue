@@ -1,17 +1,49 @@
 <template>
 	<div class="setInfo">
-		<h2>个人信息</h2>
-		<p><span>姓名<i>:</i></span>{{userData.realname}}</p>
-		<p><span>ID<i>:</i></span>{{userData.id}}</p>
-		<p><span>用户名<i>:</i></span>{{userData.username}}</p>
-		<p><span>e-mail<i>:</i></span>{{userData.email}}</p>
-		<p><span>手机号<i>:</i></span>{{userData.mobile}}</p>
-		<p><span>入职时间<i>:</i></span>{{userData.enter_at}}</p>
-		<p><span>ssh（1）<i>:</i></span>{{userData.ssh_pub_key1}}</p>
-		<p><span>ssh（2）<i>:</i></span>{{userData.ssh_pub_key2}}</p>
-		<p><span>ssh（3）<i>:</i></span>{{userData.ssh_pub_key3}}</p>
-		<el-button type="info" icon="edit" style="margin:30px" @click="updateUserInfos = true" v-if="bedit"> 编 辑 </el-button>
-		<el-button type="info" style="margin-top:30px" @click="editPwd = true" v-if="bcpass"> 修改密码 </el-button>
+		<div class="info-wrap">
+			<div class="title">个人信息</div>
+			<div class="info-name">
+				<span>姓名</span>
+				<p>{{userData.realname}}</p>
+			</div>
+			<div class="info-name">
+				<span>ID</span>
+				<p>{{userData.id}}</p>
+			</div>
+			<div class="info-name">
+				<span>用户名</span>
+				<p>{{userData.username}}</p>
+			</div>
+			<div class="info-name">
+				<span>e-mail</span>
+				<p>{{userData.email}}</p>
+			</div>
+			<div class="info-name">
+				<span>手机号</span>
+				<p>{{userData.mobile}}</p>
+			</div>
+			<div class="info-name">
+				<span>入职时间</span>
+				<p>{{userData.enter_at}}</p>
+			</div>
+			<div class="info-name">
+				<span>ssh（1）</span>
+				<p>{{userData.ssh_pub_key1}}</p>
+			</div>
+			<div class="info-name">
+				<span>ssh（2）</span>
+				<p>{{userData.ssh_pub_key2}}</p>
+			</div>
+			<div class="info-name" style="margin-bottom: 20px;">
+				<span>ssh（3）</span>
+				<p>{{userData.ssh_pub_key3}}</p>
+			</div>
+
+		</div>
+		
+
+		<el-button type="info" icon="edit" style="margin:30px;" @click="updateUserInfos = true" v-if="bedit"> 编 辑 </el-button>
+		<el-button type="info" style="margin-top:30px;" @click="editPwd = true" v-if="bcpass"> 修改密码 </el-button>
 		<!--编辑个人信息-->
 		<el-dialog title="编辑个人信息" v-model="updateUserInfos" size="tiny">
 			<div class='addUserInfo'>
@@ -98,18 +130,18 @@ export default({
 				data:{
 					id:sessionStorage.userid
 				},
-				url:"/api.php?s=/front/get_user",	
+				url:that.$api.usercontrol.get,
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 					if(data.error == 0){
-						that.userData=data.data.user[0];
-						that.updatemobile = data.data.user[0].mobile;
-						that.updatessh1 = data.data.user[0].ssh_pub_key1;
-						that.updatessh2 = data.data.user[0].ssh_pub_key2;
-						that.updatessh3 = data.data.user[0].ssh_pub_key3;
+						that.userData=data.data;
+						that.updatemobile = data.data.mobile;
+						that.updatessh1 = data.data.ssh_pub_key1;
+						that.updatessh2 = data.data.ssh_pub_key2;
+						that.updatessh3 = data.data.ssh_pub_key3;
 					}
 				}
 			});
@@ -127,11 +159,11 @@ export default({
 					ssh_pub_key2:that.updatessh2,
 					ssh_pub_key3:that.updatessh3
 				},
-				url:"/api.php?s=/front/update_user",
+				url:that.$api.usercontrol.edit,
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){
@@ -146,7 +178,7 @@ export default({
 			let that = this;
 			$.ajax({
 				type:"post",
-				url:"/api.php?s=front/user/changepwd",
+				url:that.$api.usercontrol.changepwd,
 				dataType:'json',
 				data:{
 					password:that.newPwd
@@ -216,4 +248,56 @@ export default({
 		border:1px solid #DDDDDD;
 		resize:none;
 	}
+	
+	.setInfo .info-wrap{
+		width: 730px;
+		border-radius: 4px;
+		font-size: 16px;
+		box-sizing: border-box;
+		border:1px solid #D0D0D0;
+	}
+	.setInfo .info-wrap .title{
+		height: 44px;
+		line-height: 44px;
+		padding-left: 30px;
+		background: #EEEFF6;
+		border-bottom: 1px solid #D0D0D0;
+	}
+	.setInfo .info-name{
+		width: 730px;
+		position: relative;
+		padding: 10px 0;
+	}
+	.setInfo .info-name:after{
+		position: absolute;
+		left: 30px;
+		top: 0;
+		content: ' ';
+		width: 670px;
+		border-bottom:1px solid #D0D0D0;
+	}
+	.setInfo .info-name:nth-of-type(2){
+		margin-top: 20px;
+	}
+	.setInfo .info-name:nth-of-type(2):after {
+		position: absolute;
+		left: 30px;
+		top: 0;
+		content: ' ';
+		width: 670px;
+		border-bottom:1px solid #fff;
+	}
+	.setInfo .info-name span{
+		width: 200px;
+		display: inline-block;
+		line-height: 30px;
+		text-align: center;
+		vertical-align: top;
+	}
+	.setInfo .info-name p{
+		width: 500px;
+		display: inline-block;
+		margin: 0;
+	}
+
 </style>

@@ -1,16 +1,21 @@
 <template>
 	<div class="w-apidoc">
 		<h2>{{msg.title}}</h2>
+		<p>项目：{{msg.project_name}}</p>
+		<p>模块：{{msg.module_name}}</p>
+		<p>状态：{{msg.status}}</p>
+		<p>请求协议：{{msg.tcp}}</p>
 		<p>URL：{{msg.url}}</p>
-		<p>METHOD：{{msg.method}}</p>
-		<p v-html="'REQUEST：<br>'+msg.request"></p>
-		<p v-html="'RESPONSE：<br>'+msg.response"></p>
+		<p>请求方式：{{msg.method}}</p>
+		<p>请求头部：{{msg.head}}</p>
+		<p v-html="'请求参数：<br>'+msg.request"></p>
+		<p v-html="'响应结果：<br>'+msg.response"></p>
 	</div>
 </template>
 
 <script>
 	export default{
-		name:'apidoc',
+		name:'apiDoc',
 		data(){
 			return{
 				msg:''
@@ -35,7 +40,7 @@
 							that.msg = data.data;				
 						}
 						if(data.error == 1){
-							that.$message(data.error_message);
+							that.$message(data.error_msg);
 						}
 					}
 				});
@@ -68,7 +73,7 @@
 		margin: 50px 0 20px 50px;
 		font-size:18px;
 	}
-	html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+	/*html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
 	body{
 	    color:#444;
@@ -195,5 +200,5 @@
 	
 	@media only screen and (min-width: 768px) {
 	    body{font-size:16px;}
-	}
+	}*/
 </style>

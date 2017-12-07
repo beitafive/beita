@@ -41,7 +41,7 @@
 							that.msg = res.data;				
 						}
 						if(res.error == 1){
-							that.$message(res.error_message);
+							that.$message(res.error_msg);
 						}
 					}
 				});
@@ -50,7 +50,7 @@
 			updateDocs(){
 				let that = this;
 				$.ajax({
-					type:"get",
+					type:"post",
 					url:that.$api.doc.update,
 					dataType:'json',
 					data:{

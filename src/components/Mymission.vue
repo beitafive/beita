@@ -106,7 +106,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					that.options = data.data.user_arr;
@@ -131,7 +131,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 					if(data.error == 0){
 						that.allCount = Math.ceil(data.data.count/10);
@@ -171,7 +171,7 @@ export default({
 						y.finished_at = data.data.time;
 					}
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 				}
 			});
@@ -190,7 +190,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){

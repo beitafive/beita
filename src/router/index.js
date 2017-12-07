@@ -23,6 +23,9 @@ import bugStats from '@/components/bug/bugStats'			//bug统计页
 
 import Api from '@/components/api/Api'						//api管理
 import apiDoc from '@/components/api/apiDoc'				//api详情页
+import addApi from '@/components/api/addApi'                //添加api
+import editApi from '@/components/api/editApi'                //添加api
+
 
 import documentContorl from '@/components/doc/documentContorl'	//文档管理
 import createDoc from '@/components/doc/addDoc'				//文档创建页
@@ -33,6 +36,7 @@ import Needs from '@/components/need/Needs'					//需求管理
 import addNeed from '@/components/need/addneed'				//需求添加页
 import needDoc from '@/components/need/needDoc'				//需求详情页
 import editNeed from '@/components/need/editneed'			//需求编辑页
+import createNeedTask from '@/components/need/createNeedTask'   //需求任务添加页
 
 import Project from '@/components/Project'					//项目管理
 import Module from '@/components/Module'					//模块管理
@@ -48,41 +52,61 @@ import historyList from '@/components/history/historyList'	//部门历史列表
 import editHistory from '@/components/history/editHistory'	//增改部门历史
 import historyDoc from '@/components/history/readHistory'	//部门历史详情
 
-import test from '@/components/test'		//测试
+import nopage from '@/components/nopage'		//测试
 
 import Account from '@/components/Account'						//帐号管理
+
 import UserControl from '@/components/permission/UserControl'	//用户管理
+import addUser from '@/components/permission/addUser'           //添加用户
+import editUser from '@/components/permission/editUser'         //编辑用户
+
+
 import RoleControl from '@/components/permission/roleControl'	//角色管理
 import editPermission from '@/components/permission/editPermission'	//角色权限管理
-import resources from '@/components/permission/resource'		//资源管理
+import resources from '@/components/permission/resource'		      //资源管理
 
+import department from '@/components/department/department'           //部门管理
+import addDepartment from '@/components/department/addDepartment'     //新增部门
+import editDepartment from '@/components/department/editDepartment'     //编辑部门
+
+import repo from '@/components/deploy/repo'			//repo管理
+import server from '@/components/deploy/server'		//服务器管理
+import branch from '@/components/deploy/branch'	//分支管理
+import deploy from '@/components/deploy/deploy'		//部署
+
+import myBug from '@/components/mine/myBug'     //个人中心--我的bug
+import myTask from '@/components/mine/myTask'     //个人中心--我的任务
+import myUrgentTask from '@/components/mine/myUrgentTask'     //个人中心--我的紧急任务
 
 Vue.use(Router)
 
 const routes = [
-    {path:'/',name: 'oa_login',component: Login},
+    {path:'/',name: 'oa_login',component: Login,meta:{keepAlive:false}},
     {path:'/index',name:'oa_index',component:Index, 
     	meta: {
             requireAuth: true,
         },children:[
     	{path:'/Pandect',component:Pandect},
-    	{path:'/SetInfo',component:SetInfo,beforeEnter:(to,from,next)=>{
+    	{path:'/SetInfo',component:SetInfo,meta:{keepAlive:true},beforeEnter:(to,from,next)=>{
     		next();
     	}},
     	{path:'/Mymission',component:Mymission},
     	{path:'/MissionCenter',component:MissionCenter},
-    	{path:'/Mybug',component:Mybug},
+    	// {path:'/Mybug',component:Mybug},
     	{path:'/Bugcontrol',component:Bugcontrol},
     	{path:'/addbug',component:addBug},
     	{path:'/editbug',component:editbug},
     	{path:'/bugstats',component:bugStats},
-    	{path:'/Api',component:Api},
+    	{path:'/oaApi',component:Api},
+        {path:'/addApi',component:addApi},
+        {path:'/editApi',component:editApi},
     	{path:'/document',component:documentContorl},
     	{path:'/createdoc',component:createDoc},
 	    {path:'/editdoc',component:editdoc},
     	{path:'/needs',component:Needs},
     	{path:'/addneed',component:addNeed},
     	{path:'/editneed',component:editNeed},
+        {path:'/createNeedTask',component:createNeedTask},
     	{path:'/project',component:Project},
     	{path:'/module',component:Module},
     	{path:'/versions',component:Versions},
@@ -90,9 +114,16 @@ const routes = [
     	{path:'/editversion',component:editVersion},
     	{path:'/account',component:Account},
     	{path:'/usercontrol',component:UserControl},
+        {path:'/adduser',component:addUser},
+        {path:'/edituser',component:editUser},
     	{path:'/rolecontrol',component:RoleControl},
     	{path:'/editpermission',component:editPermission},
     	{path:'/resources',component:resources},
+
+        {path:'/department',component:department},
+        {path:'/addDepartment',component:addDepartment},
+        {path:'/editDepartment',component:editDepartment},
+
     	{path:'/stat_team',component:teamdata},
     	{path:'/urgenttask',component:urgentTask},
     	{path:'/addurgent',component:addUrgent},
@@ -101,15 +132,22 @@ const routes = [
     	{path:'/edittask',component:edittask},
     	{path:'/history',component:historyList},
     	{path:'/edithistory',component:editHistory},
+		{path:'/repo',component:repo},
+    	{path:'/server',component:server},
+		{path:'/branch',component:branch},
+    	{path:'/deploy',component:deploy},
+        {path:'/myBug',component:myBug},
+        {path:'/myUrgentTask',component:myUrgentTask},
+        {path:'/myTask',component:myTask},
     ]},
     {path:'/bugcontent',component:bugcontent},
     {path:'/doc',component:doc},
     {path:'/needDoc',component:needDoc},
     {path:'/taskDoc',component:taskDoc},
     {path:'/VsDoc',component:vsDoc},
-    {path:'/apidoc',component:apiDoc},
+    {path:'/oaApiDoc',component:apiDoc},
 	{path:'/historydoc',component:historyDoc},
-	{path:'/test',component:test}
+	{path:'*',component:nopage}
   ]
 const router = new Router({
   mode:'history',
@@ -125,14 +163,13 @@ router.beforeEach((to, from, next) => {
 		store.dispatch("changeRoute",to.fullPath)		
 	}
     if (to.matched.some(r => r.meta.requireAuth)) {
-    	let params = {page:1,page_count:10,page_total:0,item_total:0}
+    	let params = {page:1,page_count:10,page_total:1,item_total:0}
     	store.dispatch("change_page",params)
         if (store.state.token) {
             next();
         }else {
             next({
-                path: '/',
-                query: {redirect: to.fullPath}
+                path: '/'
             })
         }
     }else {

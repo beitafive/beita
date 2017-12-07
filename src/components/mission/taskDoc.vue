@@ -1,11 +1,15 @@
 <template>
 	<div class="w-taskdoc">
 		<h2>{{msg.title}}</h2>
-		<p>创建时间：{{msg.created_at}}</p>
-		<p>执行者：{{msg.owner_name}}</p>
-		<p>提出者：{{msg.submit_user_name}}</p>
-		<span>内容:</span>
-		<div v-html="msg.html"></div>
+		<div class="doc-time">
+			<p><i>创建时间</i> <span> {{msg.created_at}}</span></p>
+			<p><i>执行者</i> <span v-if="msg.owner_name"> {{msg.owner_name}}</span></p>
+			<p><i>提出者</i> <span v-if="msg.submit_user_name"> {{msg.submit_user_name}}</span></p>	
+		</div>
+		<div class="doc-content">内容：</div>
+		<div v-html="msg.html"  class="markdown"></div>
+		<h4 v-if="needinfo != false">需求ID：{{needinfo.id}}</h4>
+		<div v-html="needinfo.html"></div>
 	</div>
 </template>
 
@@ -14,7 +18,8 @@
 		name:'taskdoc',
 		data(){
 			return{
-				msg:''
+				msg:'',
+				needinfo:''
 			}
 		},
 		mounted(){
@@ -33,10 +38,11 @@
 					success:function(res){
 						let data = res;
 						if(data.error == 0){
-							that.msg = data.data;				
+							that.msg = data.data;
+							that.needinfo = data.data.requirement_content;		
 						}
 						if(data.error == 1){
-							that.$message(data.error_message);
+							that.$message(data.error_msg);
 						}
 					}
 				});
@@ -51,23 +57,69 @@
 		min-height:1000px;
 		background:#fff;
 		margin: 20px auto 50px;
-		box-shadow:0 0 5px 5px #ccc;
-		padding:30px 50px;
+		box-shadow: 0 0 8px 2px rgba(231,231,231,0.50) ;
+		padding:26px 34px;
 		font-family: "microsoft yahei";
 	}
 	.w-taskdoc h2{
-		font-size:50px;
-		text-align: center;
+		font-size: 20px;
+		font-weight: normal;
+		padding-bottom: 20px;
+		color: #494949;
+		font-family:"PingFangSC-Regular";
 	}
-	.w-taskdoc p{
-		margin: 50px 0 20px 0px;
-		font-size:18px;
+	.w-taskdoc .doc-time{
+		padding:12px 0;
+		border-bottom: 1px solid #CCCCCC;
 	}
-	.w-taskdoc span{
-		font-size:26px;
-		font-weight: 600;
+	.w-taskdoc .doc-time p{
+		margin:17px 0;
 	}
-	html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+	.w-taskdoc .doc-time p i{
+		display: inline-block;
+		width: 70px;
+		font-family: "MicrosoftYaHei";
+		font-size: 14px;
+		color: #494949;
+	}
+	.w-taskdoc .doc-time p span{
+		height: 20px;
+		line-height: 20px;
+		display: inline-block;
+		padding:2px 10px;
+		border-radius: 10px;
+		background: #EEEFF6;
+		font-family: MicrosoftYaHei;
+		font-size: 14px;
+		color: #6F7E95;
+	} 
+	.w-taskdoc .doc-content{
+		margin:26px 0 20px 0;
+	}
+	.markdown {
+	  word-wrap: break-word;
+	}
+	.markdown,
+	.markdown h1,
+	.markdown h2,
+	.markdown h3,
+	.markdown h4,
+	.markdown h5,
+	.markdown h6,
+	.markdown pre,
+	.markdown code,
+	.markdown blockquote,
+	.markdown em,
+	.markdown strong,
+	.markdown code {
+	  font-size: 14px;
+	  line-height: 20px;
+	  font-weight: normal;
+	  font-style: normal;
+	  font-family: consolas, monaco, courier, "courier new", fixed-width;
+	  color: #333333;
+	}
+/*	html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
 	body{
 	    color:#444;
@@ -90,7 +142,7 @@
 	}
 	
 	h2 {
-	    border-bottom: 2px solid #CCCCCC;
+	    border-bottom: 1px solid #CCCCCC;
 	    color: #000000;
 	    font-size: 24px;
 	}
@@ -194,5 +246,211 @@
 	
 	@media only screen and (min-width: 768px) {
 	    body{font-size:16px;}
-	} 
+	} */
+/*	.markdown {
+  word-wrap: break-word;
+}
+.markdown,
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6,
+.markdown pre,
+.markdown code,
+.markdown blockquote,
+.markdown em,
+.markdown strong,
+.markdown code {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: normal;
+  font-style: normal;
+  font-family: consolas, monaco, courier, "courier new", fixed-width;
+  color: #333333;
+}
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6,
+.markdown pre,
+.markdown code,
+.markdown blockquote,
+.markdown ol,
+.markdown ul,
+.markdown li,
+.markdown p,
+.markdown section,
+.markdown header,
+.markdown footer {
+  float: none;
+  margin: 0;
+  padding: 0;
+}
+.markdown h1,
+.markdown p,
+.markdown ul,
+.markdown ol,
+.markdown pre,
+.markdown blockquote {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.markdown h1 {
+  position: relative;
+  display: inline-block;
+  display: table-cell;
+  padding: 20px 0 40px;
+  margin: 0;
+  overflow: hidden;
+}
+.markdown h1:after {
+  content: "====================================================================================================";
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+}
+.markdown h1 + * {
+  margin-top: 0;
+}
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  position: relative;
+  margin-bottom: 20px;
+}
+.markdown h2:before,
+.markdown h3:before,
+.markdown h4:before,
+.markdown h5:before,
+.markdown h6:before {
+  content: "## ";
+  display: inline;
+}
+.markdown h3:before {
+  content: "### ";
+}
+.markdown h4:before {
+  content: "#### ";
+}
+.markdown h5:before {
+  content: "##### ";
+}
+.markdown h6:before {
+  content: "###### ";
+}
+.markdown li {
+  position: relative;
+  display: block;
+  padding-left: 34px;
+  padding-left: 4ch;
+}
+.markdown li:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.markdown ul > li:after {
+  content: "*";
+}
+.markdown ol {
+  counter-reset: ol;
+}
+.markdown ol > li:after {
+  content: counter(ol) ".";
+  counter-increment: ol;
+}
+.markdown pre {
+  margin-left: 34px;
+  padding-left: 4ch;
+}
+.markdown blockquote {
+  position: relative;
+  padding-left: 17px;
+  padding-left: 2ch;
+  overflow: hidden;
+}
+.markdown blockquote:after {
+  content: ">\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>";
+  white-space: pre;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+.markdown strong:before,
+.markdown strong:after {
+  content: "__";
+  display: inline;
+}
+.markdown u:before,
+.markdown u:after {
+  content: "++";
+  display: inline;
+  text-decoration: underline;
+}
+.markdown em:before,
+.markdown em:after {
+  content: "*";
+  display: inline;
+}
+.markdown a {
+  text-decoration: none;
+}
+.markdown a:before {
+  content: "[";
+  display: inline;
+  color: #333333;
+}
+.markdown a:after {
+  content: "](" attr(href) ")";
+  display: inline;
+  color: #333333;
+}
+.markdown code {
+  font-weight: 100;
+  background: #eee;
+}
+.markdown code:before,
+.markdown code:after {
+  content: "`";
+  display: inline;
+}
+.markdown pre code:before,
+.markdown pre code:after {
+  content: none;
+}
+.markdown hr {
+  position: relative;
+  height: 20px;
+  font-size: 0;
+  line-height: 0;
+  overflow: hidden;
+  border: 0;
+  margin-bottom: 20px;
+}
+.markdown hr:after {
+  content: "----------------------------------------------------------------------------------------------------";
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 14px;
+  line-height: 20px;
+  width: 100%;
+  word-wrap: break-word;
+}
+@-moz-document url-prefix() {
+  .w-content .markdown h1 {
+    display: block;
+  }
+}
+.markdown-ones ol > li:after {
+  content: "1.";
+}*/
 </style>

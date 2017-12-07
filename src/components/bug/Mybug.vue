@@ -119,7 +119,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					that.options2 = data.data.user_arr;
@@ -144,7 +144,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 					if(data.error == 0){
 						that.allCount = Math.ceil(data.data.count/10);
@@ -174,7 +174,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){
@@ -215,7 +215,7 @@ export default({
 						y.status = '已修复'
 					}
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 				}
 			});

@@ -11,8 +11,8 @@
 			    </el-option>
 			  </el-select>
 		</p>
-		<p><span>标题</span> <input type="text" v-model="msg.title" placeholder="请填写标题" /></p>
-		<p><span>紧急程度</span> <input type="text" v-model="msg.ep" placeholder="请填写紧急程度" /></p>
+		<p><span>标题</span> <el-input type="text" v-model="msg.title" placeholder="请填写标题" style="width:250px"/></p>
+		<!-- <p><span>紧急程度</span> <el-input type="text" v-model="msg.ep" placeholder="请填写紧急程度" style="width:250px"/></p> -->
 		<p><span>提出者</span>
 			<el-select v-model="msg.submit_user_id" placeholder="请选择提出者" style="width:250px">
 			    <el-option
@@ -22,6 +22,24 @@
 			      :value="item.value">
 			    </el-option>
 			  </el-select>
+		</p>
+		<p><span>负责人</span>
+			<el-select v-model="msg.response_user_id" placeholder="请选择负责人" style="width:250px">
+			    <el-option
+			      v-for="item in ownerarr"
+			      :key="item.value"
+			      :label="item.label"
+			      :value="item.value">
+			    </el-option>
+			  </el-select>
+		</p>
+		<p><span>期望上线日期</span> 
+			<el-date-picker
+		      v-model="msg.expect_online_at"
+		      style="width:250px;"
+		      type="date"
+		      placeholder="选择日期">
+		    </el-date-picker>
 		</p>
 		<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
 		    <span style="float:left">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="msg.content"></textarea>
@@ -46,6 +64,9 @@
 					content:'',
 					ep:'',
 					submit_user_id:'',
+					response_user_id:'',
+					expect_online_at:'',
+					pageIndex: ''
 				}
 			}
 		},
@@ -53,6 +74,8 @@
 			this.getProject();
 			this.getUser();
 			this.getInfo();
+			this.pageIndex = this.$route.query.pageIndex;
+			
 		},
 		methods:{
 			getInfo(){
@@ -82,7 +105,7 @@
 					success:function(res){
 						let data = res;
 						if(data.error==1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){
@@ -101,7 +124,7 @@
 					success:function(res){
 						let data = res
 						if(data.error==1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){	
@@ -112,6 +135,10 @@
 			},
 			//创建文档
 			editNeed(){
+				if(this.msg.content == ''){
+					this.$message.error("请填写内容！");
+					return null;
+				}
 				let that = this;
 				$.ajax({
 				type:"post",
@@ -121,23 +148,41 @@
 					title:that.msg.title,
 					content:that.msg.content,
 					ep:that.msg.ep,
-					submit_user_id:that.msg.submit_user_id
+					submit_user_id:that.msg.submit_user_id,
+					response_user_id:that.msg.response_user_id,
+					expect_online_at:that.msg.expect_online_at
 				},
 				url:that.$api.need.update,
 				dataType:'json',
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_message);
+						that.$message(data.error_msg);
 						return;
 					}
 					if(data.error==0){
+						that.$store.state.pageIndex = that.pageIndex;
 						that.$router.push("/needs");
 						that.$message.success("保存成功！");
 					}
 				}
 			});
 			},
+		},
+		formatDate(date){
+			if(date == ''){
+				return '';
+			}else{
+				var d = new Date(date);
+				var year = d.getFullYear();
+				var month = d.getMonth()+1;
+				var day = d.getDate();
+				if (month < 10) month = '0' + month;
+			  	if (day < 10) day = '0' + day;
+
+			 	return [year, month, day].join('-');
+				
+			}
 		}
 	}
 </script>

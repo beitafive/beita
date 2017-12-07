@@ -18,8 +18,8 @@ var actions = {
 		commit("CHANGE_ROUTE",data)
 	},
 	//请求列表
-	page_go:({commit})=>{
-		commit("PAGE_GO")
+	page_go:({commit},data)=>{
+		commit("PAGE_GO",data)
 	},
 	//获取参数
 	getparams:({commit},data)=>{

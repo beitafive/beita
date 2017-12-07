@@ -31,8 +31,11 @@ var mutations = {
 		state.routerName = data;
 	},
 	//page组件数据
-	PAGE_GO:(state)=>{
-		state.bload = true;  
+	PAGE_GO:(state,data)=>{
+		state.bload = true;
+		if(data == 1){
+			state.pagination.page = 1;
+		}
 		$.ajax({
 			type:"get",
 			url:state.params.url+"&page="+state.pagination.page+state.params.data,
@@ -67,7 +70,7 @@ var mutations = {
 	GET_PAGE_INFO:(state,data)=>{
 		$.ajax({
 			type:"get",
-			url:"/api.php?s=api/user/get_page",
+			url:data.get_url,
 			dataType:'json',
 			async:false,
 			success:(res)=>{

@@ -63,7 +63,7 @@
 						that.taskList = data.data.stat_rows;
 					}
 					if(data.error == 1){
-						that.$message(data.error_message);
+						that.$message(data.error_msg);
 					}
 				}
 			});

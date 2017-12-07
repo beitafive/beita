@@ -44,7 +44,7 @@
 							that.msg = data.data.task;
 						}
 						if(data.error == 1){
-							that.$message(data.error_message);
+							that.$message(data.error_msg);
 						}
 					}
 				});
@@ -59,7 +59,7 @@
 					success:function(res){
 						let data = res;
 						if(data.error==1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){
@@ -70,23 +70,27 @@
 			},
 			//编辑
 			editVersion(){
-				let _this = this;
+				let that = this;
+				if(that.msg.short_desc == '' || that.msg.title == '' || that.msg.content==''){
+					that.$message.error("请完善信息！");
+					return null;
+				}
 				$.ajax({
-					type:"get",
+					type:"post",
 					url:that.$api.version.update,
 					dataType:'json',
 					data:{
-						id:_this.$route.query.id,
-						short_desc:_this.msg.short_desc,
-						title:_this.msg.title,
-						content:_this.msg.content
+						id:that.$route.query.id,
+						short_desc:that.msg.short_desc,
+						title:that.msg.title,
+						content:that.msg.content
 					},
 					success:(res)=>{
 						if(res.error == 0){
-							_this.$message.success("添加成功！");
-							_this.$router.push("/versions");
+							that.$message.success("添加成功！");
+							that.$router.push("/versions");
 						}else{
-							_this.$message.error(res.error_msg);
+							that.$message.error(res.error_msg);
 						}
 					}
 				});

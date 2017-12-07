@@ -19,7 +19,7 @@ export default new Vuex.Store({
 		pagination:{
 			page:1,
 			page_count:10,
-			page_total:0,
+			page_total:1,
 			item_total:0,
 		},
 		//列表数据
@@ -31,6 +31,7 @@ export default new Vuex.Store({
 		},
 		bload:false,		//加载动画是否显示
 		pageInfo:{},		//页面配置信息
+		pageIndex:1,		//当前分页
 	},
 	getters,
 	mutations,

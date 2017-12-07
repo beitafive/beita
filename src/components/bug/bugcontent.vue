@@ -1,13 +1,15 @@
 <template>
-	<div class="w-content">
-		<h2>{{msg.project}}</h2>
+	<div class="w-content" id="wcontent">
+		<h2 >{{msg.project}}</h2>
 		<p>所属模块：{{msg.module}}</p>
 		<p>标题：{{msg.title}}</p>
 		<p>所属环境：{{msg.is_live=="0"?"内网":"线上"}}</p>
 		<p>紧急程度：{{msg.ep}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;难度：{{msg.dp}}</p>
 		<p v-if="msg.reason">原因：{{msg.reason}}</p>
 		<p v-if="msg.solution">解决方案：{{msg.solution}}</p>
-		<p v-html="'内容：<br>'+msg.html"></p>
+		<p v-html="'内容：<br>'+msg.html" class="markdown">
+			
+		</p>
 	</div>
 </template>
 
@@ -41,7 +43,7 @@
 							that.msg = data.data;				
 						}
 						if(data.error == 1){
-							that.$message(data.error_message);
+							that.$message(data.error_msg);
 						}
 					}
 				});
@@ -72,10 +74,18 @@
 	}
 	.w-content p{
 		margin: 20px 0 20px 50px;
-		font-size:18px;
-		line-height:30px;
+		/*font-size:18px;*/
+		/*line-height:30px;*/
 	}
-	html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+	.w-content p ul{
+	    list-style-type: disc;
+	    list-style-position: inside;
+	}
+	.w-content p ol{
+		list-style-type:decimal;
+		list-style-position: inside;
+	}
+	/*html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
 	body{
 	    color:#444;
@@ -202,5 +212,212 @@
 	
 	@media only screen and (min-width: 768px) {
 	    body{font-size:16px;}
-	}
+	}*/
+
+.markdown {
+  word-wrap: break-word;
+}
+.markdown,
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6,
+.markdown pre,
+.markdown code,
+.markdown blockquote,
+.markdown em,
+.markdown strong,
+.markdown code {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: normal;
+  font-style: normal;
+  font-family: consolas, monaco, courier, "courier new", fixed-width;
+  color: #333333;
+}
+/*.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6,
+.markdown pre,
+.markdown code,
+.markdown blockquote,
+.markdown ol,
+.markdown ul,
+.markdown li,
+.markdown p,
+.markdown section,
+.markdown header,
+.markdown footer {
+  float: none;
+  margin: 0;
+  padding: 0;
+}
+.markdown h1,
+.markdown p,
+.markdown ul,
+.markdown ol,
+.markdown pre,
+.markdown blockquote {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.markdown h1 {
+  position: relative;
+  display: inline-block;
+  display: table-cell;
+  padding: 20px 0 40px;
+  margin: 0;
+  overflow: hidden;
+}
+.markdown h1:after {
+  content: "====================================================================================================";
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+}
+.markdown h1 + * {
+  margin-top: 0;
+}
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  position: relative;
+  margin-bottom: 20px;
+}
+.markdown h2:before,
+.markdown h3:before,
+.markdown h4:before,
+.markdown h5:before,
+.markdown h6:before {
+  content: "## ";
+  display: inline;
+}
+.markdown h3:before {
+  content: "### ";
+}
+.markdown h4:before {
+  content: "#### ";
+}
+.markdown h5:before {
+  content: "##### ";
+}
+.markdown h6:before {
+  content: "###### ";
+}
+.markdown li {
+  position: relative;
+  display: block;
+  padding-left: 34px;
+  padding-left: 4ch;
+}
+.markdown li:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.markdown ul > li:after {
+  content: "*";
+}
+.markdown ol {
+  counter-reset: ol;
+}
+.markdown ol > li:after {
+  content: counter(ol) ".";
+  counter-increment: ol;
+}
+.markdown pre {
+  margin-left: 34px;
+  padding-left: 4ch;
+}
+.markdown blockquote {
+  position: relative;
+  padding-left: 17px;
+  padding-left: 2ch;
+  overflow: hidden;
+}
+.markdown blockquote:after {
+  content: ">\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>\A>";
+  white-space: pre;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+.markdown strong:before,
+.markdown strong:after {
+  content: "__";
+  display: inline;
+}
+.markdown u:before,
+.markdown u:after {
+  content: "++";
+  display: inline;
+  text-decoration: underline;
+}
+.markdown em:before,
+.markdown em:after {
+  content: "*";
+  display: inline;
+}
+.markdown a {
+  text-decoration: none;
+}
+.markdown a:before {
+  content: "[";
+  display: inline;
+  color: #333333;
+}
+.markdown a:after {
+  content: "](" attr(href) ")";
+  display: inline;
+  color: #333333;
+}
+.markdown code {
+  font-weight: 100;
+  background: #eee;
+}
+.markdown code:before,
+.markdown code:after {
+  content: "`";
+  display: inline;
+}
+.markdown pre code:before,
+.markdown pre code:after {
+  content: none;
+}
+.markdown hr {
+  position: relative;
+  height: 20px;
+  font-size: 0;
+  line-height: 0;
+  overflow: hidden;
+  border: 0;
+  margin-bottom: 20px;
+}
+.markdown hr:after {
+  content: "----------------------------------------------------------------------------------------------------";
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 14px;
+  line-height: 20px;
+  width: 100%;
+  word-wrap: break-word;
+}
+@-moz-document url-prefix() {
+  .w-content .markdown h1 {
+    display: block;
+  }
+}
+.markdown-ones ol > li:after {
+  content: "1.";
+}*/
 </style>

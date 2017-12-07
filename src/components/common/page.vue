@@ -1,8 +1,8 @@
 <template>
-	<div>
-		总数：{{pagination.item_total}}
-		<el-button type="primary" icon="arrow-left" @click="prePage" style="margin-left:30px">上一页</el-button> {{pagination.page}}/{{pagination.page_total}}
-	  	<el-button type="primary" @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+	<div v-if='pagination.page_total' class="anchu-page">
+		<!-- <span class="page-info">总数：{{pagination.item_total}}</span> -->
+		<el-button  icon="arrow-left" @click="prePage" style="margin-right:10px">上一页</el-button> {{pagination.page}}/{{pagination.page_total}}
+	  	<el-button  @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
 	</div>
 </template>
 

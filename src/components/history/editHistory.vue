@@ -1,14 +1,18 @@
 <template>
 	<div class='edithistory'>
-		<h2>部门历史</h2>
-		<p><span>标题</span> <input type="text" v-model="msg.title" /></p>
-		<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
-		    <span style="float:left">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="msg.content"></textarea>
-		</p>
-		<p>
-			 <el-button type="primary" @click="addHistory" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
-			<router-link to="/history"><el-button type="info" style="width:100px"> 取 消 </el-button></router-link>
-		</p>
+		<div  class="anchu-normal-table">
+			<h2 class="anchu-normal-title">部门历史</h2>
+			<div  class="anchu-normal-content">
+				<p><span>标题</span> <input type="text" v-model="msg.title" /></p>
+				<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
+				    <span style="float:left">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="msg.content"></textarea>
+				</p>
+				<p>
+					 <el-button type="primary" @click="addHistory" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
+					<router-link to="/history"><el-button type="info" style="width:100px"> 取 消 </el-button></router-link>
+				</p>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -59,7 +63,7 @@
 					success:function(res){
 						let data = res
 						if(data.error==1){
-							that.$message(data.error_message);
+							that.$message(data.error_msg);
 							return;
 						}
 						if(data.error==0){
@@ -100,8 +104,8 @@
 	}
 	.edithistory p textarea{
 		resize: none;
-		width:900px;
-		min-height:600px;
+		width:500px;
+		min-height:300px;
 		border:1px solid #ddd;
 		border-radius:12px;
 		padding:20px;

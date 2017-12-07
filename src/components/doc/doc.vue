@@ -1,8 +1,11 @@
 <template>
 	<div class="w-doc">
 		<h2>{{msg.title}}</h2>
-		<p>创建时间：{{msg.created_at}}</p>
-		<p v-html="msg.html"></p>
+		<div class="doc-info">
+			<p><i>创建时间</i> <span> {{msg.created_at}}</span></p>			
+		</div>
+		<div class="doc-content">内容：</div>
+		<p v-html="msg.html" class="markdown"></p>
 	</div>
 </template>
 
@@ -32,7 +35,7 @@
 							that.msg = res.data;				
 						}
 						if(res.error == 1){
-							that.$message(res.error_message);
+							that.$message(res.error_msg);
 						}
 					}
 				});
@@ -47,144 +50,74 @@
 		min-height:1000px;
 		background:#fff;
 		margin: 20px auto 50px;
-		box-shadow:0 0 5px 5px #ccc;
-		padding:30px 50px;
+		box-shadow: 0 0 8px 2px rgba(231,231,231,0.50) ;
+		padding:26px 34px;
 		font-family: "microsoft yahei";
 	}
 	.w-doc h2{
-		font-size:50px;
-		text-align: center;
+		font-size: 20px;
+		font-weight: normal;
+		padding-bottom: 20px;
+		color: #494949;
+		font-family:"PingFangSC-Regular";
 	}
-	.w-doc p{
-		margin: 50px 0 20px 50px;
-		font-size:18px;
+	.w-doc .doc-msg{
+		margin: 26px 0 20px 0;
+		line-height: 26px;
+		font-family: PingFangSC-Regular;
+		font-size: 14px;
+		color: #494949;
 	}
-	html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-
-	body{
-	    color:#444;
-	    font-family:Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman', serif;
-	    font-size:13px;
-	    line-height:1.5em;
-	    padding:1em;
-	    margin:auto;
-	    max-width:42em;
-	    background:#fefefe;
+	.w-doc .doc-info{
+		padding:12px 0;
+		border-bottom: 1px solid #CCCCCC;
 	}
-	
-	h1, h2, h3, h4, h5, h6 {
-	    font-weight: bold;
+	.w-doc .doc-info p{
+		margin:17px 0;
 	}
-	
-	h1 {
-	    color: #000000;
-	    font-size: 28px;
+	.w-doc .doc-info p i{
+		display: inline-block;
+		width: 70px;
+		font-family: "MicrosoftYaHei";
+		font-size: 14px;
+		color: #494949;
 	}
-	
-	h2 {
-	    border-bottom: 2px solid #CCCCCC;
-	    color: #000000;
-	    font-size: 24px;
+	.w-doc .doc-info p span{
+		height: 20px;
+		line-height: 20px;
+		display: inline-block;
+		padding:2px 10px;
+		border-radius: 10px;
+		background: #EEEFF6;
+		font-family: MicrosoftYaHei;
+		font-size: 14px;
+		color: #6F7E95;
+	} 
+	.w-doc .doc-content{
+		margin:26px 0 20px 0;
 	}
-	
-	h3 {
-	    border-bottom: 2px solid #CCCCCC;
-	    font-size: 18px;
+	.markdown {
+	  word-wrap: break-word;
 	}
-	
-	h4 {
-	    font-size: 16px;
-	}
-	
-	h5 {
-	    font-size: 14px;
-	}
-	
-	h6 {
-	    color: #777777;
-	    background-color: inherit;
-	    font-size: 14px;
-	}
-	
-	hr {
-	    height: 0.2em;
-	    border: 0;
-	    color: #CCCCCC;
-	    background-color: #CCCCCC;
-	}
-	
-	p, blockquote, ul, ol, dl, li, table, pre {
-	    margin: 15px 0;
-	}
-	
-	p{
-	    margin:1em 0;
+	.markdown,
+	.markdown h1,
+	.markdown h2,
+	.markdown h3,
+	.markdown h4,
+	.markdown h5,
+	.markdown h6,
+	.markdown pre,
+	.markdown code,
+	.markdown blockquote,
+	.markdown em,
+	.markdown strong,
+	.markdown code {
+	  font-size: 14px;
+	  line-height: 20px;
+	  font-weight: normal;
+	  font-style: normal;
+	  font-family: consolas, monaco, courier, "courier new", fixed-width;
+	  color: #333333;
 	}
 	
-	pre { 
-	    background-color: #F8F8F8;    
-	    border: 1px solid #CCCCCC;
-	    border-radius: 3px;
-	    overflow: auto;
-	    padding: 5px;
-	}
-	
-	pre code {
-	    background-color: #F8F8F8;
-	    border: none;    
-	    padding: 0;
-	}
-	
-	code {
-	    font-family: Consolas, Monaco, Andale Mono, monospace;
-	    background-color:#F8F8F8;
-	    border: 1px solid #CCCCCC;
-	    border-radius: 3px;
-	    padding: 0 0.2em;
-	    line-height: 1;
-	}
-	
-	pre > code {
-	    border: 0;
-	    margin: 0;
-	    padding: 0;
-	}
-	
-	
-	a{ color: #0645ad; text-decoration:none;}
-	a:visited{ color: #0b0080; }
-	a:hover{ color: #06e; }
-	a:active{ color:#faa700; }
-	a:focus{ outline: thin dotted; }
-	a:hover, a:active{ outline: 0; }
-	
-	::-moz-selection{background:rgba(255,255,0,0.3);color:#000}
-	::selection{background:rgba(255,255,0,0.3);color:#000}
-	
-	a::-moz-selection{background:rgba(255,255,0,0.3);color:#0645ad}
-	a::selection{background:rgba(255,255,0,0.3);color:#0645ad}
-	
-	blockquote{
-	    color:#666666;
-	    margin:0;
-	    padding-left: 3em;
-	    border-left: 0.5em #EEE solid;
-	}
-	
-	ul, ol { margin: 1em 0; padding: 0 0 0 2em; }
-	li p:last-child { margin:0 }
-	dd { margin: 0 0 0 2em; }
-	
-	img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; max-width:100%;}
-	
-	table { border-collapse: collapse; border-spacing: 0; }
-	td { vertical-align: top; }
-	
-	@media only screen and (min-width: 480px) {
-	    body{font-size:14px;}
-	}
-	
-	@media only screen and (min-width: 768px) {
-	    body{font-size:16px;}
-	}
 </style>

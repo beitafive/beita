@@ -5,30 +5,48 @@
     	描述：api
     -->
 	<div class="w-api">
-		<h2>API管理</h2>
-		<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加API</button>
-		<!--搜索-->
-		<p style="margin-top:20px;"><el-cascader
-		    placeholder="请选择项目"
-		    :options="projectarr"
-		    filterable
-		    style="width:200px;"
-		    v-model="findproject"
-		    @change="findprojectchange"
-		  ></el-cascader>
-		  <el-cascader
-		    placeholder="请选择模块"
-		    :options="findmodulearr"
-		    filterable
-		    style="width:200px;"
-		    v-model="findmodule"
-		    @change="findmodulechange"
-		  ></el-cascader>
-		  <el-input v-model="f_title" placeholder="请输入内容" style="width:200px;"></el-input>
-		   <el-button type="primary" icon="circle-cross" @click="clearSearch">清空</el-button>
-		  <el-button type="primary" icon="search" @click="getList(1)">搜索</el-button>
+		<div  class="anchu-inner-head">
+			<h2 class="anchu-head-title">
+			API管理
+				<router-link to="/addapi">
+					<button class="addUser"  v-if="badd">+ 添加API</button>
+				</router-link>
+			</h2>
+			<!--搜索-->
+			<p style="margin-top:20px;"  class="anchu-search-wrap">
+				<span class="anchu-search-condition">
+					<span class="anchu-search-name">项目</span>
+					<el-cascader
+				    placeholder="请选择项目"
+				    :options="projectarr"
+				    filterable
+				    style="width:200px;;padding-right: 12px;"
+				    v-model="findproject"
+				    @change="findprojectchange"
+				  ></el-cascader>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">模块</span>
+				  <el-cascader
+				    placeholder="请选择模块"
+				    :options="findmodulearr"
+				    filterable
+				    style="width:200px;padding-right: 12px;"
+				    v-model="findmodule"
+				    @change="findmodulechange"
+				  ></el-cascader>					
+				</span>
+				<span class="anchu-search-condition">
+				  <span class="anchu-search-name">名称</span>
+				  <el-input v-model="f_title" placeholder="请输入名称" style="width:200px;"></el-input>					
+				</span>
+			   <el-button type="primary" icon="circle-cross" @click="clearSearch" style="margin-left: 12px;">清空</el-button>
+			  <el-button type="primary" icon="search" @click="getList(1)">搜索</el-button>
+			</p>
+		</div>
+		
 		<!--列表展示-->
-		<div class="tables">
+		<div class="anchu-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -50,7 +68,7 @@
 			    </el-table-column>
 			    <el-table-column
 			      prop="title"
-			      label="标题"
+			      label="名称"
 			      width="200">
 			    </el-table-column>
 			    <el-table-column
@@ -61,23 +79,32 @@
 			    <el-table-column
 			      prop="url"
 			      label="地址"
-			      width="250">
+			     >
+			    </el-table-column>
+			    <el-table-column
+			      prop="new_time"
+			      label="最新更新时间"
+			      width="210">
 			    </el-table-column>
 			    <el-table-column
 			      label="操作"
-			      width="120">
+			      width="200"
+			     >
 			      <template scope="scope">
 			        <el-button type="text" size="small" @click="updateUserInfo(scope.$index,scope.row)" v-if="bedit">编辑</el-button>
-			        <router-link :to="{path:'/apidoc',query:{id:scope.row.id}}" target="_blank">
+			        <el-button type="text" size="small" @click="deleteUserInfo(scope.row)" v-if="bedit">删除</el-button>
+			        <router-link :to="{path:'/oaApiDoc',query:{id:scope.row.id}}" target="_blank">
 				        <el-button type="text" size="small" style="margin-left:15px" v-if="bread">查看</el-button>			        	
 			        </router-link>
 			      </template>
 			    </el-table-column>
 			 </el-table>
-			 <p><button @click="getList(+pageIndex-1)">上一页</button>{{+pageIndex}}/{{allCount}}<button @click="getList(+pageIndex+1)">下一页</button></p>
+			 <p class="anchu-page">
+			 	<el-button icon="arrow-left" @click="getList(+pageIndex-1)" style="margin-right: 10px;">上一页</el-button>{{+pageIndex}}/{{allCount}}<el-button @click="getList(+pageIndex+1)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+			 </p>
 		</div>
 		<!--添加API-->
-		<el-dialog title="添加API" v-model="dialogVisible" size="tiny">
+	<!-- 	<el-dialog title="添加API" v-model="dialogVisible" size="tiny">
 			<div class='addUserInfo'>
 				<p>选择项目
 				  <el-cascader
@@ -97,8 +124,8 @@
 				    v-model="addmodule"
 				    @change="addmodulechange"
 				  ></el-cascader></p>
-				<p>标题 <input type="text" v-model="addtitle" /></p>
-				<p>URL <input type="text" v-model="addurl" /></p>
+				<p>标题 <el-input type="text" v-model="addtitle" class="inputInfo" placeholder="请填写标题" /></p>
+				<p>URL <el-input type="text" v-model="addurl" class="inputInfo"  placeholder="请填写URL"/></p>
 				<p>METHOD
 					<el-cascader
 				    placeholder="请选择请求方式"
@@ -121,9 +148,9 @@
 		    <el-button @click="dialogVisible = false">取 消</el-button>
 		    <el-button type="primary" @click="addNewApi">确 定</el-button>
 		  </span>
-		</el-dialog>
+		</el-dialog> -->
 		<!--编辑API信息-->
-		<el-dialog title="编辑API信息" v-model="updateUserInfos" size="tiny">
+		<!-- <el-dialog title="编辑API信息" v-model="updateUserInfos" size="tiny">
 			<div class='addUserInfo'>
 				<p>选择项目
 				<el-cascader
@@ -143,8 +170,8 @@
 				    v-model="updatemodule"
 				    @change="updatemodulechange"
 				  ></el-cascader></p>
-				<p>标题 <input type="text" v-model="updatetitle" /></p>
-				<p>URL<input type="text" v-model="updateurl"/></p>
+				<p>标题 <el-input type="text" v-model="updatetitle" class="inputInfo"  placeholder="请填写标题"/></p>
+				<p>URL<el-input type="text" v-model="updateurl" class="inputInfo" placeholder="请填写URL"/></p>
 				<p>METHOD
 				<el-cascader
 				    placeholder="请选择请求方式"
@@ -168,7 +195,7 @@
 		    <el-button @click="updateUserInfos = false">取 消</el-button>
 		    <el-button type="primary" @click='updateUser' >确 定</el-button>
 		  </span>
-		</el-dialog>
+		</el-dialog> -->
 	</div>
 </template>
 
@@ -238,6 +265,29 @@ export default({
 		this.getProject();
 	},
 	methods:{
+		//删除api
+		deleteUserInfo(row){
+			let that = this;
+			let id = row.id;
+
+			$.ajax({
+				type:"post",
+				data:{
+					id:id
+				},
+				dataType:'json',
+				url:that.$api.api.delete,
+				success:function(res){
+					let data = res
+					if(data.error==1){
+						that.$message(data.error_msg)
+						return;
+					}
+					that.$message('删除成功')
+					that.getList();
+				}
+			});
+		},
 		//获取项目列表
 		getProject(x){
 			let that = this;
@@ -251,14 +301,14 @@ export default({
 				success:function(res){
 					let data = res
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					that.projectarr = data.data.project_arr;
 				}
 			});
 		},
-		//获取BUG列表
+		//获取api列表
 		getList(x){
 			let that = this;
 			if(x=='0'){
@@ -278,10 +328,11 @@ export default({
 				success:function(res){
 					let data = res
 					if(data.error==1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 					if(data.error == 0){
 						that.tableData=data.data.api_arr;
+						
 						that.allCount = Math.ceil(data.data.count/10);
 						that.pageIndex = x || 1;
 					}
@@ -307,7 +358,7 @@ export default({
 				success:function(res){
 					let data = res
 					if(data.error==1){
-						that.$message(data.error_message);
+						that.$message(data.error_msg);
 						return;
 					}
 					if(data.error==0){
@@ -328,9 +379,11 @@ export default({
 				}
 			});
 		},
-		//编辑BUG信息   x为下标index
+		//编辑api信息,获取模块列表   x为下标index
 		updateUserInfo(x,y){
 			let that = this;
+			that.$router.push({path:"/editapi",query:{id:y.id,pid:y.project_id,mid:y.module_id,title:y.title}});
+			return ;
 			that.updateid = y.id;
 			that.updateproject = [];
 			that.updateproject_id = y.project_id;
@@ -348,13 +401,14 @@ export default({
 						that.updatemodulearr = data.data.module_arr;
 					}
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 				}
 			});
 			that.updatemodule = [];
 			that.updatemoduleinfo = y.module_id;
 			that.updatemodule.push(y.module_id);
+			
 			//默认选中请求方式
 			that.updatemethod = [];
 			that.updatemethodinfo = y.method;
@@ -385,7 +439,7 @@ export default({
 				success:function(res){
 					let data = res
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 						return;
 					}
 					if(data.error == 0){
@@ -415,7 +469,7 @@ export default({
 						that.addmodulearr = data.data.module_arr;
 					}
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 				}
 			});
@@ -436,7 +490,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error == 1){
-						that.$message(data.error_message)
+						that.$message(data.error_msg)
 					}
 					if(data.error == 0){
 						that.findmodulearr = data.data.module_arr;
@@ -503,17 +557,8 @@ export default({
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;
 	}
-	.w-api .addUser{
-		font-size:14px;
-		margin-top:20px;
-		width:98px;height:28px;
-		border:1px solid #ddd;
-		background-color: #fff;
-		border-radius:3px;
-	}
-	.w-api .addUserInfo{
-		box-sizing: border-box;
-		padding:0 50px;
+	.w-api .addUserInfo span{
+		margin-right: 12px;
 	}
 	.w-api .addUserInfo p{
 		height:40px;
@@ -521,15 +566,14 @@ export default({
 		line-height:40px;
 		font-size:14px;
 		color:#333;
-	}
-	.w-api .addUserInfo input:first-child{
+	} 
+	.w-api .addUserInfo .inputInfo{
 		width:75%;
 		height:38px;
-		border:1px solid #ddd;
 		float:right;
 		box-sizing: border-box;
-		padding:10px;
 		border-radius:4px;
+		margin-right: 12px;
 	}
 	.w-api .tables{
 		width:100%;

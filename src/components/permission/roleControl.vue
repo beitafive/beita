@@ -1,13 +1,18 @@
 <template>
 	<div class="rolecontrol">
-		<h2 style="margin-bottom:20px;">角色管理</h2>
-		<button class="addUser" @click="addTip = true" v-if="badd">+ 添加角色</button>
+		<div class="anchu-inner-head">
+			<h2 class="anchu-head-title">
+				角色管理
+				<button class="addUser" @click="addTip = true" v-if="badd">+ 添加角色</button>
+			</h2>
+		</div>
+		
 		<!--
         	作者：beitafive@163.com
         	时间：2017-09-06
         	描述：列表数据
         -->
-		<div class="tables">
+		<div class="anchu-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -15,7 +20,7 @@
 			    <el-table-column
 			      prop="role_id"
 			      label="ID"
-			      width="100">
+			     width="100">
 			    </el-table-column>
 			    <el-table-column
 			      prop="title"
@@ -25,11 +30,11 @@
 			    <el-table-column
 			      prop="code"
 			      label="CODE"
-			      width="150">
+			      >
 			    </el-table-column>
 			    <el-table-column
 			      label="操作"
-			      width="180">
+			     width="200" >
 			      <template scope="scope">
 			        <el-button type="text" size="small" @click="updateUserInfo(scope.row)" v-if="bedit">编辑</el-button>
 			        <el-button type="text" size="small" @click="updateUserInfo(scope.row,'del')" style="margin-right:10px" v-if="bdel">删除</el-button>
@@ -48,7 +53,7 @@
 		<el-dialog title="添加角色" v-model="addTip" size="tiny">
 			<div class='addUserInfo'>
 				<p>角色名称 <input type="text" v-model="addtitle" placeholder="请填写新角色名称"/></p>
-				<p>CODE <input type="text" v-model="addrole" placeholder="请填写新角色名称"/></p>
+				<p>CODE <input type="text" v-model="addrole" placeholder="请填写新角色Code"/></p>
 			</div>
 		  <span slot="footer" class="dialog-footer">
 		    <el-button @click="addTip = false">取 消</el-button>
@@ -251,13 +256,6 @@ export default({
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;
-	}
-	.rolecontrol .addUser{
-		font-size:14px;
-		width:98px;height:28px;
-		border:1px solid #ddd;
-		background-color: #fff;
-		border-radius:3px;
 	}
 	.rolecontrol .addUserInfo{
 		box-sizing: border-box;

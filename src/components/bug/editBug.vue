@@ -139,7 +139,7 @@
 										that.updatemodulearr = data.data.module_arr;						
 									}
 									if(data.error == 1){
-										that.$message(data.error_message)
+										that.$message(data.error_msg)
 									}
 								}
 							});
@@ -156,7 +156,7 @@
 										that.update_versionArr = data.data;
 									}
 									if(data.error == 1){
-										that.$message(data.error_message)
+										that.$message(data.error_msg)
 									}
 								}
 							});
@@ -184,7 +184,7 @@
 							that.updateep = y.ep;
 						}
 						if(data.error == 1){
-							that.$message(data.error_message);
+							that.$message(data.error_msg);
 						}
 					}
 				});
@@ -199,7 +199,7 @@
 					success:function(res){
 						let data = res;
 						if(data.error==1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){
@@ -218,7 +218,7 @@
 					success:function(res){
 						let data = res
 						if(data.error==1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){	
@@ -253,12 +253,13 @@
 					success:function(res){
 						let data = res
 						if(data.error == 1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){
 							that.$message("更新成功");
-							that.$router.push("/Bugcontrol");
+							// that.$router.push("/Bugcontrol");
+							that.$router.go(-1);
 						}
 					}
 				});
@@ -289,7 +290,7 @@
 							that.updatemodulearr = data.data.module_arr;						
 						}
 						if(data.error == 1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 						}
 					}
 				});
@@ -306,7 +307,7 @@
 							that.update_versionArr = data.data;
 						}
 						if(data.error == 1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 						}
 					}
 				});

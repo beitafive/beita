@@ -32,7 +32,7 @@
 							that.msg = data.data;				
 						}
 						if(data.error == 1){
-							that.$message(data.error_message);
+							that.$message(data.error_msg);
 						}
 					}
 				});

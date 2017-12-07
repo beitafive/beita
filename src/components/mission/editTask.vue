@@ -48,7 +48,7 @@
 		    @change="changestatus"
 		  ></el-cascader></p>
 		<p><span>工时</span> <input type="text" v-model="update_point" /></p>
-		<p><span>难度</span> 
+		<!-- <p><span>难度</span> 
 			<el-select v-model="update_dp" placeholder="请选择版本" style="width:250px;">
 		    <el-option
 		      v-for="item in dpArr"
@@ -56,14 +56,13 @@
 		      :label="item.label"
 		      :value="item.value">
 		    </el-option>
-		  </el-select></p>
+		  </el-select></p> -->
 		<p><span>截止日期</span> 
 			<el-date-picker
 		      v-model="endTime"
 		      type="date"
 		      style="width:250px;"
-		      placeholder="选择日期"
-		      :picker-options="pickerOptions0">
+		      placeholder="选择日期">
 		    </el-date-picker>
 		</p>
 		<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
@@ -146,7 +145,7 @@
 										that.updatemodulearr = data.data.module_arr;						
 									}
 									if(data.error == 1){
-										that.$message(data.error_message)
+										that.$message(data.error_msg)
 									}
 								}
 							});
@@ -163,7 +162,7 @@
 										that.update_versionArr = data.data;
 									}
 									if(data.error == 1){
-										that.$message(data.error_message)
+										that.$message(data.error_msg)
 									}
 								}
 							});
@@ -188,10 +187,12 @@
 							that.update_dp = y.dp;
 							that.update_point = y.point;
 							//更新 截至时间
-							that.endTime = y.expire_at;
+							if(y.expire_at){
+								that.endTime = new Date(y.expire_at);								
+							}
 						}
 						if(data.error == 1){
-							that.$message(data.error_message);
+							that.$message(data.error_msg);
 						}
 					}
 				});
@@ -206,7 +207,7 @@
 					success:function(res){
 						let data = res;
 						if(data.error==1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){
@@ -225,7 +226,7 @@
 					success:function(res){
 						let data = res
 						if(data.error==1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){	
@@ -238,6 +239,14 @@
 			updateInfo(){
 				let that = this;
 				let eTime;
+				if(this.updateownerinfo == ''){
+					this.$message.error("请选择执行者！");
+					return null;
+				}
+				if(this.updatecontent == ''){
+					this.$meesage.error("请填写内容！");
+					return null;
+				}
 				if(that.endTime != "" && that.endTime != null){
 					eTime = that.endTime.getFullYear()+'-'+(that.endTime.getMonth()+1)+'-'+that.endTime.getDate();
 				}else{
@@ -263,12 +272,13 @@
 					success:function(res){
 						let data = res
 						if(data.error == 1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){
 							that.$message("更新成功");
-							that.$router.push("/MissionCenter");
+							// that.$router.push("/MissionCenter");
+							that.$router.go(-1);
 						}
 					}
 				});
@@ -299,7 +309,7 @@
 							that.updatemodulearr = data.data.module_arr;						
 						}
 						if(data.error == 1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 						}
 					}
 				});
@@ -316,7 +326,7 @@
 							that.update_versionArr = data.data;
 						}
 						if(data.error == 1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 						}
 					}
 				});

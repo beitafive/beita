@@ -1,69 +1,75 @@
 <template>
 	<div class='createtask'>
-		<h2>添加任务</h2>
-		<p><span>选择项目</span>
-			<el-cascader
-		    placeholder="请选择项目"
-		    :options="projectarr"
-		    filterable
-		    style="width:250px;"
-		    v-model="addproject"
-		    @change="addprojectchange"
-		  ></el-cascader></p>
-		<p><span>选择版本</span>
-			<el-select v-model="add_version" placeholder="请选择版本" style="width:250px;">
-		    <el-option
-		      v-for="item in add_versionArr"
-		      :key="item.value"
-		      :label="item.label"
-		      :value="item.value">
-		    </el-option>
-		  </el-select></p>
-		<p><span>选择模块</span>
-		<el-cascader
-		    placeholder="请选择模块"
-		    :options="addmodulearr"
-		    filterable
-		    style="width:250px;"
-		    v-model="addmodule"
-		    @change="addmodulechange"
-		  ></el-cascader></p>
-		<p><span>标题</span> <input type="text" v-model="addtitle" /></p>
-		<p><span>执行者</span>
-			<el-cascader
-		    placeholder="请选择执行者"
-		    :options="ownerarr"
-		    filterable
-		    style="width:250px;"
-		    v-model="addowner"
-		    @change="addownerchange"
-		  ></el-cascader></p>
-		<p><span>工时</span> <input type="text" v-model="add_point" /></p>
-		<p><span>难度</span> 
-			<el-select v-model="add_dp" placeholder="请选择版本" style="width:250px;">
-		    <el-option
-		      v-for="item in dpArr"
-		      :key="item.value"
-		      :label="item.label"
-		      :value="item.value">
-		    </el-option>
-		  </el-select></p>
-		<p><span>截止日期</span> 
-			<el-date-picker
-		      v-model="endTime"
-		      style="width:250px;"
-		      type="date"
-		      placeholder="选择日期"
-		      :picker-options="pickerOptions0">
-		    </el-date-picker>
-		</p>
-		<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
-		    <span style="float:left">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="addcontent"></textarea>
-		</p>
-		<p>
-			 <el-button type="primary" @click="addMission" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
-			<router-link to="/MissionCenter"><el-button type="info" style="width:100px"> 取 消 </el-button></router-link>
-		</p>
+		<div  class="anchu-normal-table">
+			<h2 class="anchu-normal-title">添加任务</h2>
+			<div class="anchu-normal-content">
+				<p><span>选择项目</span>
+					<el-cascader
+				    placeholder="请选择项目"
+				    :options="projectarr"
+				    filterable
+				    style="width:250px;"
+				    v-model="addproject"
+				    @change="addprojectchange"
+				  ></el-cascader></p>
+				<p><span>选择版本</span>
+					<el-select v-model="add_version" placeholder="请选择版本" style="width:250px;">
+				    <el-option
+				      v-for="item in add_versionArr"
+				      :key="item.value"
+				      :label="item.label"
+				      :value="item.value">
+				    </el-option>
+				  </el-select></p>
+				<p><span>选择模块</span>
+				<el-cascader
+				    placeholder="请选择模块"
+				    :options="addmodulearr"
+				    filterable
+				    style="width:250px;"
+				    v-model="addmodule"
+				    @change="addmodulechange"
+				  ></el-cascader></p>
+				<p><span>标题</span> <input type="text" v-model="addtitle" /></p>
+				<p><span>执行者</span>
+					<el-cascader
+				    placeholder="请选择执行者"
+				    :options="ownerarr"
+				    filterable
+				    style="width:250px;"
+				    v-model="addowner"
+				    @change="addownerchange"
+				  ></el-cascader></p>
+				<p><span>工时</span> <input type="text" v-model="add_point" /></p>
+				<!-- <p><span>难度</span> 
+					<el-select v-model="add_dp" placeholder="请选择版本" style="width:250px;">
+				    <el-option
+				      v-for="item in dpArr"
+				      :key="item.value"
+				      :label="item.label"
+				      :value="item.value">
+				    </el-option>
+				  </el-select></p> -->
+				<p><span>截止日期</span> 
+					<el-date-picker
+				      v-model="endTime"
+				      style="width:250px;"
+				      type="date"
+				      placeholder="选择日期">
+				    </el-date-picker>
+				</p>
+				<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
+				    <span style="float:left">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="addcontent"></textarea>
+				</p>
+				<p>
+					 <el-button type="primary" @click="addMission" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
+					<router-link to="/MissionCenter"><el-button type="info" style="width:100px"> 取 消 </el-button></router-link>
+				</p>
+			</div>
+			
+
+		</div>
+
 	</div>
 </template>
 
@@ -113,7 +119,7 @@
 					success:function(res){
 						let data = res;
 						if(data.error==1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){
@@ -132,7 +138,7 @@
 					success:function(res){
 						let data = res
 						if(data.error==1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 							return;
 						}
 						if(data.error == 0){	
@@ -144,7 +150,14 @@
 			//添加任务
 			addMission(){
 				let that = this;
-				let eTime
+				if(this.addownerinfo == ''){
+					this.$message.error("请选择执行者！");
+					return null;
+				}
+				if(this.addcontent == ''){
+					this.$meesage.error("请填写内容！");
+					return null;
+				}
 				if(that.endTime != ""){
 					that.eTime = that.endTime.getFullYear()+'-'+(that.endTime.getMonth()+1)+'-'+that.endTime.getDate();
 				}else{
@@ -169,12 +182,13 @@
 					success:function(res){
 						let data = res
 						if(data.error==1){
-							that.$message(data.error_message);
+							that.$message(data.error_msg);
 							return;
 						}
 						if(data.error==0){
 							that.$message("添加成功");
-							that.$router.push("/MissionCenter");
+							// that.$router.push("/MissionCenter");
+							that.$router.go(-1);
 						}
 					}
 				});
@@ -201,7 +215,7 @@
 							that.addmodulearr = data.data.module_arr;
 						}
 						if(data.error == 1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 						}
 					}
 				});
@@ -218,7 +232,7 @@
 							that.add_versionArr = data.data;
 						}
 						if(data.error == 1){
-							that.$message(data.error_message)
+							that.$message(data.error_msg)
 						}
 					}
 				});
@@ -241,9 +255,9 @@
 		box-sizing:border-box;
 		padding:20px 50px 150px 80px;
 	}
-	.createtask h2{
+	/*.createtask h2{
 		margin-bottom: 40px;
-	}
+	}*/	
 	.createtask p{
 		margin:20px 0;
 	}
@@ -261,8 +275,8 @@
 	}
 	.createtask p textarea{
 		resize: none;
-		width:900px;
-		min-height:600px;
+		width:500px;
+		min-height:300px;
 		border:1px solid #ddd;
 		border-radius:12px;
 		padding:20px;

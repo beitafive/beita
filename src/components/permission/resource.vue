@@ -7,9 +7,9 @@
         	描述：列表数据
         -->
 		<div class="tables">
-			<p v-for="(items,index) in rList" :key="items">
+			<p v-for="(items,index) in rList" :key="index">
 				<el-button type="primary" style="margin-right:10px;width:120px;" @click="MenuShow(items)" >{{items.title}}</el-button> :
-				<el-button type="info" v-for="(item,ind) in items.children" :key="item" @click="MenuShow(item,items)">{{item.title}}</el-button>
+				<el-button type="info" v-for="(item,ind) in items.children" :key="ind" @click="MenuShow(item,items)">{{item.title}}</el-button>
 				<el-button type="success" icon="plus" @click="addResource('add',items)" v-if="badd"></el-button>
 			</p>
 			<p><el-button type="success" icon="plus" @click="addResource('add')" v-if="badd"> 添 加 </el-button></p>

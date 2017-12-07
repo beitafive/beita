@@ -1,14 +1,18 @@
 <template>
 	<div class="addDoc">
-		<h2>创建文档</h2>
-		<p><span>标题</span> <input type="text" v-model="title" placeholder="请填写标题" /></p>
-		<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
-		    <span style="float:left">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="content"></textarea>
-		</p>
-		<p>
-			<el-button type="primary" @click="createDoc" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
-			<router-link to="/document"><el-button type="info" style="width:100px"> 取 消 </el-button></router-link>
-		</p>
+		<div  class="anchu-normal-table">
+			<h2 class="anchu-normal-title">创建文档</h2>
+			<div  class="anchu-normal-content">
+				<p><span>标题</span> <input type="text" v-model="title" placeholder="请填写标题" /></p>
+				<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
+				    <span style="float:left">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="content"></textarea>
+				</p>
+				<p>
+					<el-button type="primary" @click="createDoc" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
+					<router-link to="/document"><el-button type="info" style="width:100px"> 取 消 </el-button></router-link>
+				</p>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -18,7 +22,7 @@
 		data(){
 			return{
 				title:'',
-				content:'',
+				content:''
 			}
 		},
 		methods:{
@@ -26,8 +30,8 @@
 			createDoc(){
 				let _this = this;
 				$.ajax({
-					type:"get",
-					url:that.$api.doc.add,
+					type:"post",
+					url:_this.$api.doc.add,
 					dataType:'json',
 					data:{
 						title:_this.title,
@@ -42,7 +46,7 @@
 						}
 					}
 				});
-			},
+			}
 		}
 	}
 </script>
@@ -75,8 +79,8 @@
 	}
 	.addDoc p textarea{
 		resize: none;
-		width:900px;
-		min-height:600px;
+		width:500px;
+		min-height:300px;
 		border:1px solid #ddd;
 		border-radius:12px;
 		padding:20px;
