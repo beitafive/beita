@@ -1,12 +1,14 @@
 <template>
 	<div class="department">
-		<div class="anchu-inner-head">
-			<h2 class="anchu-head-title">
+		<div class="co-inner-head">
+			<h2 class="co-head-title">
 				部门管理
-				<router-link tag="button" to="/addDepartment" class="addUser">+ 添加部门</router-link>
 			</h2>
+			<el-button  @click="add" v-if="badd" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
 		</div>
-		<div class="anchu-inner-content">
+
+		<span class="page-info">部门总数：{{count}}</span>
+		<div class="co-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -24,6 +26,7 @@
 			    <el-table-column
 			      prop="describe"
 			      label="部门描述"
+			      min-width="200"
 			      >
 			    </el-table-column>
 			    <el-table-column
@@ -31,8 +34,8 @@
 			      width="160"
 			      >
 			      <template scope="scope">
-			        <el-button type="text" size="small" @click="editDepInfo(scope.row)">编辑</el-button>
-			        <el-button type="text" size="small" @click="delDepInfo(scope.row)" style="margin-right:10px" >删除</el-button>
+			        <el-button type="text" size="small" @click="editDepInfo(scope.row)"  v-if="bedit">编辑</el-button>
+			        <el-button type="text" size="small" @click="delDepInfo(scope.row)" style="margin-right:10px;color: #FA5555;" v-if="bdel">删除</el-button>
 			        <!-- <router-link v-if="bper" :to="{path:'/editpermission',query:{id:scope.row.role_id,name:scope.row.title}}"      >
 			        	<el-button type="text" size="small">权限管理</el-button>
 			        </router-link> -->
@@ -50,15 +53,31 @@
 		data(){
 			return {
 				tableData:[],//部门列表
+				count: '', //总条数
+				//权限
+				badd:false,
+				bedit:false,
+				bdel:false
 			}
 		},
 		components:{
 			wPage
 		},
 		mounted(){
+			let that = this;
+			this.$store.dispatch("getPer",'department').then(()=>{
+				that.$store.state.perList.includes("department.add")?that.badd=true:'';
+				that.$store.state.perList.includes("department.edit")?that.bedit=true:'';		
+				that.$store.state.perList.includes("department.read")?that.bread=true:'';		
+				that.$store.state.perList.includes("department.del")?that.bdel=true:'';			
+			})
 			this.getList();
 		},
 		methods:{
+			//添加部门
+			add(){
+				this.$router.push('/addDepartment');
+			},
 			//获取部门列表
 			getList(){
 				let that = this;
@@ -71,6 +90,7 @@
 							return false;
 						}
 						that.tableData = res.data.data;
+						that.count = res.data.count;
 					}
 				})
 			},
@@ -83,28 +103,46 @@
 			delDepInfo(row){
 				let that = this;
 				let id = row.id;
-				$.ajax({
-					type:'post',
-					dataType:'json',
-					url:that.$api.department.del,
-					data:{
-						id:id
-					},
-					success:function(res){
-						if(res.error == 1){
-							that.$message(res.error_msg);
-							return false;
+				that.$confirm('是否继续删除?', '提示', {
+		          confirmButtonText: '确定',
+		          cancelButtonText: '取消',
+		          type: 'warning'
+		        }).then(() => {
+		        	$.ajax({
+						type:'post',
+						dataType:'json',
+						url:that.$api.department.del,
+						data:{
+							id:id
+						},
+						success:function(res){
+							if(res.error == 1){
+								that.$message(res.error_msg);
+								return false;
+							}
+							that.$message({
+					            type: 'success',
+					            message: '删除成功!',
+					            duration: 900
+					        });
+							that.getList();
 						}
-						that.$message('删除成功');
-						that.getList();
-					}
-				})
+					})
+		          
+		        }).catch(() => {
+		          this.$message({
+		            type: 'info',
+		            message: '已取消删除',
+		            duration: 700
+		          });          
+		        });
+				
 			}
 		}
 	}
 </script>
 
-<style>
+<style scoped>
 	.department{ 
 		float:left;
 		/*width:100%;*/

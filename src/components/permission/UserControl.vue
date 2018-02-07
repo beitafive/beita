@@ -1,34 +1,80 @@
 <template>
 	<div class="usercontrol" v-if="bload">
-		<div  class="anchu-inner-head">
-			<h2 class="anchu-head-title">
+		<div  class="co-inner-head">
+			<h2 class="co-head-title">
 				{{pageInfo.basic.page_title}}
-				<router-link to="/addUser" tag="button" class="addUser" v-if="badd&&pageInfo.operate_area.add">+ 添加用户</router-link>
 			</h2>
-			<p style="margin-top:30px"  class="anchu-search-wrap">
-				<span  class="anchu-search-condition">
-					<span v-if="pageInfo.search_area.username"  class="anchu-search-name">{{pageInfo.search_area.username.username}}</span>			<el-input v-model="find_username" placeholder="请输入内容" style="width:200px;margin:0 15px"></el-input>	
+			<el-button  @click="addUser"  v-if="badd&&pageInfo.operate_area.add" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
+			<p class="co-search-wrap">
+				<span  class="co-search-condition">
+					<span v-if="pageInfo.search_area.username"  class="co-search-name">{{pageInfo.search_area.username.username}}</span>			<el-input v-model="find_username" @keyup.enter.native="search" placeholder="请输入内容" style="width:200px;margin:0 15px"></el-input>	
 				</span>
-			<el-button type="primary" icon="search" @click="getList(1)">搜索</el-button></p>
+				<el-button type="primary" @click="search" style="padding: 10px 37px;">搜索</el-button>
+			</p>
+
 		</div>
 		<span class="page-info">用户总数：{{count}}</span>
-		<div class="anchu-inner-content">
+		<div class="co-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
 			    v-loading="$store.state.bload"
     			element-loading-text="这应该是网络的问题..."
 			    style="width: 100%">
-			    <el-table-column v-for="(item,index) in pageInfo.data_area" key="item" :prop="item.value" :label="item.label" :width="item.width">
-			    	
+			    <el-table-column
+			      prop="id"
+			      label="ID"
+			      width="70">
 			    </el-table-column>
+			    <el-table-column
+			      prop="username"
+			      label="用户名"
+			      width="150">
+			    </el-table-column>
+			    <el-table-column
+			      prop="realname"
+			      label="真实姓名"
+			      width="150">
+			    </el-table-column>
+			    <el-table-column
+			      prop="email"
+			      label="邮箱"
+			      min-width="200"
+			     >
+			    </el-table-column>
+			    <el-table-column
+			      prop="mobile"
+			      label="手机"
+			      width="150"
+			      >
+			    </el-table-column>
+			    <el-table-column
+			      prop="role"
+			      label="角色"
+			      min-width="200"
+			      >
+			    </el-table-column>
+			    <el-table-column
+			      prop="department_name"
+			      label="部门"
+			     min-width="150">
+			    </el-table-column>
+			    <!-- <el-table-column
+			      prop="point"
+			      label="积分"
+			     width="100">
+			    </el-table-column> -->
+			    <!-- <el-table-column v-for="(item,index) in pageInfo.data_area" key="item" :prop="item.value" :label="item.label" :width="item.width">
+			    	
+			    </el-table-column> -->
 			    <el-table-column
 			      label="操作"
 			      width="230">
 			      <template scope="scope">
 			        <el-button type="text" size="small" @click="updateUserInfo(scope)" v-if="bedit">编辑</el-button>
 			        <el-button type="text" size="small" @click="getrolelist(scope.row)" v-if="beditrole">分配角色</el-button>
-			        <el-button type="text" size="small" @click="getDepartmentList(scope.row)" v-if="beditrole">分配部门</el-button>
+			        <el-button type="text" size="small" @click="getDepartmentList(scope.row)" v-if="beditdepartment">分配部门</el-button>
+			        <el-button type="text" size="small" @click="resetPassword(scope.row)" v-if="bresetpassword">重置密码</el-button>
 			      </template>
 			    </el-table-column>
 			  </el-table>
@@ -47,7 +93,7 @@
 
 		<el-dialog title="分配部门" v-model="editDepartmentTip" size="small">
 			<div class='addUserInfo'>
-				  <el-radio-group v-for="(val,index) in departmentList" v-model="depId" style="padding-right: 10px;">
+				  <el-radio-group v-for="(val,index) in departmentList" v-model="depId" :key="index" style="padding-right: 10px;">
 				    <el-radio :label="val.id">{{val.name}}</el-radio>
 				  </el-radio-group>
 			</div>
@@ -92,6 +138,8 @@ export default({
 			badd:false,
 			bedit:false,
 			beditrole:false,
+			beditdepartment:false,
+			bresetpassword:false,
 			
 			pageInfo:""
 		}
@@ -105,6 +153,8 @@ export default({
 			that.$store.state.perList.includes("user.add")?this.badd=true:'';
 			that.$store.state.perList.includes("user.edit")?this.bedit=true:'';
 			that.$store.state.perList.includes("user.editrole")?this.beditrole=true:'';
+			that.$store.state.perList.includes("user.editdepartment")?this.beditdepartment=true:'';
+			that.$store.state.perList.includes("user.resetpassword")?this.bresetpassword=true:'';
 		})
 		
 	},
@@ -114,6 +164,10 @@ export default({
 		}
 	},
 	methods:{
+		//搜索
+		search(){
+			this.getList(1);
+		},
 		//获取部门列表
 		getDepartmentList(row){
 			let that = this;
@@ -132,6 +186,10 @@ export default({
 					}
 				}
 			});
+		},
+		//新增用户
+		addUser(){
+			this.$router.push('/addUser');
 		},
 		//分配部门
 		submitDep(id){
@@ -157,6 +215,39 @@ export default({
 				}
 			});
 		},	
+		//重置密码
+		resetPassword(){
+			let that = this;
+			this.$confirm('是否确认重置密码?', '提示', {
+	          confirmButtonText: '确定',
+	          cancelButtonText: '取消',
+	          type: 'warning'
+	        }).then(() => {
+	        	$.ajax({
+	        		type:"get",
+					url:that.$api.usercontrol.reset_password,
+					dataType:'json',
+					success:(res) => {
+						if(res.error == 0){
+							that.$message({
+					            type: 'success',
+					            message: '重置成功!'
+					          });
+							that.getList();
+							
+						}else{
+							that.$message.error(res.error_msg)
+						}
+					}
+	        	})
+	          
+	        }).catch(() => {
+	          that.$message({
+	            type: 'info',
+	            message: '已取消重置'
+	          });          
+	        });
+		},
 		//发送用户部门请求
 		submitUR(){
 			let that = this;

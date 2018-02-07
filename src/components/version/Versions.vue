@@ -1,15 +1,13 @@
 <template>
 	<div class="w-versions">
-		<div class="anchu-inner-head">
-			<h2 class="anchu-head-title">
+		<div class="co-inner-head">
+			<h2 class="co-head-title">
 				版本管理
-				<router-link to="/addversion" v-if="badd">
-					<button class="addUser">+ 添加版本</button>			
-				</router-link>
 			</h2>
-			<p style="margin-top:20px;" class="anchu-search-wrap">
-				<span class="anchu-search-condition">
-					<span class="anchu-search-name">项目</span>
+			<el-button @click="addVersion" v-if="badd" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
+			<p style="margin-top:20px;" class="co-search-wrap">
+				<span class="co-search-condition">
+					<span class="co-search-name">项目</span>
 					<el-cascader
 				    placeholder="请选择项目"
 				    :options="projectarr"
@@ -19,8 +17,8 @@
 				    @change="checkChange"
 				  ></el-cascader>					
 				</span>
-				<span class="anchu-search-condition">
-				  <span class="anchu-search-name">状态</span>
+				<span class="co-search-condition">
+				  <span class="co-search-name" style="margin-left: 12px;">状态</span>
 				  <el-select v-model="selectStatus" placeholder="请选择状态">
 				    <el-option
 				      v-for="item in statusArr"
@@ -30,12 +28,12 @@
 				    </el-option>
 				  </el-select>					
 				</span>
-			   <el-button type="primary" icon="circle-cross" @click="clearSearch" style="margin-left: 12px;">清空</el-button>
-			  <el-button type="primary" icon="search" @click="getList('1',findprojectinfo,f_title)">搜索</el-button>
+			  <el-button type="primary" @click="getList('1',findprojectinfo,selectStatus)" style="padding: 10px 37px;margin-left: 12px;">搜索</el-button>
+			  <el-button  @click="clearSearch" style="padding: 10px 23px;">清空输入</el-button>
 			</p>
 		</div>
-		
-		<div class="anchu-inner-content">
+		<span class="page-info">版本总数：{{count}}</span>
+		<div class="co-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -54,7 +52,13 @@
 			    <el-table-column
 			      prop="title"
 			      label="标题"
+			      min-width="200"
 			      >
+			      <template scope="scope">
+			      	<router-link :to="{path:'/VsDoc',query:{id:scope.row.id}}" target="_blank" style="color: #1D8CE0;">
+				        <span>{{scope.row.title}}</span>
+			        </router-link>
+				  </template>
 			    </el-table-column>
 			    <el-table-column
 			      prop="short_desc"
@@ -83,12 +87,14 @@
 			      	<router-link :to="{path:'editversion',query:{id:scope.row.id}}" v-if="bedit" style="margin: 0 7px">
 				        <el-button type="text" size="small">编辑</el-button>			  
 			      	</router-link>
-			        &nbsp;<router-link :to="{path:'/VsDoc',query:{id:scope.row.id}}" target="_blank" v-if="bread"><el-button type="text" size="small">查看</el-button></router-link>
+			        <!-- &nbsp;<router-link :to="{path:'/VsDoc',query:{id:scope.row.id}}" target="_blank" v-if="bread"><el-button type="text" size="small">查看</el-button></router-link> -->
 			      </template>
 			    </el-table-column>
 			  </el-table>
-			  <p  class="anchu-page">
-			  	<el-button  icon="arrow-left" @click="getList(+pageIndex-1,findprojectinfo,f_title)" style="margin-right: 10px;">上一页</el-button> {{+pageIndex}} / {{allCount}} <el-button  @click="getList(+pageIndex+1,findprojectinfo,f_title)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button></p>
+
+			  <p v-if="tableData.length"  class="co-page">			 	
+			 	<el-button icon="arrow-left" @click="prePage" style="margin-right:10px;">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button  @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+			 </p>
 		</div>
 	</div>
 </template>
@@ -99,7 +105,6 @@ export default({
 	data(){
 		return{
 			role:localStorage.role,		//角色
-			f_title:'',//搜索-标题
 			findprojectinfo:'',//搜索-项目
 			findproject:[],
 			status:'', //列表版本的状态
@@ -127,24 +132,29 @@ export default({
 		}
 	},
 	mounted(){
-		let _this = this;
-		this.$store.dispatch("getPer","version").then(()=>{
-			_this.$store.state.perList.includes("version.add")?this.badd=true:'';
-			_this.$store.state.perList.includes("version.edit")?this.bedit=true:'';		
-			_this.$store.state.perList.includes("version.pass")?this.bpass=true:'';
-			_this.$store.state.perList.includes("version.line")?this.bline=true:'';
-			_this.$store.state.perList.includes("version.finish")?this.bfinish=true:'';
-			_this.$store.state.perList.includes("version.close")?this.bclose=true:'';
-			_this.$store.state.perList.includes("version.read")?this.bread=true:'';				
-			_this.getList();
-		});
-		this.getVersions();
-	},
-	updated(){
-		// console.log(this.selectStatus);
+		let that = this;
+		that.$store.dispatch("getPer","version").then(()=>{
+			that.$store.state.perList.includes("version.add")?that.badd=true:'';
+			that.$store.state.perList.includes("version.edit")?that.bedit=true:'';		
+			that.$store.state.perList.includes("version.pass")?that.bpass=true:'';
+			that.$store.state.perList.includes("version.line")?that.bline=true:'';
+			that.$store.state.perList.includes("version.finish")?that.bfinish=true:'';
+			that.$store.state.perList.includes("version.close")?that.bclose=true:'';
+			that.$store.state.perList.includes("version.read")?that.bread=true:'';		
 
+			//获取页面状态信息
+			let pageContent = that.$store.state.pageContent;
+
+			that.findprojectinfo = pageContent.f_project;
+			that.findproject[0] =  that.findprojectinfo;
+			that.selectStatus = pageContent.selectStatus;
+
+			that.getList(pageContent.pageIndex);
+		});
+		that.getVersions();
 	},
 	methods:{
+		//修改状态
 		changeItem(row,status){
 			let that = this;
 			$.ajax({
@@ -196,19 +206,18 @@ export default({
 			});
 		},
 		//获取版本列表
-		getList(x,y,z){
+		getList(page,p_id,status){
 			let that = this;
-			if(x=='0'){
+			if(page=='0'){
 				that.$message("没有上一页");
 				return;
 			}
 			$.ajax({
 				type:"get",
 				data:{
-					page:x||1,
-					project_id:y,
-					status:that.selectStatus,
-					title:z
+					page:page||1,
+					project_id:p_id,
+					status:status,
 				},
 				dataType:'json',
 				url:that.$api.version.getlist,
@@ -216,25 +225,53 @@ export default({
 					let data = res;
 					if(data.error==1){
 						// that.$message(data.error_msg)
-						if(that.allCount!="" && x<=that.allCount){
+						if(that.allCount!="" && page<=that.allCount){
 							that.tableData = [];
 						};
 						return;
 					}
 					that.count = data.data.count;
 					that.tableData = data.data.version_arr;
-					that.pageIndex = x || 1;
+					that.pageIndex = page || 1;
 					that.allCount = Math.ceil(data.data.count/10);
 
-					that.findprojectinfo = y;
-					that.status = z;
+					that.findprojectinfo = p_id;
+					that.status = status;
 					
 				}
 			});
 		},
+		//添加版本
+		addVersion(){
+			let pageContent = {
+				'f_project': this.findprojectinfo,
+				'selectStatus': this.selectStatus,
+				'pageIndex': this.pageIndex
+			}
+			this.$store.dispatch('keep_page_content',pageContent)
+			this.$router.push('/addversion')
+		},
 		//获取checkbox的值
 		checkChange(value){
 			this.findprojectinfo = value[0];
+		},
+		//下一页
+		nextPage(){
+			if(this.pageIndex==this.allCount){
+				this.$message("没有下一页")
+				return
+			}
+			this.pageIndex++;
+			this.getList(this.pageIndex);
+		},
+		//上一页
+		prePage(){
+			if(this.pageIndex == 1){
+				this.$message("没有上一页")
+				return
+			}
+			this.pageIndex--;
+			this.getList(this.pageIndex)
 		},
 		//清空搜索框
 		clearSearch(){

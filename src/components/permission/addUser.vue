@@ -1,18 +1,18 @@
 <template>
 	<div class="addUser">
-		<div class="anchu-normal-table">
-			<h2 class="anchu-normal-title">添加用户</h2>
-			<div class="anchu-normal-content">
+		<div class="co-normal-table">
+			<h2 class="co-normal-title">添加用户</h2>
+			<div class="co-normal-content">
 				<p>
 					<span>用户名</span>
-					<el-input v-model="addname" placeholder="请填写用户名" :maxlength="4" style="width:250px"/></el-input></p>
+					<el-input v-model="addname" placeholder="请填写用户名" :maxlength="20" style="width:250px"/></el-input></p>
 				<p>
 					<span>密码</span>
 					<el-input v-model="addpassword" type="password" placeholder="请填写密码" :maxlength="12" style="width:250px" /></el-input></p>
 
 				<p>
 					<span>真名</span>
-					<el-input v-model="addrealname" placeholder="请填写真名"  :maxlength="4"  style="width:250px" /></el-input></p>
+					<el-input v-model="addrealname" placeholder="请填写真名"  :maxlength="20"  style="width:250px" /></el-input></p>
 				<p>
 					<span>邮箱</span>
 					<el-input v-model="addemail" placeholder="请填写邮箱" :maxlength="30" style="width:250px" /></p>
@@ -106,6 +106,11 @@
 					that.$message('邮箱格式有误');
 					return false;
 				}
+				let enter_at = formatDate(that.addenter_at)
+				if(enter_at == ''){
+					that.$message('入职时间不能为空');
+					return false;
+				}
 				$.ajax({
 					type:"post",
 					dataType:'json',
@@ -115,7 +120,7 @@
 						password:that.addpassword,
 						email:email,
 						mobile:tel,
-						enter_at:formatDate(that.addenter_at),
+						enter_at:enter_at,
 						leave_at:formatDate(that.addleave_at),
 						ssh_pub_key1:that.addssh1,
 						ssh_pub_key2:that.addssh2,

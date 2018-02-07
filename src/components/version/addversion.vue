@@ -1,8 +1,8 @@
 <template>
 	<div class="addversion">
-		<div  class="anchu-normal-table">
-			<h2 class="anchu-normal-title">创建版本</h2>
-			<div  class="anchu-normal-content">
+		<div  class="co-normal-table">
+			<h2 class="co-normal-title">创建版本</h2>
+			<div  class="co-normal-content">
 				<p><span>项目</span> 
 					<el-select v-model="project_id" placeholder="请选择项目" style="width:250px">
 					    <el-option

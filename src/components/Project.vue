@@ -1,12 +1,14 @@
 <template>
 	<div class="w-project">
-		<div class="anchu-inner-head">
-			<h2 class="anchu-head-title">
+		<div class="co-inner-head">
+			<h2 class="co-head-title">
 				项目管理
-				<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加项目</button>			
+				<!-- <button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加项目</button>			 -->
 			</h2>
+			<el-button  @click="dialogVisible = true" v-if="badd" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
 		</div>
-		<div class="anchu-inner-content">
+		<span class="page-info">项目总数：{{count}}</span>
+		<div class="co-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -19,6 +21,7 @@
 			    <el-table-column
 			      prop="title"
 			      label="标题"
+			      min-width="200"
 			      >
 			    </el-table-column>
 			    <el-table-column
@@ -34,7 +37,7 @@
 			      </template>
 			    </el-table-column>
 			  </el-table>
-			  <p  class="anchu-page">
+			  <p  class="co-page">
 			  		<el-button  icon="arrow-left" @click="getList(pageIndex-1)" style="margin-right: 10px;">上一页</el-button>{{pageIndex}} / {{allCount}}<el-button  @click="getList(pageIndex+1)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
 			  	</p>
 		</div>

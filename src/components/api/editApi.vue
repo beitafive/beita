@@ -101,8 +101,9 @@
 				<el-input type="text" placeholder="参数说明" style="width: 22%;margin-right: 10px;" v-model="paramInfo"></el-input>
 				<span style="cursor: pointer;color:#4990E2;" @click="addRequest(requestName,requestDemo,paramType,paramInfo)">新增</span>
 			</p>
+
 			<p  v-if="requestNow == 0" v-for="(item,index) in requestArr" key="index"  class="header-list">
-				<input type="checkbox" class="api-request-checkbox" v-model="checkstatus" style="cursor: pointer;">
+				<input type="checkbox" class="api-request-checkbox" v-model="item.checkstatus" style="cursor: pointer;">
 				<el-input type="text" placeholder="参数名" style="width: 22%;margin-right: 5px;" v-model="item.requestName"></el-input>
 				<el-input type="text" placeholder="示例" style="width: 22%;margin-right: 5px;" v-model="item.requestDemo"></el-input>
 				<el-select v-model="item.paramType" placeholder="参数类型"  style="width:170px;line-height: 1;margin-right: 5px;">
@@ -124,6 +125,55 @@
 			  placeholder="请输入内容"
 			  v-if="requestNow == 1"
 			  v-model="reqTextarea">
+			</el-input>
+		</div>
+
+		<div class="api-request">
+			<h3>响应参数</h3>
+			<ul class="api-request-tab" >
+				<li :class="{select:index == responseParamsNow}" v-for="(item,index) in responseTabArr" key="index" @click="resTab(index)">{{item.name}}</li>
+			</ul>
+
+			<p  v-if="responseParamsNow == 0">
+				<input type="checkbox" class="api-request-checkbox"  v-model="resCheckboxStatus" style="cursor: pointer;">
+				<el-input type="text" placeholder="参数名" style="width: 22%;margin-right: 5px;" v-model="responseName"></el-input>
+				<el-input type="text" placeholder="示例" style="width: 22%;margin-right: 5px;" v-model="responseDemo"></el-input>
+				 <el-select v-model="resParamType" placeholder="参数类型"  style="width:170px;line-height: 1;margin-right: 5px;">
+					    <el-option
+					      v-for="item in responseTypeArr"
+					      :key="item.value"
+					      :label="item.label"
+					      :value="item.value"
+					      :disabled="item.disabled">
+					    </el-option>
+					</el-select>
+				<el-input type="text" placeholder="参数说明" style="width: 22%;margin-right: 10px;" v-model="responseParamInfo"></el-input>
+				<span style="cursor: pointer;color:#4990E2;" @click="addResponseArr(responseName,responseDemo,resParamType,responseParamInfo)">新增</span>
+			</p>
+
+			<p  v-if="responseParamsNow == 0" v-for="(item,index) in responseArr" key="index"  class="header-list">
+				<input type="checkbox" class="api-request-checkbox" v-model="item.resCheckStatus" style="cursor: pointer;">
+				<el-input type="text" placeholder="参数名" style="width: 22%;margin-right: 5px;" v-model="item.responseName"></el-input>
+				<el-input type="text" placeholder="示例" style="width: 22%;margin-right: 5px;" v-model="item.responseDemo"></el-input>
+				<el-select v-model="item.resParamType" placeholder="参数类型"  style="width:170px;line-height: 1;margin-right: 5px;">
+				    <el-option
+				      v-for="item in responseTypeArr"
+				      :key="item.value"
+				      :label="item.label"
+				      :value="item.value"
+				      :disabled="item.disabled">
+				    </el-option>
+				</el-select>
+				<el-input type="text" placeholder="参数说明" style="width: 22%;margin-right: 10px;" v-model="item.responseParamInfo"></el-input>
+				<span style="cursor: pointer;color: #FA5555;" @click="delResponse(index)">删除</span>
+			</p>
+			<el-input
+			  type="textarea"
+			  :autosize="{ minRows: 8}"
+			  style="width:676px;margin-bottom: 20px;min-height: 200px;"
+			  placeholder="请输入内容"
+			  v-if="responseParamsNow == 1"
+			  v-model="resTextarea">
 			</el-input>
 		</div>
 
@@ -208,8 +258,8 @@
 				addHead:'',//新增请求头部
 				addHeaderInfo:'',//新增请求头部描述
 				headerArr:[],//请求头部列表
-
-				requestNow:'', //当前请求参数tab
+				//请求参数
+				requestNow:0, //当前请求参数tab
 				request:{
 					type:'',
 					requestParmas:''
@@ -225,7 +275,24 @@
 				paramType:"字符串",//请求类型
 				paramArr:[{value:'字符串',label:'字符串'},{value:'数字',label:'数字'}],//请求列表
 
-				responseNow:'',//响应结果
+				//响应参数
+				responseParamsNow:0,//响应参数tab
+				responseParams:{
+					type:0,
+					responseP:''
+				},
+				resTextarea:'',//响应参数源数据
+				responseArr:[],//响应参数列表
+				responseName:'',//响应-参数名
+				responseDemo:'',//响应-示例
+				resCheckstatus:true,//响应-是否必选-输入
+				resCheckboxStatus:false,//响应-是否必选-列表
+				responseParamInfo:'',//响应-参数说明
+				resParamType:"字符串",//响应-参数类型-列表
+				responseTypeArr:[{value:'字符串',label:'字符串'},{value:'数字',label:'数字'}],//响应-参数类型
+				responseTabArr:[{"name":"表单[form-data]"},{"name":"源数据[raw]"}],//响应参数tab
+				//响应结果
+				responseNow:'',
 				responseTab:[{"name":"响应结果1"},{"name":"响应结果2"},{"name":"响应结果3"}],//响应结果tab
 				response:{
 					restextarea0:'',//响应结果0
@@ -237,7 +304,6 @@
 				id: this.$route.query.id,//api的id
 				project_id:this.$route.query.pid,//项目id
 				module_id: this.$route.query.mid,//api的模块id
-				title:this.$route.query.title,//api的title
 			}
 		},
 		mounted(){
@@ -276,22 +342,57 @@
 							that.addurl = apiArr.url;
 							that.addtitle = apiArr.title;
 							that.addmethod = apiArr.method;
+							//响应参数
+							if(!apiArr.response_params){
+								that.responseParams={
+									type:0,
+									responseP:''
+								}
+							}else{
+								that.responseParams = JSON.parse(apiArr.response_params);
+								if(that.responseParams.type == 0){
+									that.responseArr = that.responseParams.responseP;
+									that.responseParamsNow = that.responseParams.type;
+								}else{
+									that.resTextarea = that.responseParams.responseP;
+									that.responseParamsNow = that.responseParams.type;									
+								}
+							}
+							
+
 							if(apiArr.head == ''){
 								that.headerArr = [];
 							}else{
 
 								that.headerArr = JSON.parse(apiArr.head);
 							}
-							
-							that.request = JSON.parse(apiArr.request);
-							
-							if(that.request.type == 0){
-								that.requestArr = that.request.requestParmas;
-								that.requestNow = that.request.type;
+							//请求参数
+							if(!apiArr.request){
+								that.request = {
+									type:0,
+									requestParmas:''
+								}
 							}else{
-								that.reqTextarea = that.request.requestParmas;
-								that.requestNow = that.request.type;
+								that.request = JSON.parse(apiArr.request);
+								
+								if(that.request.type == 0){
+									if(Object.prototype.toString.call(that.request.requestParmas)=='[object Array]'){
+										that.requestArr = that.request.requestParmas;
+										that.requestNow = that.request.type;
+									}else{
+										that.request = {
+											type:0,
+											requestParmas:''
+										}
+									}
+									
+								}else{
+									that.reqTextarea = that.request.requestParmas;
+									that.requestNow = that.request.type;									
+								}
+								
 							}
+							//响应结果
 							if(apiArr.response == ''){
 								that.response = {}
 							}else{
@@ -379,12 +480,12 @@
 			selectTab(index){
 				this.requestNow = index;
 				if(index == 0){
-					this.reqTextarea = '';
+					// this.reqTextarea = '';
 					this.request.type = 0;
 					this.request.requestParmas = this.requestArr;
 				}
 				if(index == 1){
-					this.requestArr = [];
+					// this.requestArr = [];
 					this.request.type = 1;
 					this.request.requestParmas = this.reqTextarea;
 				}
@@ -412,6 +513,43 @@
 			//删除请求参数
 			delRequest(index){
 				this.requestArr.splice(index,1);
+			},
+			//响应参数tab
+			resTab(index){
+				this.responseParamsNow = index;
+				if(index == 0){				
+					this.responseParams.type = 0;
+					this.responseParams.responseP = this.responseArr;
+				}
+				if(index == 1){
+					this.responseParams.type = 1;
+					this.responseParams.responseP = this.resTextarea;
+				}
+				
+			},
+			//添加响应参数
+			addResponseArr(responseName,responseDemo,resParamType,responseParamInfo){
+				if(responseName == '' || responseDemo == '' || resParamType == '' || responseParamInfo == ''){
+					this.$message("参数信息不完整");
+					return false;
+				}
+				let resArr ={
+					'resCheckStatus':this.resCheckboxStatus,
+					'responseName':responseName,
+					'responseDemo':responseDemo,
+					'resParamType':resParamType,
+					'responseParamInfo':responseParamInfo,
+				}
+				this.responseArr.push(resArr);
+				this.resCheckboxStatus = false;
+				this.responseName = '';
+				this.responseDemo = '';
+				this.resParamType = '字符串';
+				this.responseParamInfo = '';
+			},
+			//删除响应参数
+			delResponse(index){
+				this.responseArr.splice(index,1);
 			},
 			//响应结果tab
 			selectResponseTab(index){
@@ -442,15 +580,20 @@
 			//发送更新用户信息功能
 			updateUser(){
 				let that = this;
+		
 				if(that.request.type == 0){
 					that.request.requestParmas = that.requestArr;
-				}
-				if(that.request.type == 1){
+				}else{
 					that.request.requestParmas = that.reqTextarea;
 				}
-				if(that.response.restextarea0 == '' && that.response.restextarea1== '' && that.response.restextarea2 == ''){
-					this.$message("请输入响应结果");
+				if(that.responseParams.type == 0){
+					that.responseParams.responseP = that.responseArr;
+				}else{
+					that.responseParams.responseP = that.resTextarea;
 				}
+				// if(that.response.restextarea0 == '' && that.response.restextarea1== '' && that.response.restextarea2 == ''){
+				// 	this.$message("请输入响应结果");
+				// }
 				$.ajax({
 					type:"post",
 					data:{
@@ -463,6 +606,7 @@
 						head:that.headerArr,
 						status:that.addStatus,
 						request:JSON.stringify(that.request),
+						response_params: JSON.stringify(that.responseParams),
 						response:that.response,
 						tcp:that.addArgument
 					},

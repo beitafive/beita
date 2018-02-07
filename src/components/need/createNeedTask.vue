@@ -1,8 +1,8 @@
 <template>
 	<div class='create-need-task'>
-		<div  class="anchu-normal-table">
-			<h2 class="anchu-normal-title">创建需求任务</h2>
-			<div class="anchu-normal-content">
+		<div  class="co-normal-table">
+			<h2 class="co-normal-title">创建需求任务</h2>
+			<div class="co-normal-content">
 				<p><span>需求标题</span>{{msg.title}}</p>
 				<p><span>选择项目</span>
 					<el-cascader
@@ -50,6 +50,21 @@
 				    v-model="addowner"
 				    @change="addownerchange"
 				  ></el-cascader></p>
+
+				 <p><span>测试者</span>
+					<el-select v-model="testId" placeholder="请选择测试" style="width:250px;">
+					    <el-option
+					      v-for="item in testArr"
+					      :key="item.value"
+					      :label="item.label"
+					      :value="item.value">
+					    </el-option>
+					</el-select>
+				</p>
+				  <p><span>难度</span>
+					<el-input-number v-model="difficultPerformance" :min="1" :max="5" label="难度"></el-input-number> 
+				  </p>
+
 				<p><span>工时</span> <input type="text" v-model="add_point" /></p>
 				<p><span>截止日期</span> 
 					<el-date-picker
@@ -64,7 +79,7 @@
 				</p>
 				<p>
 					 <el-button type="primary" @click="addMission" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
-					<router-link to="/MissionCenter"><el-button type="info" style="width:100px"> 取 消 </el-button></router-link>
+					<el-button type="info" style="width:100px" @click="cancel"> 取 消 </el-button>
 				</p>
 			</div>
 			
@@ -81,6 +96,8 @@
 			return{
 				projectarr:[],		//项目列表
 				ownerarr:[],		//执行者列表
+				testArr:[],
+				testId:'',//测试id
 				//添加，工时 难度
 				add_point:'',
 				add_dp:'1',
@@ -107,14 +124,17 @@
 				msg:'', //需求详情
 				task_type:'', 	//任务类型
 				task_typeArr:[{value:'0',label:'版本任务'},{value:'1',label:'紧急任务'}],
+				difficultPerformance:0,//难度
 
-				pageIndex: this.$route.query.pageIndex
+
+				// pageIndex: this.$route.query.pageIndex
 			}
 		},
 		mounted(){
 			this.getProject();
 			this.getUser();
 			this.getNeedInfo();
+			this.getTester();
 		},
 		methods:{
 			//获取需求信息
@@ -176,6 +196,28 @@
 					}
 				});
 			},
+			//获取测试人员列表
+			getTester(type){
+				let that = this;
+				$.ajax({
+					type:"get",
+					url:that.$api.get_options,
+					dataType:'json',
+					data:{
+						type:'test'
+					},
+					success:function(res){
+						let data = res
+						if(data.error==1){
+							that.$message(data.error_msg)
+							return;
+						}
+						if(data.error == 0){	
+							that.testArr = that.testArr.concat(data.data.user_arr);
+						}
+					}
+				});
+			},
 			//添加任务
 			addMission(){
 				let that = this;
@@ -217,12 +259,15 @@
 						title:that.addtitle,
 						content:that.addcontent,
 						version_id:that.add_version,
-						dp:that.add_dp,
+						dp:that.difficultPerformance,
 						point:that.add_point,
 						expire_at:that.eTime,
 						submit_user_id:that.submit_user_id,
 						requirement_id: that.requirement_id,		//需求任务ID
-						is_quick:that.task_type 					//任务类型
+						is_quick:that.task_type,				//任务类型
+						test_id:that.testId,
+						
+
 					},
 					dataType:'json',
 					url:that.$api.task.add,
@@ -233,14 +278,16 @@
 							return;
 						}
 						if(data.error==0){
-							that.$message("添加成功");
-							
-							that.$store.state.pageIndex = that.pageIndex;
-							console.log(that.pageIndex);
+							that.$message("添加成功");					
+	
 							that.$router.go(-1);
 						}
 					}
 				});
+			},
+			//取消
+			cancel(){
+				this.$router.go(-1);
 			},
 			//添加项目下拉事件
 			addprojectchange(value){

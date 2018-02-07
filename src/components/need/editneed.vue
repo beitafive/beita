@@ -1,18 +1,25 @@
 <template>
 	<div class="editneed">
 		<h2>编辑需求</h2>
-		<p><span>项目</span> 
-			<el-select v-model="msg.project_id" placeholder="请选择项目" style="width:250px">
-			    <el-option
-			      v-for="item in projectarr"
-			      :key="item.value"
-			      :label="item.label"
-			      :value="item.value">
-			    </el-option>
-			  </el-select>
-		</p>
+		<p><span>选择项目</span>
+			<el-cascader
+		    placeholder="请选择项目"
+		    :options="projectarr"
+		    filterable
+		    style="width:250px;"
+		    v-model="updateproject"
+		    @change="updateprojectchange"
+		  ></el-cascader></p>
+		<p><span>选择版本</span>
+			<el-select v-model="update_version" placeholder="请选择版本" style="width:250px;">
+		    <el-option
+		      v-for="item in update_versionArr"
+		      :key="item.value"
+		      :label="item.label"
+		      :value="item.value">
+		    </el-option>
+		  </el-select></p>
 		<p><span>标题</span> <el-input type="text" v-model="msg.title" placeholder="请填写标题" style="width:250px"/></p>
-		<!-- <p><span>紧急程度</span> <el-input type="text" v-model="msg.ep" placeholder="请填写紧急程度" style="width:250px"/></p> -->
 		<p><span>提出者</span>
 			<el-select v-model="msg.submit_user_id" placeholder="请选择提出者" style="width:250px">
 			    <el-option
@@ -33,6 +40,16 @@
 			    </el-option>
 			  </el-select>
 		</p>
+		<p><span>状态</span>
+		<el-select v-model="msg.status" placeholder="请选择">
+		    <el-option
+		      v-for="item in options"
+		      :key="item.value"
+		      :label="item.label"
+		      :value="item.value">
+		    </el-option>
+		  </el-select></p>
+		<p><span>重要程度</span><el-rate v-model="msg.important" style="width: 250px;display: inline-block;"></el-rate></p>
 		<p><span>期望上线日期</span> 
 			<el-date-picker
 		      v-model="msg.expect_online_at"
@@ -52,32 +69,41 @@
 </template>
 
 <script>
+	import { formatDate } from '@/assets/js/util' 
 	export default{
 		name:'editneed',
 		data(){
 			return{
 				projectarr:[],	//项目列表
-				ownerarr:[],	//提出者列表
+				ownerarr:[],	//提出者列表				
+				options:[{value:'WAIT',label:'等待中'},{value:'HANDLE',label:'处理中'},{value:'CONFIRMED',label:'开发中'},{value:'FINISHED',label:'已完成'},{value:'TESTED',label:'测试通过'},{value:'ONLINE',label:'已上线'},{value:'CLOSED',label:'已关闭'},{value:'REFUSED',label:'已拒绝'},{value:'DELETED',label:'已删除'}],
 				msg:{
 					project_id:'',
+					version_id:'',
 					title:'',
 					content:'',
 					ep:'',
 					submit_user_id:'',
 					response_user_id:'',
 					expect_online_at:'',
-					pageIndex: ''
-				}
+					pageIndex: '',
+					status:''
+				},
+				updateproject:[],//选择的项目
+				//编辑，版本
+				update_versionArr:[],
+				update_version:'',
+				important:1,	//重要程度
 			}
 		},
 		mounted(){
 			this.getProject();
 			this.getUser();
 			this.getInfo();
-			this.pageIndex = this.$route.query.pageIndex;
 			
 		},
 		methods:{
+			//获取需求信息
 			getInfo(){
 				let that = this;
 				$.ajax({
@@ -91,6 +117,13 @@
 						let data = res;
 						if(data.error == 0){
 							that.msg = data.data;
+							//更新项目信息
+							that.updateproject = [];
+							that.updateproject.push(that.msg.project_id);
+							//版本信息
+							that.update_version = that.msg.version_id;
+							
+							that.getVersion(that.msg.project_id);
 						}
 					}
 				});
@@ -114,6 +147,39 @@
 					}
 				});
 			},
+			//编辑项目下拉
+			updateprojectchange(value){
+				let that = this;
+				that.msg.project_id = value[0];
+				that.update_versionArr=[];
+				that.update_version= '';
+				that.getVersion(value[0])
+				
+			},
+			//获取版本信息
+			getVersion(id){
+				let that = this;
+
+				//获取版本信息
+				$.ajax({
+					type:"get",
+					url:that.$api.get_version_list,
+					data:{
+						project_id:id
+					},
+					dataType:'json',
+					success:function(res){
+						let data = res;
+						if(data.error == 0){
+							//版本列表
+							that.update_versionArr = data.data;
+						}
+						if(data.error == 1){
+							that.$message(data.error_msg)
+						}
+					}
+				});
+			},
 			//获取执行者列表
 			getUser(){
 				let that = this;
@@ -133,57 +199,47 @@
 					}
 				});
 			},
-			//创建文档
+			//编辑需求
 			editNeed(){
-				if(this.msg.content == ''){
-					this.$message.error("请填写内容！");
+				let that = this;
+				if(that.msg.content == ''){
+					that.$message.error("请填写内容！");
 					return null;
 				}
-				let that = this;
+				that.msg.version_id = that.update_version;
+				
 				$.ajax({
-				type:"post",
-				data:{
-					id:that.$route.query.id,
-					project_id:that.msg.project_id,
-					title:that.msg.title,
-					content:that.msg.content,
-					ep:that.msg.ep,
-					submit_user_id:that.msg.submit_user_id,
-					response_user_id:that.msg.response_user_id,
-					expect_online_at:that.msg.expect_online_at
-				},
-				url:that.$api.need.update,
-				dataType:'json',
-				success:function(res){
-					let data = res;
-					if(data.error==1){
-						that.$message(data.error_msg);
-						return;
+					type:"post",
+					data:{
+						id:that.$route.query.id,
+						project_id:that.msg.project_id,
+						version_id:that.msg.version_id,
+						title:that.msg.title,
+						content:that.msg.content,
+						ep:that.msg.ep,
+						submit_user_id:that.msg.submit_user_id,
+						response_user_id:that.msg.response_user_id,
+						expect_online_at:formatDate(that.msg.expect_online_at),
+						status: that.msg.status,
+						important: that.msg.important
+					},
+					url:that.$api.need.update,
+					dataType:'json',
+					success:function(res){
+						let data = res;
+						if(data.error==1){
+							that.$message(data.error_msg);
+							return;
+						}
+						if(data.error==0){
+							that.$router.push("/needs");
+							that.$message.success("保存成功！");
+						}
 					}
-					if(data.error==0){
-						that.$store.state.pageIndex = that.pageIndex;
-						that.$router.push("/needs");
-						that.$message.success("保存成功！");
-					}
-				}
-			});
+				});
 			},
 		},
-		formatDate(date){
-			if(date == ''){
-				return '';
-			}else{
-				var d = new Date(date);
-				var year = d.getFullYear();
-				var month = d.getMonth()+1;
-				var day = d.getDate();
-				if (month < 10) month = '0' + month;
-			  	if (day < 10) day = '0' + day;
-
-			 	return [year, month, day].join('-');
-				
-			}
-		}
+		
 	}
 </script>
 

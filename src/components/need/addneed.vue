@@ -1,8 +1,8 @@
 <template>
 	<div class="addneed">
-		<div  class="anchu-normal-table">
-			<h2 class="anchu-normal-title">创建需求</h2>
-			<div  class="anchu-normal-content">
+		<div  class="co-normal-table">
+			<h2 class="co-normal-title">创建需求</h2>
+			<div  class="co-normal-content">
 				<p><span>项目</span> 
 					<el-select v-model="project_id" placeholder="请选择项目" style="width:250px">
 					    <el-option
@@ -23,6 +23,7 @@
 				    </el-date-picker>
 				</p>
 				<p><span>紧急程度</span> <input type="text" v-model="ep" placeholder="请填写紧急程度" /></p> -->
+				<p><span>重要程度</span><el-rate v-model="important" style="width: 250px;display: inline-block;"></el-rate></p>
 				<p><span>期望上线日期</span> 
 					<el-date-picker
 				      v-model="endTime"
@@ -44,7 +45,7 @@
 				<p><span>负责人</span>
 					<el-select v-model="response_user_id" placeholder="请选择负责人" style="width:250px">
 					    <el-option
-					      v-for="item in ownerarr"
+					      v-for="item in reponseUserArr"
 					      :key="item.value"
 					      :label="item.label"
 					      :value="item.value">
@@ -64,6 +65,7 @@
 </template>
 
 <script>
+	import { formatDate } from '@/assets/js/util' 
 	export default{
 		name:'addneed',
 		data(){
@@ -71,9 +73,11 @@
 				title:'',		//标题
 				content:'',		//内容
 				ep:'',			//紧急程度
+				important:0,	//重要程度
 				projectarr:[],	//项目列表
 				project_id:'',	//项目ID
 				ownerarr:[],	//提出者列表
+				reponseUserArr:[],//负责人
 				owner_id:localStorage.token,	//提出者ID
 				response_user_id: '',//负责人ID
 				createTime:'',  //创建时间
@@ -83,6 +87,7 @@
 		mounted(){
 			this.getProject();
 			this.getUser();
+			this.getResponseUser();
 		},
 		methods:{
 			//获取项目列表
@@ -123,6 +128,25 @@
 					}
 				});
 			},
+			//获取负责人列表
+			getResponseUser(){
+				let that = this;
+				$.ajax({
+					type:"get",
+					url:that.$api.need.get_user_options,
+					dataType:'json',
+					success:function(res){
+						let data = res
+						if(data.error==1){
+							that.$message(data.error_msg)
+							return;
+						}
+						if(data.error == 0){	
+							that.reponseUserArr = data.data;
+						}
+					}
+				});
+			},
 			//创建文档
 			addNeed(){
 				let that = this;
@@ -147,48 +171,35 @@
 					return null;
 				}
 				$.ajax({
-				type:"post",
-				data:{
-					project_id:that.project_id,
-					title:that.title,
-					ep:that.ep,
-					submit_user_id:that.owner_id,
-					response_user_id:that.response_user_id,
-					content:that.content,
-					created_at:that.createTime,
-					expect_online_at:that.formatDate(that.endTime),
-				},
-				url:that.$api.need.add,
-				dataType:'json',
-				success:function(res){
-					let data = res;
-					if(data.error==1){
-						that.$message(data.error_msg);
-						return;
+					type:"post",
+					data:{
+						project_id:that.project_id,
+						title:that.title,
+						ep:that.ep,
+						submit_user_id:that.owner_id,
+						response_user_id:that.response_user_id,
+						content:that.content,
+						created_at:that.createTime,
+						expect_online_at:formatDate(that.endTime),
+						important: that.important
+
+					},
+					url:that.$api.need.add,
+					dataType:'json',
+					success:function(res){
+						let data = res;
+						if(data.error==1){
+							that.$message(data.error_msg);
+							return;
+						}
+						if(data.error==0){
+							that.$router.push("/needs");
+							that.$message("添加成功");
+						}
 					}
-					if(data.error==0){
-						that.$router.push("/needs");
-						that.$message("添加成功");
-					}
-				}
-			});
+				});
 			},
-			formatDate(date){
-				if(date == ''){
-					return '';
-				}else{
-					var d = new Date(date);
-					var year = d.getFullYear();
-					var month = d.getMonth()+1;
-					var day = d.getDate();
-					if (month < 10) month = '0' + month;
-				  	if (day < 10) day = '0' + day;
-
-				 	return [year, month, day].join('-');
-
-				}
-				
-			}
+			
 		}
 	}
 </script>

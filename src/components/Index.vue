@@ -16,12 +16,15 @@ export default({
 	name:'oa_index',
 	data(){
 		return{
-			msg:''
+			msg:'',
 		}
 	},
 	components:{
 		topHeader,
 		wMenu
+	},
+	mounted(){
+		this.$store.dispatch('changePoint').then(function(){})
 	}
 })
 </script>

@@ -48,6 +48,16 @@
 		      :value="item.value">
 		    </el-option>
 		  </el-select></p>
+		  <p><span>测试者</span>
+			<el-select v-model="testId" placeholder="请选择测试" style="width:250px;">
+			    <el-option
+			      v-for="item in testArr"
+			      :key="item.value"
+			      :label="item.label"
+			      :value="item.value">
+			    </el-option>
+			</el-select>
+		</p>
 		<p><span>状态</span>
 		<el-cascader
 		    placeholder="请选择状态"
@@ -100,13 +110,16 @@
 				//编辑，状态
 				updatestatus:[],
 				updatestate:'',
-				statusArr:[{value:'WAIT',label:'WAIT'},{value:'FIXED',label:'FIXED'},{value:'CLOSED',label:'CLOSED'},{value:'TESTED',label:'TESTED'}]
+				statusArr:[{value:'WAIT',label:'WAIT'},{value:'FIXED',label:'FIXED'},{value:'CLOSED',label:'CLOSED'},{value:'TESTED',label:'TESTED'}],
+				testId:'',//测试id
+				testArr:[],//测试人员列表
 			}
 		},
 		mounted(){
 			this.getProject();
 			this.getUser();
 			this.getInfo();
+			this.getTester();
 		},
 		methods:{
 			getInfo(){
@@ -126,6 +139,7 @@
 							that.updateproject = [];
 							that.updateprojectinfo=y.project_id;
 							that.updateproject.push(y.project_id);
+							that.testId = y.test_id;
 							$.ajax({
 								type:"get",
 								url:that.$api.get_module_list,
@@ -227,11 +241,37 @@
 					}
 				});
 			},
+			//获取测试人员列表
+			getTester(type){
+				let that = this;
+				$.ajax({
+					type:"get",
+					url:that.$api.get_options,
+					dataType:'json',
+					data:{
+						type:'test'
+					},
+					success:function(res){
+						let data = res
+						if(data.error==1){
+							that.$message(data.error_msg)
+							return;
+						}
+						if(data.error == 0){	
+							that.testArr = that.testArr.concat(data.data.user_arr);
+						}
+					}
+				});
+			},
 			//发送更新
 			updateInfo(){
 				let that = this;
 				let is_live = '';
 				that.update_is_live?is_live=1:is_live=0;
+				if(that.testId == ''){
+					that.$message.error("请选择测试者")
+					return;
+				}
 				$.ajax({
 					type:"post",
 					data:{
@@ -246,7 +286,8 @@
 						owner_id:that.updateownerinfo,
 						ep:that.updateep,
 						dp:that.updatedp,
-						submit_user_id:that.updatesubuserid
+						submit_user_id:that.updatesubuserid,
+						test_id:that.testId
 					},
 					dataType:'json',
 					url:that.$api.bug.update,

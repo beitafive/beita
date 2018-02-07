@@ -20,11 +20,33 @@ var mutations = {
 			dataType:'json',
 			success:(res)=>{
 				if(res.error==0){
-					state.perList = res.data;
+					state.perList = res.data.resource;
+					// state.point = res.data.point;
 					sessionStorage.perList = res.data;
 				}
 			}
 		})
+	},
+	//获取积分
+	CHANGE_POINT:(state) =>{
+		let that = this;
+		$.ajax({
+			type:"get",
+			dataType:'json',
+			data:{
+				id:sessionStorage.userid
+			},
+			url:'/api.php?s=api/user/get',
+			success:function(res){
+				let data = res;
+				if(data.error==1){
+					console.log(data.error_msg)
+				}
+				if(data.error == 0){
+					state.point = data.data.point;
+				}
+			}
+		});
 	},
 	//改变路由
 	CHANGE_ROUTE:(state,data)=>{
@@ -81,6 +103,16 @@ var mutations = {
 				}
 			}
 		});
-	}
+	},
+	//保存当前页面信息
+	KEEP_PAGE_CONTENT:(state,data) => {
+		state.pageContent = data;
+		// console.log(data)
+	},
+	//保存页面搜索信息
+	SEARCH_PARAMS:(state,data) => {
+		state.searchParams = data;
+		// console.log(data)
+	},
 }
 export default mutations;

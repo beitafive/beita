@@ -9,6 +9,7 @@ import 'element-ui/lib/theme-default/index.css'
 import './assets/css/reset.css'
 import './assets/css/index.css'
 import './assets/font/iconfont.css'
+import TreeView from "vue-json-tree-view"
 import store from '@/vuex/store'
 import api from '@/api.js'
 
@@ -17,6 +18,7 @@ Vue.prototype.$api = api;
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)
+Vue.use(TreeView)
 
 
 $(document).ajaxSuccess(function(event, xhr, settings,res) {
@@ -51,6 +53,7 @@ if(window.location.href.includes('cc')){
 //console.log(vm)
 //console.log(info)
 //}
+
 try{
 	new Vue({
 	  el: '#app',

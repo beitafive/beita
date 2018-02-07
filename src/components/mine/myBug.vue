@@ -1,15 +1,16 @@
 <template>
 	<div class="bugcontorl">
-			<div class="anchu-inner-head">
-				<h2 class="anchu-head-title">
+			<div class="co-inner-head">
+				<h2 class="co-head-title">
 				我的BUG
-					<router-link to="/addbug" v-if="badd">
+					<!-- <router-link to="/addbug" v-if="badd">
 						<button class="addUser">+ 添加BUG</button>			
-					</router-link>
+					</router-link> -->
 				</h2>
-				<p style="margin-top:20px;" class="anchu-search-wrap">
-					<span class="anchu-search-condition">
-					  <span class="anchu-search-name">环境</span>
+				<el-button  @click="add"  v-if="badd" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
+				<p style="margin-top:20px;" class="co-search-wrap">
+					<span class="co-search-condition">
+					  <span class="co-search-name">环境</span>
 					  <el-select v-model="find_is_live" placeholder="请选择" style="width:200px;padding-right: 12px;">
 					    <el-option
 					      v-for="item in is_live_arr"
@@ -20,8 +21,8 @@
 					  </el-select>
 					  </el-tooltip>						
 					</span>
-					<span class="anchu-search-condition">
-					  <span class="anchu-search-name">bug状态</span>
+					<span class="co-search-condition">
+					  <span class="co-search-name">bug状态</span>
 					  <el-select v-model="findstatus" placeholder="请选择BUG状态" style="width:200px;padding-right: 12px;">
 					    <el-option
 					      v-for="item in statusarr"
@@ -31,17 +32,20 @@
 					    </el-option>
 					  </el-select>						
 					</span>
-					<span class="anchu-search-condition">
-					  <span class="anchu-search-name">标题</span>
-					  <el-input v-model="f_title" placeholder="请输入标题" style="width:200px;padding-right: 12px;"></el-input>						
+					<span class="co-search-condition">
+					  <span class="co-search-name">标题</span>
+					  <el-input v-model="f_title" @keyup.enter.native="search" placeholder="请输入标题" style="width:200px;padding-right: 12px;"></el-input>						
 					</span>
-				   <el-button type="primary" icon="circle-cross" @click="clearSearch">清空</el-button>
-				  <el-button type="primary" icon="search" @click="getList(1)">搜索</el-button>
+				  <!--  <el-button type="primary" icon="circle-cross" @click="clearSearch">清空</el-button>
+				  <el-button type="primary" icon="search" @click="getList(1)">搜索</el-button> -->
+
+				  <el-button type="primary" @click="search" style="padding: 10px 37px;margin-left: 12px;">搜索</el-button>
+			   	  <el-button  @click="clearSearch" style="padding: 10px 23px;">清空输入</el-button>
 				</p>
 			</div>
 			<span class="page-info">BUG总数：{{count}}</span>
 			<!--列表展示-->
-			<div class="anchu-inner-content">
+			<div class="co-inner-content">
 				<el-table
 				    :data="tableData"
 				    border
@@ -67,9 +71,14 @@
 				      width="120">
 				    </el-table-column>
 				    <el-table-column
-				      prop="title"
 				      label="标题"
+				      min-width="200"
 				      >
+				      <template scope="scope">
+				      	<router-link :to="{path:'/bugcontent',query:{id:scope.row.id}}" target="_blank" style="color: #1D8CE0;">
+					        <span>{{scope.row.title}}</span>
+				        </router-link>
+				      </template>
 				    </el-table-column>
 				    <el-table-column
 				      prop="status_name"
@@ -106,14 +115,14 @@
 				        <el-button type="text" size="small" @click="editBug(scope.row,'wait')" v-if="brepulse && scope.row.status=='FIXED'">打回</el-button>
 				        <el-button type="text" size="small" @click="editBug(scope.row,'closed')" v-if="bclose && scope.row.status=='TESTED'">关闭</el-button>
 				        &nbsp;
-				        <router-link :to="{path:'/bugcontent',query:{id:scope.row.id}}" target="_blank" v-if="bread">
+				        <!-- <router-link :to="{path:'/bugcontent',query:{id:scope.row.id}}" target="_blank" v-if="bread">
 				        <el-button type="text" size="small">
 				        	查看
-				        </el-button></router-link>
+				        </el-button></router-link> -->
 				      </template>
 				    </el-table-column>
 				 </el-table>
-				<p v-if="tableData.length" class="anchu-page">
+				<p v-if="tableData.length" class="co-page">
 				 	
 			 		<el-button icon="arrow-left" @click="prePage" style="margin-right: 10px;">上一页</el-button>{{pageIndex}} / {{allCount}}<el-button @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>	
 				</p>
@@ -201,6 +210,14 @@ export default({
 		this.getUser();
 	},
 	methods:{
+		//搜索
+		search(){
+			this.getList(1);
+		},
+		//添加bug
+		add(){
+			this.$router.push('/addbug');
+		},
 		//下一页
 		nextPage(){
 			if(this.pageIndex==this.allCount){

@@ -7,11 +7,11 @@
 	      			<i class="iconfont" v-html="items.icon"></i>&nbsp; {{items.name}}
 	      		</template>
 	      		<!-- 内层循环渲染 -->
-	      		<el-menu-item v-for="(item,index) in items.children" :index="item.index" key="index">
-	      			<router-link tag="span" :to="item.router">
+	      		<router-link tag="span" :to="item.router" v-for="(item,index) in items.children" key="index">
+	      			<el-menu-item :index="item.index">
 	      				&nbsp;&nbsp;<i class="iconfont" v-html="item.icon"></i>&nbsp;{{item.name}}
-	      			</router-link>
-	      		</el-menu-item>
+	      			</el-menu-item>
+	      		</router-link>
 	      	</el-submenu>
 	   </el-menu>  
 	</div>
@@ -34,6 +34,10 @@ export default({
 	    menuselect(index){
 	    	this.menuIndex = index;
 	    	sessionStorage.menuIndex = index;
+	    	let pageContent = {};
+			this.$store.dispatch('keep_page_content',pageContent)
+			let searchParams = {};
+			this.$store.dispatch('search_params',searchParams)
 		},
 		//获取MenuList
 		getMenuList(){

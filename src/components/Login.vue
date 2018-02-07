@@ -94,9 +94,9 @@ export default {
     				}
     				localStorage.role = data.data.role.toLowerCase();
     				that.$store.dispatch("login",data.data.id)
-    				if(that.$store.state.routerName){
-    					that.$router.push({path:that.$store.state.routerName})
-    				}else{
+            if(that.$store.state.routerName){
+              that.$router.push({path:that.$store.state.routerName})
+            }else{
 	    				that.$router.push('/index')    					
     				}
     			}

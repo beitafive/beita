@@ -1,15 +1,13 @@
 <template>
 	<div class="missioncenter">
-		<div class="anchu-inner-head">
-			<h2 class="anchu-head-title">
-				我的任务
-				<router-link to="/createtask" v-if="badd">
-					<button class="addUser" @click="addmission = true">+ 添加任务</button>			
-				</router-link>
+		<div class="co-inner-head">
+			<h2 class="co-head-title">
+				我的任务				
 			</h2>
-			<p style="margin-top:20px;" class="anchu-search-wrap">
-				<span  class="anchu-search-condition">
-				  <span  class="anchu-search-name">状态</span>
+			<el-button  @click="addTask"  v-if="badd" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
+			<p style="margin-top:20px;" class="co-search-wrap">
+				<span  class="co-search-condition">
+				  <span  class="co-search-name">状态</span>
 					  <el-select v-model="findstatus" placeholder="请选择任务状态" style="width:200px;padding-right: 12px;">
 					    <el-option
 					      v-for="item in statusArr"
@@ -20,10 +18,10 @@
 					  </el-select>
 				    </el-tooltip>					
 				</span>
-				<span class="anchu-search-condition">
-				  <span  class="anchu-search-name">标题</span>
-				  <el-input v-model="f_title" placeholder="请输入标题" style="width:200px;padding-right: 12px;"></el-input>
-				  <span  class="anchu-search-name">日期</span>
+				<span class="co-search-condition">
+				  <span  class="co-search-name">标题</span>
+				  <el-input v-model="f_title" @keyup.enter.native="search" placeholder="请输入标题" style="width:200px;padding-right: 12px;"></el-input>
+				  <span  class="co-search-name">日期</span>
 				     <el-date-picker
 				      v-model="endTime"
 				      style="width:200px;"
@@ -32,13 +30,14 @@
 				    </el-date-picker>
 				    </el-tooltip>					
 				</span>
-			   <el-button type="primary" icon="circle-cross" @click="clearSearch" style="margin-left: 12px;">清空</el-button>
-			  <el-button type="primary" icon="search" @click="getList(1)">搜索</el-button>
+			  
+			   <el-button type="primary" @click="search" style="padding: 10px 37px;margin-left: 12px;">搜索</el-button>
+			   <el-button  @click="clearSearch" style="padding: 10px 23px;">清空输入</el-button>
 			</p>
 		</div>
 		<span class="page-info">任务总数：{{count}}</span>
 		<!--列表展示-->
-		<div class="anchu-inner-content">
+		<div class="co-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -56,8 +55,7 @@
 			    <el-table-column
 			      prop="project"
 			      label="项目"
-			      sortable="custom"
-			     			     
+			      sortable="custom"			     			     
 			      width="100">
 			    </el-table-column>
 			    <el-table-column
@@ -72,9 +70,10 @@
 			    </el-table-column>
 			    <el-table-column
 			      label="标题"
+			      min-width="200"
 			      >
 			      <template scope="scope">
-			      	<router-link :to="{path:'/taskDoc',query:{id:scope.row.id}}" target="_blank" style="cursor:pointer;color:#1D8CE0">
+			      	<router-link :to="{path:'/taskDoc',query:{id:scope.row.id}}" target="_blank" :class="[scope.row.is_quick == 1 ? quickClass : normalClass]">
 				        <span>{{scope.row.title}}</span>
 			        </router-link>
 			      </template>
@@ -107,6 +106,11 @@
 			      label="截止日期"
 			       sortable="custom"		      
 			      width="130">
+				      <template scope="scope">
+				      		<p v-if="scope.row.color == 'RED'" style="color: red;">{{scope.row.expire_at}}</p>
+				      		<p v-if="scope.row.color == 'YELLOW'" style="color: blue;">{{scope.row.expire_at}}</p>
+				      		<p v-if="scope.row.color == ''">{{scope.row.expire_at}}</p>
+				      </template>
 			    </el-table-column>
 			    <el-table-column
 			      label="操作"
@@ -124,7 +128,7 @@
 			      </template>
 			    </el-table-column>
 			 </el-table>
-			 <p v-if="tableData.length"  class="anchu-page">
+			 <p v-if="tableData.length"  class="co-page">
 			 	
 			 	<el-button icon="arrow-left" @click="prePage" style="margin-right:10px;">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button  @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
 			 </p>
@@ -162,6 +166,7 @@
 </template>
 
 <script>
+import { formatDate } from '@/assets/js/util.js'
 export default({
 	name:'myTask',
 	data(){
@@ -186,7 +191,7 @@ export default({
 			findmodulearr:[],
 			findmodule:[],
 			//搜索，状态
-			findstatus:'',
+			findstatus:'WAIT',
 			statusArr:[{value:'WAIT',label:'进行中'},{value:'FINISHED',label:'已完成'},{value:'TESTED',label:'测试通过'},{value:'ONLINE',label:'已上线'},{value:'CLOSED',label:'已关闭'}],
 			//搜索，执行者
 			findowner:[],
@@ -211,12 +216,16 @@ export default({
 			bline:false,			//上线
 			bpass:false, 			//测试通过
 			bUp:false,				//更新进度
+
 			order_project: 0,		//按照项目排序
 			order_user: 0,			//按照人员排序
 			order_expire_at: 0,		//按照截止日期排序
 			projectSortSwitch: false,		//排序开关
 			userSortSwitch: false,		//排序开关
-			expireSortSwitch: false		//排序开关
+			expireSortSwitch: false,		//排序开关
+
+			quickClass:'quickClass',	//紧急任务样式
+			normalClass:'normalClass'	//版本任务样式
 		}
 	},
 	mounted(){
@@ -232,12 +241,18 @@ export default({
 			_this.$store.state.perList.includes("task.Up")?this.bUp=true:'';			
 			_this.getList();
 		});
-		this.getProject();
 		this.getUser();
-		
 		
 	},
 	methods:{
+		//搜索
+		search(){
+			this.getList(1);
+		},
+		//添加紧急任务
+		addTask(){
+			this.$router.push('/createtask');
+		},
 		//更新任务进度 - 按钮
 		updateProgress(row){
 			this.updateid = row.id;
@@ -273,6 +288,25 @@ export default({
 		updateOwner(index,row){
 			this.updateid = row.id;
 			this.updateOwnerTip = true;
+		},
+		//获取执行者列表
+		getUser(){
+			let that = this;
+			$.ajax({
+				type:"get",
+				url:that.$api.get_user_list,
+				dataType:'json',
+				success:function(res){
+					let data = res
+					if(data.error==1){
+						that.$message(data.error_msg)
+						return;
+					}
+					if(data.error == 0){	
+						that.ownerarr = that.ownerarr.concat(data.data.user_arr);
+					}
+				}
+			});
 		},
 		//更新执行者 - 发送请求
 		updateNewOwner(){
@@ -330,6 +364,7 @@ export default({
 				},
 				success:(res)=>{
 					if(res.error == 0){
+						that.$store.dispatch("getPer","task")	
 						that.getList(that.pageIndex);
 					}else{
 						that.$message.error(res.error_msg)
@@ -339,8 +374,12 @@ export default({
 		},
 		//完成
 		finishItem(x,y){
+			let that = this;
 			this.taskStatus = 'FINISHED';
 			this.changeTaskStatus(this.taskStatus,y.id);
+			this.$store.dispatch('changePoint').then(function(){
+				// console.log(that.$store.state.point)
+			})
 		},
 		//关闭
 		closeItem(x,y){
@@ -357,59 +396,11 @@ export default({
 			this.taskStatus = 'ONLINE';
 			this.changeTaskStatus(this.taskStatus,y.id);
 		},
-		//获取执行者列表
-		getUser(){
-			let that = this;
-			$.ajax({
-				type:"get",
-				url:that.$api.get_user_list,
-				dataType:'json',
-				success:function(res){
-					let data = res
-					if(data.error==1){
-						that.$message(data.error_msg)
-						return;
-					}
-					if(data.error == 0){	
-						that.ownerarr = that.ownerarr.concat(data.data.user_arr);
-					}
-				}
-			});
-		},
-		//获取项目列表
-		getProject(x){
-			let that = this;
-			$.ajax({
-				type:"get",
-				url:that.$api.get_project_list,
-				dataType:'json',
-				success:function(res){
-					let data = res;
-					if(data.error==1){
-						that.$message(data.error_msg)
-						return;
-					}
-					if(data.error == 0){
-						that.projectarr = data.data.project_arr;					
-					}
-				}
-			});
-		},
+		
+	
 		//获取任务列表
 		getList(x,){
-			let that = this;
-			let sTime,eTime;
-			if(that.beginTime != ''){
-				sTime = that.beginTime.getFullYear()+'-'+(that.beginTime.getMonth()+1)+'-'+that.beginTime.getDate();
-			}else{
-				sTime = '';
-			}
-			if(that.endTime != ''){
-				eTime = that.endTime.getFullYear()+'-'+(that.endTime.getMonth()+1)+'-'+that.endTime.getDate();
-			}else{
-				eTime = '';
-			}
-			
+			let that = this;			
 			$.ajax({
 				type:"get",
 				data:{
@@ -421,13 +412,13 @@ export default({
 					title:that.f_title,
 					version_id:that.find_version,
 					status:that.findstatus,
-					finished_start:sTime,
-					finished_end:eTime,
+					finished_start:formatDate(that.beginTime),
+					finished_end:formatDate(that.endTime),
 					order_project: that.order_project,
 					order_user: that.order_user,
 					order_expire_at: that.order_expire_at
 				},
-				url:that.$api.task.getlist,
+				url:that.$api.task.get_my_task,
 				dataType:'json',
 				success:function(res){
 					let data = res
@@ -563,7 +554,10 @@ export default({
 				}
 				this.getList();
 			}else{
-				return ;
+				this.order_project = 0;
+				this.order_user = 0;
+				this.order_expire_at = 0;
+				this.getList();
 			}
 			
 		}
@@ -571,10 +565,10 @@ export default({
 })
 </script>
 
-<style>
+<style scoped>
 	.missioncenter{
 		float:left;
-		width:85%;
+		/*width:85%;*/
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;
@@ -592,5 +586,13 @@ export default({
 		margin-top:50px;
 		text-align: center;
 		font-size:14px;
+	}
+	.quickClass{
+		cursor:pointer;
+		color: #FA5555;
+	}
+	.normalClass{
+		cursor:pointer;
+		color:#1D8CE0;
 	}
 </style>

@@ -1,20 +1,21 @@
 <template>
 	<div class="w-account">
-		<div class="anchu-inner-head">
-			<h2 class="anchu-head-title">
+		<div class="co-inner-head">
+			<h2 class="co-head-title">
 				账户管理
-				<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加账户</button>
+				<!-- <button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加账户</button> -->
 			</h2>
-			<p style="margin-top:30px" class="anchu-search-wrap">
-				<span class="anchu-search-condition">
-					<span class="anchu-search-name">标题</span>
-					<el-input v-model="f_title" placeholder="请输入内容" style="width:200px;margin:0 15px"></el-input>					
+			<el-button @click="dialogVisible = true" v-if="badd" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
+			<p class="co-search-wrap">
+				<span class="co-search-condition">
+					<span class="co-search-name">标题</span>
+					<el-input v-model="f_title" placeholder="请输入内容" style="width:200px;margin:0 15px" @keyup.enter.native="search"></el-input>					
 				</span>
-				<el-button type="primary" icon="search" @click="getList('1')">搜索</el-button>
+				<el-button type="primary" @click="search" style="padding: 10px 37px;">搜索</el-button>
 			</p>
 		</div>
-		
-		<div class="anchu-inner-content">
+		<span class="page-info">账户总数：{{count}}</span>
+		<div class="co-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -31,6 +32,7 @@
 			    </el-table-column>
 			    <el-table-column
 			      label="内容"
+			      min-width="300"
 			     >
 			      <template scope="scope">
 			      	<div v-html="scope.row.content"></div>
@@ -44,35 +46,38 @@
 			      </template>
 			    </el-table-column>
 			  </el-table>
-			  <p class="anchu-page">
+			  <p class="co-page">
 			  	<el-button  icon="arrow-left" @click="getList(+pageIndex-1)" style="margin-right: 10px;">上一页</el-button>{{+pageIndex}}/{{allCount}}
 			  	<el-button  @click="getList(+pageIndex+1)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
 			  </p>
 		</div>
-		<el-dialog title="添加账户" v-model="dialogVisible" size="tiny">
-			<div class='addUserInfo'>
-				<p>标题 <input type="text" v-model="addtitle" /></p>
-				<div style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
-				内容
-				<textarea class="content" placeholder="请添加内容描述" v-model="addcontent"></textarea>
-				</div>
-			</div>
+
+		<el-dialog title="添加账户" v-model="dialogVisible">
+			<el-form ref="form"  label-width="80px">
+			  <el-form-item label="标题">
+			    <el-input v-model="addtitle"></el-input>
+			  </el-form-item>
+			  <el-form-item label="活动形式">
+			    <el-input type="textarea" v-model="addcontent" :rows="10"></el-input>
+			  </el-form-item>
+			</el-form>
 		  <span slot="footer" class="dialog-footer">
 		    <el-button @click="dialogVisible = false">取 消</el-button>
 		    <el-button type="primary" @click="addNewUser">确 定</el-button>
 		  </span>
 		</el-dialog>
-		<el-dialog title="编辑项目信息" v-model="updateUserInfos" size="tiny">
-			<div class='addUserInfo'>
-				<p>标题 <input type="text" v-model="updatetitle"  /></p>
-				<div style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
-				内容
-				<textarea class="updateContent" placeholder="请添加内容描述" v-model="updatecontent"></textarea>
-				</div>
-			</div>
-		  <span slot="footer" class="dialog-footer">
-		    <el-button @click="updateUserInfos = false">取 消</el-button>
-		    <el-button type="primary" @click='updateUser' >确 定</el-button>
+		<el-dialog title="编辑项目信息" v-model="updateUserInfos" >
+		  	<el-form ref="form"  label-width="80px">
+			  <el-form-item label="标题">
+			    <el-input v-model="updatetitle"></el-input>
+			  </el-form-item>
+			  <el-form-item label="活动形式">
+			    <el-input type="textarea" v-model="updatecontent" :rows="10"></el-input>
+			  </el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+		    	<el-button @click="updateUserInfos = false">取 消</el-button>
+		   		<el-button type="primary" @click='updateUser' >确 定</el-button>
 		  </span>
 		</el-dialog>
 	</div>
@@ -110,6 +115,10 @@ export default({
 		})
 	},
 	methods:{
+		//搜索
+		search(){
+			this.getList(1);
+		},
 		//获取账号列表
 		getList(x){
 			let that = this;
@@ -173,7 +182,7 @@ export default({
 		updateUserInfo(x){
 			this.updateUserInfos = true;
 			this.updatetitle = this.tableData[x].title;
-			this.updatecontent = this.tableData[x].content;
+			this.updatecontent = this.tableData[x].edit_content;
 			this.updateid = this.tableData[x].id;
 			this.updateIndex = x;
 		},
@@ -208,17 +217,18 @@ export default({
 })
 </script>
 
-<style>
+<style scoped>
 	.w-account{
 		float:left;
-		width:85%;
+		/*width:85%;*/
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;
 	}
 	.w-account .addUserInfo{
 		box-sizing: border-box;
-		padding:0 50px;
+		width: 100%;
+		/*padding:0 50px;*/
 	}
 	.w-account .addUserInfo p{
 		height:40px;

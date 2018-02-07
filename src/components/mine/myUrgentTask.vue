@@ -1,15 +1,13 @@
 <template>
 	<div class="w-urgenttask">
-		<div class="anchu-inner-head">
-			<h2 class="anchu-head-title">
+		<div class="co-inner-head">
+			<h2 class="co-head-title">
 				我的紧急任务
-				<router-link to="/addurgent" v-if="badd">
-					<button class="addUser">+ 添加任务</button>			
-				</router-link>
 			</h2>
-			<p style="margin-top:20px;"  class="anchu-search-wrap">
-				<span  class="anchu-search-condition">
-			  		<span  class="anchu-search-name">状态</span>
+			<el-button  @click="addTask"  v-if="badd" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
+			<p style="margin-top:20px;"  class="co-search-wrap">
+				<span  class="co-search-condition">
+			  		<span  class="co-search-name">状态</span>
 					  <el-select v-model="findstatus" placeholder="请选择任务状态" style="width:200px;padding-right: 12px;">
 					    <el-option
 					      v-for="item in statusArr"
@@ -19,20 +17,22 @@
 					    </el-option>
 					  </el-select>					
 				</span>
-				<span class="anchu-search-condition">
-				  <span class="anchu-search-name">标题</span>
+				<span class="co-search-condition">
+				  <span class="co-search-name">标题</span>
 				  <el-input v-model="f_title" placeholder="请输入标题" style="width:200px;padding-right: 12px;"></el-input>					
 				</span>
-			   <el-button type="primary" icon="circle-cross" @click="clearSearch">清空</el-button>
-			  <el-button type="primary" icon="search" @click="getList(1)">搜索</el-button>
+
+			   <el-button type="primary" @click="search" style="padding: 10px 37px;">搜索</el-button>
+			   <el-button  @click="clearSearch" style="padding: 10px 23px;">清空输入</el-button>
 			</p>
 		</div>
 		<span class="page-info">任务总数：{{count}}</span>
 		<!--列表展示-->
-		<div class="anchu-inner-content">
+		<div class="co-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
+			    @sort-change="projectSort"
 			    style="width: 100%">
 			    <el-table-column
 			      prop="id"
@@ -55,9 +55,14 @@
 			      width="120">
 			    </el-table-column>
 			    <el-table-column
-			      prop="title"
 			      label="标题"
+			      min-width="200"
 			      >
+			      <template scope="scope">
+			      		<router-link :to="{path:'/taskDoc',query:{id:scope.row.id}}" target="_blank" style="cursor:pointer;color:#1D8CE0">
+					        <span>{{scope.row.title}}</span>
+				        </router-link>
+			      </template>
 			    </el-table-column>
 			    <el-table-column
 			      label="状态"
@@ -76,10 +81,21 @@
 			      label="工时"
 			      width="70">
 			    </el-table-column>
-			    <el-table-column
+			    <!-- <el-table-column
 			      prop="created_at"
 			      label="创建时间"
 			      width="180">
+			    </el-table-column> -->
+			    <el-table-column
+			      prop="expire_at"
+			      label="截止日期"
+			      sortable="custom"		      
+			      width="180">
+				      <template scope="scope">
+				      		<p v-if="scope.row.color == 'RED'" style="color: red;">{{scope.row.expire_at}}</p>
+				      		<p v-if="scope.row.color == 'YELLOW'" style="color: blue;">{{scope.row.expire_at}}</p>
+				      		<p v-if="scope.row.color == ''">{{scope.row.expire_at}}</p>
+				      </template>
 			    </el-table-column>
 			    <el-table-column
 			      label="操作"
@@ -93,13 +109,13 @@
 			        <el-button type="text" size="small" @click="testedItem(scope.row)" v-if="bpass && scope.row.status=='FINISHED'">测试通过</el-button>
 			        <el-button type="text" size="small" @click="onlineItem(scope.row)" v-if="bline && scope.row.status=='TESTED'">上线</el-button>
 			        <el-button type="text" size="small" @click="closeItem(scope.row)" v-if="bclose && scope.row.status=='ONLINE'">关闭</el-button>
-			        <router-link :to="{path:'/taskDoc',query:{id:scope.row.id}}" target="_blank" v-if="bread">
+			        <!-- <router-link :to="{path:'/taskDoc',query:{id:scope.row.id}}" target="_blank" v-if="bread">
 				        <el-button type="text" size="small" style="margin-left:20px">查看</el-button>
-			        </router-link>
+			        </router-link> -->
 			      </template>
 			    </el-table-column>
 			 </el-table>
-			 <p v-if="tableData.length" class="anchu-page">
+			 <p v-if="tableData.length" class="co-page">
 			 	
 			 	<el-button icon="arrow-left" @click="prePage" style="margin-right: 10px;">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button  @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
 			 </p>
@@ -151,7 +167,7 @@ export default({
 			findmodulearr:[],
 			findmodule:[],
 			//搜索，状态
-			findstatus:'',
+			findstatus:'WAIT',
 			statusArr:[{value:'WAIT',label:'进行中'},{value:'FINISHED',label:'已完成'},{value:'TESTED',label:'测试通过'},{value:'ONLINE',label:'已上线'},{value:'CLOSED',label:'已关闭'}],
 			//搜索，执行者
 			findowner:[],
@@ -169,6 +185,10 @@ export default({
 			bclose:false,			//关闭
 			bread:false,			//查看
 			bline:false,			//上线
+
+			order_project: 0,		//按照项目排序
+			order_user: 0,			//按照人员排序
+			order_expire_at: 0		//按照截止日期排序
 		}
 	},
 	mounted(){
@@ -184,15 +204,42 @@ export default({
 			_this.$store.state.perList.includes("urgent.read")?_this.bread=true:'';				
 			_this.getList();
 		});
-		this.getProject();
-		this.getUser();
 		this.findownerinfo = this.$store.state.token;
+		this.getUser();
 	},
 	methods:{
+		//搜索
+		search(){
+			this.getList(1);
+		},
+		//添加紧急任务
+		addTask(){
+			this.$router.push('/addurgent');
+		},
 		updateOwner(index,row){
 			this.updateid = row.id;
 			this.updateOwnerTip = true;
 		},
+		//获取执行者列表
+		getUser(){
+			let that = this;
+			$.ajax({
+				type:"get",
+				url:that.$api.get_user_list,
+				dataType:'json',
+				success:function(res){
+					let data = res
+					if(data.error==1){
+						that.$message(data.error_msg)
+						return;
+					}
+					if(data.error == 0){	
+						that.ownerarr = that.ownerarr.concat(data.data.user_arr);
+					}
+				}
+			});
+		},
+		//更新执行者 - 发送请求
 		updateNewOwner(){
 			let that = this;
 			$.ajax({
@@ -275,44 +322,7 @@ export default({
 			this.taskStatus = 'ONLINE';
 			this.changeTaskStatus(this.taskStatus,y.id);
 		},
-		//获取执行者列表
-		getUser(){
-			let that = this;
-			$.ajax({
-				type:"get",
-				url:that.$api.get_user_list,
-				dataType:'json',
-				success:function(res){
-					let data = res;
-					if(data.error==1){
-						that.$message(data.error_msg)
-						return;
-					}
-					if(data.error == 0){	
-						that.ownerarr = that.ownerarr.concat(data.data.user_arr);
-					}
-				}
-			});
-		},
-		//获取项目列表
-		getProject(x){
-			let that = this;
-			$.ajax({
-				type:"get",
-				url:that.$api.get_project_list,
-				dataType:'json',
-				success:function(res){
-					let data = res;
-					if(data.error==1){
-						that.$message(data.error_msg)
-						return;
-					}
-					if(data.error == 0){
-						that.projectarr = data.data.project_arr;					
-					}
-				}
-			});
-		},
+		
 		//获取任务列表
 		getList(x){
 			let that = this;
@@ -327,6 +337,9 @@ export default({
 					title:that.f_title,
 					version_id:that.find_version,
 					status:that.findstatus,
+					order_project: that.order_project,
+					order_user: that.order_user,
+					order_expire_at: that.order_expire_at,
 				},
 				url:that.$api.quicktask.getlist,
 				dataType:'json',
@@ -401,6 +414,55 @@ export default({
 		//搜索，执行者下拉事件
 		findownerchange(value){
 			this.findownerinfo = value[0];
+		},
+		//排序
+		projectSort(e){
+			if(e.prop == "project"){
+				this.projectSortSwitch = !this.projectSortSwitch
+				if(this.projectSortSwitch == true){
+					this.order_project = 1;
+					this.order_user = 0;
+					this.order_expire_at = 0;
+				}else{
+					this.order_project = 2;
+					this.order_user = 0;
+					this.order_expire_at = 0;
+				}
+				
+				this.getList();
+			}else if(e.prop == "realname"){
+				this.userSortSwitch = !this.userSortSwitch
+				if(this.userSortSwitch == true){
+					this.order_project = 0;
+					this.order_user = 1;
+					this.order_expire_at = 0;
+					
+				}else{
+					this.order_project = 0;
+					this.order_user = 2;
+					this.order_expire_at = 0;
+				}
+				this.getList();
+			}else if(e.prop == "expire_at"){
+				this.expireSortSwitch = !this.expireSortSwitch
+				if(this.expireSortSwitch == true){
+					this.order_project = 0;
+					this.order_user = 0;
+					this.order_expire_at = 1;
+					
+				}else{
+					this.order_project = 0;
+					this.order_user = 0;
+					this.order_expire_at = 2;
+				}
+				this.getList();
+			}else{
+				this.order_project = 0;
+				this.order_user = 0;
+				this.order_expire_at = 0;
+				this.getList();
+			}
+			
 		},
 		//清空
 		clearSearch(){

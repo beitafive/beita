@@ -1,10 +1,10 @@
 <template>
 	<div class="rolecontrol">
-		<div class="anchu-inner-head">
-			<h2 class="anchu-head-title">
+		<div class="co-inner-head">
+			<h2 class="co-head-title">
 				角色管理
-				<button class="addUser" @click="addTip = true" v-if="badd">+ 添加角色</button>
 			</h2>
+			<el-button  @click="addTip = true" v-if="badd" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
 		</div>
 		
 		<!--
@@ -12,7 +12,7 @@
         	时间：2017-09-06
         	描述：列表数据
         -->
-		<div class="anchu-inner-content">
+		<div class="co-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -30,6 +30,7 @@
 			    <el-table-column
 			      prop="code"
 			      label="CODE"
+			      min-width="200"
 			      >
 			    </el-table-column>
 			    <el-table-column

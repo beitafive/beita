@@ -28,6 +28,16 @@
 		    v-model="updatemodule"
 		    @change="updatemodulechange"
 		  ></el-cascader></p>
+		  <p><span>选择需求</span> 
+			<el-select v-model="edit_need" placeholder="请选择需求" style="width:250px;">
+		    <el-option
+		      v-for="item in needArr"
+		      :key="item.value"
+		      :label="item.label"
+		      :value="item.value"
+		      >
+		    </el-option>
+		  </el-select></p>
 		<p><span>标题</span> <input type="text" v-model="updatetitle" /></p>
 		<p><span>执行者</span>
 			<el-cascader
@@ -48,16 +58,25 @@
 		    @change="changestatus"
 		  ></el-cascader></p>
 		<p><span>工时</span> <input type="text" v-model="update_point" /></p>
-		<!-- <p><span>难度</span> <input type="text" v-model="update_dp" /></p> -->
+		<p><span>截止日期</span> 
+			<el-date-picker
+		      v-model="endTime"
+		      style="width:250px;"
+		      type="date"
+		      placeholder="选择日期">
+		    </el-date-picker>
+		</p>
 		<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
-		    <span style="float:left">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="updatecontent"></textarea>
+		    <span style="float:left;margin:10px 0;">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="updatecontent"></textarea>
 		</p>
 		<p>
-			 <el-button type="primary" @click="updateInfo" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
-			<router-link to="/MissionCenter"><el-button type="info" style="width:100px"> 取 消 </el-button></router-link>
+			<el-button type="primary" @click="updateInfo" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
+			<el-button type="info" style="width:100px" @click="cancel"> 取 消 </el-button>
 		</p>
 	</div>
 </template>
+
+
 
 <script>
 	export default{
@@ -70,6 +89,9 @@
 				//编辑，工时 难度
 				update_point:'',
 				update_dp:'',
+				//截止日期
+				endTime:'',			//截至日期
+				eTime:'',			//转换后日期
 				//编辑，版本
 				update_versionArr:[],
 				update_version:'',
@@ -80,6 +102,9 @@
 				updatemodulearr:[],
 				updatemodule:[],
 				updatemoduleinfo:'',
+				//编辑需求
+				needArr:[],
+				edit_need:'',
 				//编辑，执行者
 				updateowner:[],
 				updateownerinfo:'',
@@ -88,13 +113,20 @@
 				//编辑，状态
 				updatestatus:[],
 				updatestate:'',
-				options3:[{value:'WAIT',label:'等待中'},{value:'FINISHED',label:'已完成'},{value:'TESTED',label:'测试通过'},{value:'CLOSED',label:'已关闭'}],
+				options3:[
+					{value:'WAIT',label:'等待中'},
+					{value:'FINISHED',label:'已完成'},
+					{value:'TESTED',label:'测试通过'},
+					{value:'ONLINE',label:'已上线'},
+					{value:'CLOSED',label:'已关闭'}
+				],
 			}
 		},
 		mounted(){
 			this.getProject();
 			this.getUser();
 			this.getInfo();
+			this.getNeed();
 		},
 		methods:{
 			getInfo(){
@@ -154,6 +186,9 @@
 							that.updatemodule = [];
 							that.updatemoduleinfo = y.module_id,
 							that.updatemodule.push(y.module_id);
+							//更新需求信息
+							that.edit_need = y.requirement_id;
+
 							that.updateid = y.id;//编辑 - id
 							that.updatetitle=y.title;//编辑 标题
 							that.updatecontent=y.content;//编辑 内容
@@ -168,6 +203,9 @@
 							//更新 难度 工时
 							that.update_dp = y.dp;
 							that.update_point = y.point;
+							if(y.expire_at){
+								that.endTime = new Date(y.expire_at);								
+							}
 						}
 						if(data.error == 1){
 							that.$message(data.error_msg);
@@ -194,6 +232,25 @@
 					}
 				});
 			},
+			//获取需求列表(处理中的需求)
+			getNeed(){
+				let that = this;
+				$.ajax({
+					type:"get",
+					url:that.$api.need.get_options,
+					dataType:'json',
+					success:function(res){
+						let data = res;
+						if(data.error==1){
+							that.$message(data.error_msg)
+							return;
+						}
+						if(data.error == 0){
+							that.needArr = data.data;		
+						}
+					}
+				});
+			},
 			//获取执行者列表
 			getUser(){
 				let that = this;
@@ -216,6 +273,11 @@
 			//发送更新
 			updateInfo(){
 				let that = this;
+				if(that.endTime != ""){
+					that.eTime = that.endTime.getFullYear()+'-'+(that.endTime.getMonth()+1)+'-'+that.endTime.getDate();
+				}else{
+					that.eTime = '';
+				}
 				$.ajax({
 					type:"post",
 					data:{
@@ -228,7 +290,9 @@
 						owner_id:that.updateownerinfo,
 						version_id:that.update_version,
 						dp:that.update_dp,
-						point:that.update_point
+						expire_at:that.eTime,
+						point:that.update_point,
+						requirement_id: that.edit_need
 					},
 					dataType:'json',
 					url:that.$api.quicktask.update,
@@ -240,7 +304,6 @@
 						}
 						if(data.error == 0){
 							that.$message("更新成功");
-							// that.$router.push("/urgenttask");
 							that.$router.go(-1);
 						}
 					}
@@ -301,13 +364,17 @@
 			changestatus(value){
 				this.updatestate = value[0];
 			},
+			//取消
+			cancel(){
+				this.$router.go(-1)
+			}
 		}
 	}
 </script>
 <style scoped>
 	.edittask{
 		float:left;
-		width:85%;
+		/*width:85%;*/
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 80px;

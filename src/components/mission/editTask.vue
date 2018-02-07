@@ -28,6 +28,25 @@
 		    v-model="updatemodule"
 		    @change="updatemodulechange"
 		  ></el-cascader></p>
+		 <p><span>选择需求</span> 
+			<el-select v-model="edit_need" placeholder="请选择需求" style="width:250px;">
+		    <el-option
+		      v-for="item in needArr"
+		      :key="item.value"
+		      :label="item.label"
+		      :value="item.value"
+		      >
+		    </el-option>
+		  </el-select></p>
+		<p><span>选择任务类型</span>
+			<el-select v-model="task_type" placeholder="请选择任务类型" style="width:250px;">
+		    <el-option
+		      v-for="item in task_typeArr"
+		      :key="item.value"
+		      :label="item.label"
+		      :value="item.value">
+		    </el-option>
+		  </el-select></p>
 		<p><span>标题</span> <input type="text" v-model="updatetitle" /></p>
 		<p><span>执行者</span>
 			<el-cascader
@@ -38,6 +57,16 @@
 		    v-model="updateowner"
 		    @change="updateownerchange"
 		  ></el-cascader></p>
+		  <p><span>测试者</span>
+			<el-select v-model="testId" placeholder="请选择测试" style="width:250px;">
+			    <el-option
+			      v-for="item in testArr"
+			      :key="item.value"
+			      :label="item.label"
+			      :value="item.value">
+			    </el-option>
+			</el-select>
+		</p>
 		<p><span>状态</span>
 		<el-cascader
 		    placeholder="请选择状态"
@@ -47,6 +76,9 @@
 		    v-model="updatestatus"
 		    @change="changestatus"
 		  ></el-cascader></p>
+		 <p><span>难度</span>
+			<el-input-number v-model="difficultPerformance" :min="1" :max="5" label="难度"></el-input-number> 
+		  </p>
 		<p><span>工时</span> <input type="text" v-model="update_point" /></p>
 		<!-- <p><span>难度</span> 
 			<el-select v-model="update_dp" placeholder="请选择版本" style="width:250px;">
@@ -66,11 +98,11 @@
 		    </el-date-picker>
 		</p>
 		<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
-		    <span style="float:left">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="updatecontent"></textarea>
+		    <span style="float:left;margin:10px 0;">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="updatecontent"></textarea>
 		</p>
 		<p>
-			 <el-button type="primary" @click="updateInfo" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
-			<router-link to="/MissionCenter"><el-button type="info" style="width:100px"> 取 消 </el-button></router-link>
+			<el-button type="primary" @click="updateInfo" style="width:100px;margin:0 20px 0 100px"> 保 存 </el-button>
+			<el-button type="info" style="width:100px" @click="cancel"> 取 消 </el-button>
 		</p>
 	</div>
 </template>
@@ -80,6 +112,8 @@
 		name:'edittask',
 		data(){
 			return{
+				testArr:[],
+				testId:'',//测试id
 				endTime:'',			//截止日期
 				projectarr:[],		//项目列表
 				ownerarr:[],		//执行者列表
@@ -97,24 +131,42 @@
 				updatemodulearr:[],
 				updatemodule:[],
 				updatemoduleinfo:'',
+				//编辑需求
+				needArr:[],
+				edit_need:'',
 				//编辑，执行者
 				updateowner:[],
 				updateownerinfo:'',
 				updatetitle:'',//编辑，标题
 				updatecontent:'',//编辑，内容
+
+				task_type:'', 	//任务类型
+				task_typeArr:[{value:'0',label:'版本任务'},{value:'1',label:'紧急任务'}],
+
 				//编辑，状态
 				updatestatus:[],
 				updatestate:'',
-				options3:[{value:'WAIT',label:'WAIT'},{value:'FINISHED',label:'FINISHED'},{value:'CLOSED',label:'CLOSED'}],
-				dpArr:[{value:'1',label:'1'},{value:'2',label:'2'},{value:'3',label:'3'},{value:'4',label:'4'},{value:'5',label:'5'}]
+				options3:[
+					{value:'WAIT',label:'等待中'},
+					{value:'FINISHED',label:'已完成'},
+					{value:'TESTED',label:'测试通过'},
+					{value:'ONLINE',label:'已上线'},
+					{value:'CLOSED',label:'已关闭'}
+				],
+				dpArr:[{value:'1',label:'1'},{value:'2',label:'2'},{value:'3',label:'3'},{value:'4',label:'4'},{value:'5',label:'5'}],
+				difficultPerformance:0,//难度
+				
 			}
 		},
 		mounted(){
 			this.getProject();
 			this.getUser();
 			this.getInfo();
+			this.getNeed();
+			this.getTester();
 		},
 		methods:{
+			//获取任务信息
 			getInfo(){
 				let that = this;
 				$.ajax({
@@ -132,6 +184,8 @@
 							that.updateproject = [];
 							that.updateprojectinfo=y.project_id;
 							that.updateproject.push(y.project_id);
+							that.testId = y.test_id;
+							that.difficultPerformance = y.dp;
 							$.ajax({
 								type:"get",
 								url:that.$api.get_module_list,
@@ -172,9 +226,13 @@
 							that.updatemodule = [];
 							that.updatemoduleinfo = y.module_id,
 							that.updatemodule.push(y.module_id);
+							//更新需求信息
+							that.edit_need = y.requirement_id;
+
 							that.updateid = y.id;//编辑 - id
 							that.updatetitle=y.title;//编辑 标题
 							that.updatecontent=y.content;//编辑 内容
+							that.task_type = y.is_quick;
 							//更新 状态信息
 							that.updatestatus = [];
 							that.updatestatus.push(y.status);
@@ -216,6 +274,25 @@
 					}
 				});
 			},
+			//获取需求列表(处理中的需求)
+			getNeed(){
+				let that = this;
+				$.ajax({
+					type:"get",
+					url:that.$api.need.get_options,
+					dataType:'json',
+					success:function(res){
+						let data = res;
+						if(data.error==1){
+							that.$message(data.error_msg)
+							return;
+						}
+						if(data.error == 0){
+							that.needArr = data.data;		
+						}
+					}
+				});
+			},
 			//获取执行者列表
 			getUser(){
 				let that = this;
@@ -235,17 +312,39 @@
 					}
 				});
 			},
+			//获取测试人员列表
+			getTester(type){
+				let that = this;
+				$.ajax({
+					type:"get",
+					url:that.$api.get_options,
+					dataType:'json',
+					data:{
+						type:'test'
+					},
+					success:function(res){
+						let data = res
+						if(data.error==1){
+							that.$message(data.error_msg)
+							return;
+						}
+						if(data.error == 0){	
+							that.testArr = that.testArr.concat(data.data.user_arr);
+						}
+					}
+				});
+			},
 			//发送更新
 			updateInfo(){
 				let that = this;
 				let eTime;
-				if(this.updateownerinfo == ''){
-					this.$message.error("请选择执行者！");
-					return null;
-				}
-				if(this.updatecontent == ''){
-					this.$meesage.error("请填写内容！");
-					return null;
+				if(that.updateownerinfo == ''){
+					that.$message("请选择执行者！");
+					return false;
+				}				
+				if(that.updatecontent == ''){
+					that.$message("请填写内容！");
+					return false;
 				}
 				if(that.endTime != "" && that.endTime != null){
 					eTime = that.endTime.getFullYear()+'-'+(that.endTime.getMonth()+1)+'-'+that.endTime.getDate();
@@ -263,9 +362,13 @@
 						status:that.updatestate,
 						owner_id:that.updateownerinfo,
 						version_id:that.update_version,
-						dp:that.update_dp,
+						dp:that.difficultPerformance,
 						point:that.update_point,
 						expire_at:eTime,
+						requirement_id: that.edit_need,
+						is_quick:that.task_type,
+						test_id:that.testId,
+
 					},
 					dataType:'json',
 					url:that.$api.task.update,
@@ -277,7 +380,6 @@
 						}
 						if(data.error == 0){
 							that.$message("更新成功");
-							// that.$router.push("/MissionCenter");
 							that.$router.go(-1);
 						}
 					}
@@ -338,13 +440,17 @@
 			changestatus(value){
 				this.updatestate = value[0];
 			},
+			//取消
+			cancel(){
+				this.$router.go(-1)
+			}
 		}
 	}
 </script>
 <style scoped>
 	.edittask{
 		float:left;
-		width:85%;
+		/*width:85%;*/
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 80px;

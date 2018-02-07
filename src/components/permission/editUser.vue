@@ -1,15 +1,15 @@
 <template>
 	<div class="editUser">
-		<div class="anchu-normal-table">
-			<h2 class="anchu-normal-title">编辑用户</h2>
-			<div class="anchu-normal-content">
+		<div class="co-normal-table">
+			<h2 class="co-normal-title">编辑用户</h2>
+			<div class="co-normal-content">
 				<p>
 					<span>用户名</span>
-					<el-input v-model="editname" placeholder="用户名必填" :maxlength="4" style="width:250px"/></el-input></p>
+					<el-input v-model="editname" placeholder="用户名必填" :maxlength="20" style="width:250px"/></el-input></p>
 
 				<p>
 					<span>真名</span>
-					<el-input v-model="editrealname" placeholder="请填写用户名"  :maxlength="4"  style="width:250px" /></el-input></p>
+					<el-input v-model="editrealname" placeholder="请填写用户名"  :maxlength="20"  style="width:250px" /></el-input></p>
 				<p>
 					<span>邮箱</span>
 					<el-input v-model="editemail" placeholder="请填写邮箱" :maxlength="30" style="width:250px" /></p>
@@ -124,6 +124,11 @@
 					that.$message('邮箱格式有误');
 					return false;
 				}
+				let enter_at = formatDate(that.editenter_at)
+				if(enter_at == ''){
+					that.$message('入职时间不能为空');
+					return false;
+				}
 				$.ajax({
 					type:"post",
 					dataType:'json',
@@ -133,7 +138,7 @@
 						realname:that.editrealname,
 						email:email,
 						mobile:tel,
-						enter_at:formatDate(that.editenter_at),
+						enter_at:enter_at,
 						leave_at:formatDate(that.editleave_at),
 						ssh_pub_key1:that.editssh1,
 						ssh_pub_key2:that.editssh2,

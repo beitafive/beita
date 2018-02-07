@@ -1,13 +1,13 @@
 <template>
 	<div class="w-module">
-		<div class="anchu-inner-head">
-			<h2 class="anchu-head-title">
+		<div class="co-inner-head">
+			<h2 class="co-head-title">
 				模块管理
-				<button class="addUser" @click="dialogVisible = true" v-if="badd">+ 添加模块</button>
 			</h2>
-			<p style="margin-top:20px;" class="anchu-search-wrap">
-				<span class="anchu-search-condition">
-					<span class="anchu-search-name">项目</span>
+			<el-button  @click="dialogVisible = true" v-if="badd" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
+			<p style="margin-top:20px;" class="co-search-wrap">
+				<span class="co-search-condition">
+					<span class="co-search-name">项目</span>
 					<el-cascader
 				    placeholder="请选择项目"
 				    :options="options"
@@ -17,16 +17,17 @@
 				    @change="checkChange"
 				  ></el-cascader>					
 				</span>
-				<span class="anchu-search-condition">
-				  <span class="anchu-search-name">标题</span>
-				  <el-input v-model="f_title" placeholder="请输入搜索标题" style="width:200px;padding-right: 12px;"></el-input>					
+				<span class="co-search-condition">
+				  <span class="co-search-name">标题</span>
+				  <el-input v-model="f_title" @keyup.enter.native="search" placeholder="请输入搜索标题" style="width:200px;padding-right: 12px;"></el-input>					
 				</span>
-			   <el-button type="primary" icon="circle-cross" @click="clearSearch">清空</el-button>
-			  <el-button type="primary" icon="search" @click="getList('1',checkInfo,f_title)">搜索</el-button>
+
+			   <el-button type="primary" @click="getList('1',checkInfo,f_title)" style="padding: 10px 37px;margin-left: 12px;">搜索</el-button>
+			   <el-button  @click="clearSearch" style="padding: 10px 23px;">清空输入</el-button>
 			</p>
 		</div>
-		
-		<div class="anchu-inner-content">
+		<span class="page-info">模块总数：{{count}}</span>
+		<div class="co-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -44,6 +45,7 @@
 			    <el-table-column
 			      prop="title"
 			      label="标题"
+			      min-width="200"
 			      >
 			    </el-table-column>
 			    <el-table-column
@@ -59,22 +61,26 @@
 			      </template>
 			    </el-table-column>
 			  </el-table>
-			  <p class="anchu-page">
+			  <p class="co-page">
 			  	<el-button  icon="arrow-left" @click="getList(+pageIndex-1,checkInfo,f_title)" style="margin-right: 10px;">上一页</el-button>{{+pageIndex}}/{{allCount}}<el-button  @click="getList(+pageIndex+1,checkInfo,f_title)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
 			  </p>
 		</div>
 		<el-dialog title="添加模块" v-model="dialogVisible" size="tiny">
 			<div class='addUserInfo'>
-				<p>项目<el-cascader
+				<p>
+					<span style="line-height: 36px;">项目</span>
+					<el-cascader
 				    placeholder="请选择项目"
 				    :options="options"
 				    filterable
-				    style="float:right;width:75%"
+				    style="float:right;width:75%;"
 				    v-model="addselect"
 				    @change="addcheckChange"
 				  ></el-cascader>
 				</p>
-				<p>标题 <input type="text" v-model="addtitle" /></p>
+				<p>
+					<span style="line-height: 36px;">标题</span>
+					<el-input type="text" v-model="addtitle" style="float:right;width:75%"/></el-input></p>
 			</div>
 		  <span slot="footer" class="dialog-footer">
 		    <el-button @click="dialogVisible = false">取 消</el-button>
@@ -83,7 +89,9 @@
 		</el-dialog>
 		<el-dialog title="编辑模块信息" v-model="updateUserInfos" size="tiny">
 			<div class='addUserInfo'>
-				<p>标题 <input type="text" v-model="updatetitle" /></p>
+				<p>
+					<span style="line-height: 36px;">标题</span> 
+					<el-input type="text" v-model="updatetitle" style="float:right;width:75%" /></el-input></p>
 			</div>
 		  <span slot="footer" class="dialog-footer">
 		    <el-button @click="updateUserInfos = false">取 消</el-button>
@@ -101,8 +109,9 @@ export default({
 			f_title:'',
 			tableData:[],
 			pageIndex:1,
-			count:'',
+			count:'',				//总条数
 			allCount:'',
+
 			dialogVisible:false,
 			updateUserInfos:false,
 			addtitle:'',
@@ -129,6 +138,9 @@ export default({
 		this.getProject();
 	},
 	methods:{
+		search(){
+			this.getList(1,this.checkInfo,this.f_title);
+		},
 		//获取项目列表
 		getProject(){
 			let that = this;
@@ -146,7 +158,7 @@ export default({
 				}
 			});
 		},
-		//获取需求列表
+		//获取模块列表
 		getList(x,y,z){
 			let that = this;
 			if(x=='0'){

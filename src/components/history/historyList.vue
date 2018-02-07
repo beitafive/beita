@@ -1,22 +1,25 @@
 <template>
 	<div class="w-history">
-		<div class="anchu-inner-head">
-			<h2 class="anchu-head-title">
+		<div class="co-inner-head">
+			<h2 class="co-head-title">
 				部门历史
-				<router-link to="/edithistory" v-if="badd">
+				<!-- <router-link to="/edithistory" v-if="badd">
 					<button class="addUser">+ 添加历史</button>			
-				</router-link>
+				</router-link> -->
 			</h2>
-			<p style="margin-top:20px;"  class="anchu-search-wrap">
-				<span class="anchu-search-condition">
-					<span class="anchu-search-name">内容</span>
-				  	<el-input v-model="f_title" placeholder="请输入内容" style="width:200px;padding-right: 12px;"></el-input>					
+			<el-button  @click="add" v-if="badd" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
+			<p style="margin-top:20px;"  class="co-search-wrap">
+				<span class="co-search-condition">
+					<span class="co-search-name">内容</span>
+				  	<el-input v-model="f_title" @keyup.enter.native="search"  placeholder="请输入内容" style="width:200px;padding-right: 12px;"></el-input>					
 				</span>
-			  <el-button type="primary" icon="search" @click="getList('1')">搜索</el-button>
+			  <!-- <el-button type="primary" icon="search" @click="getList('1')">搜索</el-button> -->
+			  <el-button type="primary" @click="getList('1')" style="padding: 10px 37px;margin-left: 12px;">搜索</el-button>
+			  <el-button  @click="clearSearch" style="padding: 10px 23px;">清空输入</el-button>
 			</p>
 		</div>
 		
-		<div class="anchu-inner-content">
+		<div class="co-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
@@ -29,7 +32,13 @@
 			    <el-table-column
 			      prop="title"
 			      label="标题"
+			      min-width="200"
 			      >
+			      <template scope="scope">
+			      	<router-link :to="{path:'/historydoc',query:{id:scope.row.id}}" target="_blank" style="color: #1D8CE0;">
+				        <span>{{scope.row.title}}</span>
+			        </router-link>
+				  </template>
 			    </el-table-column>
 			    <el-table-column
 			      prop="created_at"
@@ -43,13 +52,13 @@
 			      	<router-link :to="{path:'/edithistory',query:{id:scope.row.id}}" v-if="bedit">
 			        	<el-button type="text" size="small">编辑</el-button>
 			       </router-link>
-			        <router-link :to="{path:'/historydoc',query:{id:scope.row.id}}" target="_blank" v-if="bread">
+			        <!-- <router-link :to="{path:'/historydoc',query:{id:scope.row.id}}" target="_blank" v-if="bread">
 				        <el-button type="text" size="small" style="margin-left:20px">查看</el-button>			        	
-			        </router-link>
+			        </router-link> -->
 			      </template>
 			    </el-table-column>
 			 </el-table>
-			  <p class="anchu-page">
+			  <p class="co-page">
 			  	<el-button  icon="arrow-left" @click="prePage"  style="margin-right: 10px;">上一页</el-button> {{pageIndex}} / {{allCount}}  <el-button  @click="nextPage">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
 			  </p>
 		</div>
@@ -82,6 +91,13 @@ export default({
 		})
 	},
 	methods:{
+		search(){
+			this.getList(1);
+		},
+		//添加历史
+		add(){
+			this.$router.push('/edithistory');
+		},
 		//下一页
 		nextPage(){
 			if(this.pageIndex==this.allCount){
@@ -114,7 +130,7 @@ export default({
 				success:function(res){
 					let data = res;
 					if(data.error==1){
-						that.$message(data.error_msg)
+						// that.$message(data.error_msg)
 						that.tableData = [];
 						return;
 					}
@@ -125,6 +141,9 @@ export default({
 				}
 			});
 		},
+		clearSearch(){
+			this.f_title = '';
+		}
 	}
 })
 </script>

@@ -13,6 +13,9 @@ var actions = {
 	getPer:({commit},data)=>{
 		commit('GET_PER',data)
 	},
+	changePoint:({commit})=>{
+		commit('CHANGE_POINT')
+	},
 	//改变路由
 	changeRoute:({commit},data)=>{
 		commit("CHANGE_ROUTE",data)
@@ -36,6 +39,17 @@ var actions = {
 			dispatch("getparams",data)
 			resolve(state.pageInfo);
 		})
-	}
+	},
+	//保存当前页面状态信息
+	keep_page_content:({commit},data) => {
+		
+		commit('KEEP_PAGE_CONTENT',data)
+	},
+	//保存页面搜索信息
+	search_params: ({commit},data) => {
+		commit('SEARCH_PARAMS',data);
+
+	},
+	
 }
 export default actions;

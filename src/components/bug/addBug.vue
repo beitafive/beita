@@ -1,8 +1,8 @@
 <template>
 	<div class='addbug'>
-		<div class="anchu-normal-table">
-			<h2 class="anchu-normal-title">添加BUG</h2>
-			<div class="anchu-normal-content">
+		<div class="co-normal-table">
+			<h2 class="co-normal-title">添加BUG</h2>
+			<div class="co-normal-content">
 				<p><el-checkbox v-model="add_is_live" style="color:#cc3737">是否在线上</el-checkbox></p>
 				<p><span>选择项目</span>
 					<el-cascader
@@ -49,6 +49,16 @@
 				    v-model="addsubUser"
 				    @change="addsubchange"
 				  ></el-cascader></p>
+				 <p><span>测试者</span>
+					<el-select v-model="testId" placeholder="请选择测试" style="width:250px;">
+					    <el-option
+					      v-for="item in testArr"
+					      :key="item.value"
+					      :label="item.label"
+					      :value="item.value">
+					    </el-option>
+					</el-select>
+				</p>
 				<!-- <p><span>紧急程度</span> <input type="text" v-model="add_ep" /></p>
 				<p><span>难度</span> <input type="text" v-model="add_dp" /></p> -->
 				<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
@@ -96,11 +106,14 @@
 				addsubUserId:localStorage.token,
 				addtitle:'',//添加，标题
 				addcontent:'',//添加，内容
+				testId:'',//测试id
+				testArr:[],//测试人员列表
 			}
 		},
 		mounted(){
 			this.getProject();
 			this.getUser();
+			this.getTester();
 		},
 		methods:{
 			//获取项目列表
@@ -141,7 +154,29 @@
 					}
 				});
 			},
-			//添加任务
+			//获取测试人员列表
+			getTester(type){
+				let that = this;
+				$.ajax({
+					type:"get",
+					url:that.$api.get_options,
+					dataType:'json',
+					data:{
+						type:'test'
+					},
+					success:function(res){
+						let data = res
+						if(data.error==1){
+							that.$message(data.error_msg)
+							return;
+						}
+						if(data.error == 0){	
+							that.testArr = that.testArr.concat(data.data.user_arr);
+						}
+					}
+				});
+			},
+			//添加bug
 			addBug(){
 				let that = this;
 				let is_live = '';
@@ -158,6 +193,10 @@
 				}else{
 					is_live = 0;
 				}
+				if(that.testId == ''){
+					that.$message.error("请选择测试者")
+					return;
+				}
 				$.ajax({
 					type:"post",
 					data:{
@@ -170,7 +209,8 @@
 						ep:that.add_ep,
 						owner_id:that.addownerinfo,
 						submit_user_id:that.addsubUserId,
-						is_live:is_live
+						is_live:is_live,
+						test_id:that.testId
 					},
 					dataType:'json',
 					url:that.$api.bug.add,
@@ -181,6 +221,8 @@
 							return;
 						}
 						if(data.error==0){
+							that.$store.dispatch('changePoint').then(function(){})
+							// that.$store.dispatch("getPer","bug")
 							that.$message("添加成功");
 							// that.$router.push("/Bugcontrol");
 							that.$router.go(-1);

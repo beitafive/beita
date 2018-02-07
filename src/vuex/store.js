@@ -13,6 +13,7 @@ export default new Vuex.Store({
 		sApi:'',
 		token:null,
 		perList:'',			//权限数据
+		point:0,			//积分
 		menuIndex:'',
 		routerName:'',		//当前的路由
 		//分页数据
@@ -32,6 +33,8 @@ export default new Vuex.Store({
 		bload:false,		//加载动画是否显示
 		pageInfo:{},		//页面配置信息
 		pageIndex:1,		//当前分页
+		pageContent:{},		//保存当前页面状态信息
+		searchParams:{},	//页面搜索条件
 	},
 	getters,
 	mutations,

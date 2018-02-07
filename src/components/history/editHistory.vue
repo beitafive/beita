@@ -1,8 +1,8 @@
 <template>
 	<div class='edithistory'>
-		<div  class="anchu-normal-table">
-			<h2 class="anchu-normal-title">部门历史</h2>
-			<div  class="anchu-normal-content">
+		<div  class="co-normal-table">
+			<h2 class="co-normal-title">部门历史</h2>
+			<div  class="co-normal-content">
 				<p><span>标题</span> <input type="text" v-model="msg.title" /></p>
 				<p style="overflow:hidden;margin-top:20px;color:#333;font-size:16px;">
 				    <span style="float:left">内容</span> <textarea class="content" placeholder="请添加内容描述" v-model="msg.content"></textarea>

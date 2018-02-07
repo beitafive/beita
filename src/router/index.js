@@ -24,7 +24,8 @@ import bugStats from '@/components/bug/bugStats'			//bug统计页
 import Api from '@/components/api/Api'						//api管理
 import apiDoc from '@/components/api/apiDoc'				//api详情页
 import addApi from '@/components/api/addApi'                //添加api
-import editApi from '@/components/api/editApi'                //添加api
+import editApi from '@/components/api/editApi'              //编辑api
+import showApi from '@/components/api/showApi'              //展示api
 
 
 import documentContorl from '@/components/doc/documentContorl'	//文档管理
@@ -77,6 +78,23 @@ import deploy from '@/components/deploy/deploy'		//部署
 import myBug from '@/components/mine/myBug'     //个人中心--我的bug
 import myTask from '@/components/mine/myTask'     //个人中心--我的任务
 import myUrgentTask from '@/components/mine/myUrgentTask'     //个人中心--我的紧急任务
+import point from '@/components/mine/point'     //个人中心--我的积分
+
+import performance from '@/components/performance/performance'     //个人中心--绩效总览表
+import performanceLog from '@/components/performance/performanceLog'     //个人中心--绩效日志列表
+
+import sheet from '@/components/sheet/sheet'     //任务中心--表列表
+import addSheet from '@/components/sheet/addSheet'     //任务中心--新增
+import editSheet from '@/components/sheet/editSheet'     //任务中心--编辑
+
+import column from '@/components/column/column'     //任务中心--字段列表
+import addColumn from '@/components/column/addColumn'     //任务中心--新增
+import editColumn from '@/components/column/editColumn'     //任务中心--编辑
+
+
+
+
+
 
 Vue.use(Router)
 
@@ -97,21 +115,28 @@ const routes = [
     	{path:'/addbug',component:addBug},
     	{path:'/editbug',component:editbug},
     	{path:'/bugstats',component:bugStats},
+
     	{path:'/oaApi',component:Api},
         {path:'/addApi',component:addApi},
         {path:'/editApi',component:editApi},
+        {path:'/showApi',component:showApi},
+
     	{path:'/document',component:documentContorl},
     	{path:'/createdoc',component:createDoc},
 	    {path:'/editdoc',component:editdoc},
+        
     	{path:'/needs',component:Needs},
     	{path:'/addneed',component:addNeed},
     	{path:'/editneed',component:editNeed},
         {path:'/createNeedTask',component:createNeedTask},
+
     	{path:'/project',component:Project},
     	{path:'/module',component:Module},
+
     	{path:'/versions',component:Versions},
     	{path:'/addversion',component:addVersion},
     	{path:'/editversion',component:editVersion},
+
     	{path:'/account',component:Account},
     	{path:'/usercontrol',component:UserControl},
         {path:'/adduser',component:addUser},
@@ -136,9 +161,24 @@ const routes = [
     	{path:'/server',component:server},
 		{path:'/branch',component:branch},
     	{path:'/deploy',component:deploy},
+
         {path:'/myBug',component:myBug},
         {path:'/myUrgentTask',component:myUrgentTask},
         {path:'/myTask',component:myTask},
+        {path:'/point',component:point},
+        {path:'/performance',component:performance},
+        {path:'/performanceLog',component:performanceLog},
+
+        {path:'/sheet',component:sheet},
+        {path:'/addsheet',component:addSheet},
+        {path:'/editsheet',component:editSheet},
+
+        {path:'/column',component:column},
+        {path:'/addcolumn',component:addColumn},
+        {path:'/editcolumn',component:editColumn},
+
+
+
     ]},
     {path:'/bugcontent',component:bugcontent},
     {path:'/doc',component:doc},

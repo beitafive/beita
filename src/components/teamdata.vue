@@ -1,30 +1,27 @@
 <template>
 	<div class="w-document">
-		<div  class="anchu-inner-head">
-			<h2 class="anchu-head-title">团队统计</h2>
-			<p style="margin-top:20px;" class="anchu-search-wrap">
-				<span class="anchu-search-condition">
-					<span class="anchu-search-name">日期</span>
-					  <el-date-picker
-					      v-model="beginTime"
-					      type="date"
-					      placeholder="选择开始日期">
-					    </el-date-picker>
-					  — <el-date-picker
-					      v-model="endTime"
-					      type="date"
-					      placeholder="选择结束日期">
-					    </el-date-picker>					
+		<div  class="co-inner-head">
+			<h2 class="co-head-title">团队统计</h2>
+			<p style="margin-top:20px;" class="co-search-wrap">
+				<span class="co-search-condition">
+					<span class="co-search-name">日期</span>
+						<el-date-picker
+						    v-model="selectWeek"
+						    type="week"
+						    format="yyyy 第 WW 周"
+						    placeholder="选择周">
+						</el-date-picker>
+					 			
 				</span>
-			  <el-button type="primary" icon="search" @click="getList()" style="margin-left: 12px;">搜索</el-button>
+			  <el-button type="primary" @click="getList()" style="padding: 10px 37px;margin-left: 12px;">查询</el-button>
 			</p>
 		</div>
 		
 		<!--列表展示-->
-		<div class="anchu-inner-content">
+		<!-- <div class="co-inner-content">
 			<el-table
 		    :data="tableData"
-		    border
+		    border			
 		     @sort-change="projectSort"
 		    style="width: 100%">
 		    <el-table-column
@@ -70,16 +67,26 @@
 		      width="150">
 		    </el-table-column>
 		 </el-table>
-		</div>
+		</div> -->
+		<div id="personChart" style="min-width: 1638px;height:600px;margin: 20px;"></div>
 	</div>
 </template>
 
 <script>
+	import {formatDate} from '@/assets/js/util.js'
+	var echarts = require('echarts');
+	var personChart;
 	export default{
 		name:'documentcontorl',
 		data(){
 			return{
 				tableData:[],		//列表数据
+				personArr:[],		//人员数据
+				waitArr:[],			//未完成工作量
+				taskArr:[],			//已完成任务量
+				bugArr:[],			//bug数量
+
+				selectWeek:new Date(),		//选择周
 				beginTime:'',		
 				endTime:'',			
 				sTime:'',
@@ -106,38 +113,90 @@
 				sort_live_amount:0,
 				liveSortSwitch:false,			//线上bug排序
 
+				echarts:{},
+				
+				option2:{						//个人数据统计表
+		            title: {
+		                text: '个人统计'
+		            },
+		            tooltip: {
+		            	trigger: 'axis',
+		            	axisPointer: {
+				            type: 'cross',
+				            crossStyle: {
+				                color: '#999'
+				            }
+				        }
+		            },
+		            legend: {
+		                data:['剩余工作量','完成任务量','产生BUG数']
+		            },
+		            xAxis: {
+		                data: [],
+		                axisPointer: {
+			                type: 'shadow'
+			            }
+		            },
+		            yAxis: {},
+		            series: [
+			            {
+			                name: '剩余工作量',
+			                type: 'bar',
+			                data: []
+			            },
+			            {
+			                name: '完成任务量',
+			                type: 'bar',
+			                data: []
+			            },
+			            {
+			                name: '产生BUG数',
+			                type: 'bar',
+			                data: []
+			            }
+		            ]
+		        },
+		        num:0
+
 
 
 
 			}
 		},
 		beforeMount(){
+			// this.echarts = require('echarts');
 			this.beginTime = new Date();
 			this.endTime = new Date();
 		},
 		mounted(){
-			this.getList();
+			this.getList();	
 		},
 		methods:{
+			//获取团队数据
 			getList(order,sort){
 				let that = this;
-				if(that.beginTime != ""){
-					that.sTime = that.beginTime.getFullYear()+'-'+(that.beginTime.getMonth()+1)+'-'+that.beginTime.getDate();
-				}else{
-					that.sTime = '';
-				}
-				if(that.endTime != ""){
-					that.eTime = that.endTime.getFullYear()+'-'+(that.endTime.getMonth()+1)+'-'+that.endTime.getDate();
-				}else{
-					that.eTime = '';
-				}
+				// if(that.beginTime != ""){
+				// 	that.sTime = that.beginTime.getFullYear()+'-'+(that.beginTime.getMonth()+1)+'-'+that.beginTime.getDate();
+				// }else{
+				// 	that.sTime = '';
+				// }
+				// if(that.endTime != ""){
+				// 	that.eTime = that.endTime.getFullYear()+'-'+(that.endTime.getMonth()+1)+'-'+that.endTime.getDate();
+
+				// }else{
+				// 	that.eTime = '';
+				// }
+				this.personArr = [];
+				this.waitArr = [];
+				this.taskArr = [];
+				this.bugArr = [];
 				$.ajax({
 					type:"get",
-					url:that.$api.get_team,
+					url:that.$api.team.get_team,
 					dataType:'json',
 					data:{
-						start_date:that.sTime,
-						end_date:that.eTime,
+						start_date:formatDate(that.selectWeek),
+						end_date:'',
 						order:order,
 						sort:sort,
 					},
@@ -146,12 +205,32 @@
 							let data = res.data;
 							that.tableData = [];
 							that.tableData = Object.values(data);
-							
+							that.tableData.forEach(function(value){
+								that.personArr.push(value.realname);
+								that.waitArr.push(value.task_wait_point_amount);
+								that.taskArr.push(value.task_point_amount);
+								that.bugArr.push(value.bug_live_amount);
+							})
+							that.personStats();
 						}else{
 							that.$message.error(res.error_msg);
 						}
 					}
 				});
+			},
+			//绘制个人统计chart
+			personStats(arr){
+					
+					if (personChart != null && personChart != "" && personChart != undefined) {        
+						personChart.dispose();
+				    }
+					this.option2.xAxis.data = this.personArr;
+
+					this.option2.series[0].data = this.waitArr;
+					this.option2.series[1].data = this.taskArr;
+					this.option2.series[2].data = this.bugArr;
+					personChart = echarts.init(document.getElementById('personChart'));
+					personChart.setOption(this.option2);
 			},
 			projectSort(e){
 				let order = e.prop;

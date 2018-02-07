@@ -1,16 +1,27 @@
 <template>
 	<div class="w-needdoc">
 		<h2>{{msg.title}}</h2>
-		<p>ID：{{msg.id}}</p>
-		<p>标题：{{msg.title}}</p>
-		<p>提出者：{{msg.submit_user}}</p>
-		<p>负责人：{{msg.response_user_name}}</p>
-		<p>创建日期：{{msg.created_at}}</p>
-		<p>状态：{{msg.status_name}}</p>
-		<p>期望上线日期：{{msg.expect_online_at}}</p>
-		<p>需求日志：</p>
+		<p><span class="needLabel">ID：</span>{{msg.id}}</p>
+		<p><span class="needLabel">标题：</span>{{msg.title}}</p>
+		<p><span class="needLabel">提出者：</span>{{msg.submit_user}}</p>
+		<p><span class="needLabel">负责人：</span>{{msg.response_user_name}}</p>
+		<p><span class="needLabel">创建日期：</span>{{msg.created_at}}</p>
+		<p><span class="needLabel">状态：</span>{{msg.status_name}}</p>
+		<p><span class="needLabel">期望上线日期：</span>{{msg.expect_online_at}}</p>		
+		<p><span class="needLabel">任务列表：</span>
+			<ul v-for=" item in msg.task_info">
+				<li >
+					<h4>负责人：{{item.task_owner}}</h4>
+					任务描述：<a :href=" item.task_link"  target="_blank" style="color: blue;">{{item.task_title}}</a></li>
+			</ul>
+	        
+		</p>
+		<p><span class="needLabel">需求日志：</span></p>
 		<p v-html="msg.log"></p>
-		<p v-html="'内容：<br>'+msg.html" class="markdown"></p>
+		<p><span class="needLabel">需求备注</span></p>
+		<p v-html="msg.remark"></p>
+		<p><span class="needLabel">内容：</span></p>
+		<p v-html="msg.html" class="markdown"></p>
 	</div>
 </template>
 
@@ -72,6 +83,9 @@
 	}
 	.w-needdoc p{
 		margin: 50px 0 20px 50px;
+	}
+	.w-needdoc .needLabel{
+		font-weight: 900;
 	}
 	.markdown {
 	  word-wrap: break-word;

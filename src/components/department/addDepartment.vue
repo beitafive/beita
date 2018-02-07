@@ -1,8 +1,8 @@
 <template>
 	<div class="addDepartment">
-		<div class="anchu-normal-table">
-			<h2 class="anchu-normal-title">添加部门</h2>
-			<div class="anchu-normal-content">
+		<div class="co-normal-table">
+			<h2 class="co-normal-title">添加部门</h2>
+			<div class="co-normal-content">
 				<p>
 					<span>部门名称：</span>
 					<el-input v-model="depname" placeholder="请填写部门名称" :maxlength="12" style="width:250px"></el-input></p>

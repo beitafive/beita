@@ -22,6 +22,10 @@
 				<span>手机号</span>
 				<p>{{userData.mobile}}</p>
 			</div>
+			<!-- <div class="info-name">
+				<span>积分</span>
+				<p>{{userData.point}}</p>
+			</div> -->
 			<div class="info-name">
 				<span>入职时间</span>
 				<p>{{userData.enter_at}}</p>
@@ -41,7 +45,6 @@
 
 		</div>
 		
-
 		<el-button type="info" icon="edit" style="margin:30px;" @click="updateUserInfos = true" v-if="bedit"> 编 辑 </el-button>
 		<el-button type="info" style="margin-top:30px;" @click="editPwd = true" v-if="bcpass"> 修改密码 </el-button>
 		<!--编辑个人信息-->

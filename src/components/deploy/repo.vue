@@ -1,39 +1,54 @@
 <template>
 	<div class="w-repo" v-if="bload">
-		<div class="anchu-inner-head">
-			<h2 class="anchu-head-title">
+		<div class="co-inner-head">
+			<h2 class="co-head-title">
 				{{pageInfo.basic.page_title}}
-				<button type="info" @click="addTip=true" class="addUser">+ 添加REPO </button>
 			</h2>
-			<p style="margin-top:30px" class="anchu-search-wrap">
-				<span class="anchu-search-condition">
-					<span class="anchu-search-name">标题</span>
-					<el-input v-model="title" placeholder="请输入标题" style="width:200px;;padding-right: 12px;"></el-input>
+			<el-button  @click="addTip=true" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
+			<p style="margin-top:30px" class="co-search-wrap">
+				<span class="co-search-condition">
+					<span class="co-search-name">标题</span>
+					<el-input v-model="title" @keyup.enter.native="search"  placeholder="请输入标题" style="width:200px;;padding-right: 12px;"></el-input>
 				</span>
-				<span class="anchu-search-condition">
-					<span class="anchu-search-name">PATH</span>
-					<el-input v-model="path" placeholder="请输入path" style="width:200px;padding-right: 12px;"></el-input>
+				<span class="co-search-condition">
+					<span class="co-search-name">PATH</span>
+					<el-input v-model="path" @keyup.enter.native="search" placeholder="请输入path" style="width:200px;padding-right: 12px;"></el-input>
 				</span>				
-				<el-button type="primary" icon="search" @click="getList(1)">搜索</el-button>
+				<!-- <el-button type="primary" icon="search" @click="getList(1)">搜索</el-button> -->
+				<el-button type="primary" @click="getList('1')" style="padding: 10px 37px;margin-left: 12px;">搜索</el-button>
+			   <el-button  @click="clearSearch" style="padding: 10px 23px;">清空输入</el-button>
 			</p>
 		</div>
 		<span class="page-info">总数：{{count}}</span>
-		<div class="anchu-inner-content">
+		<div class="co-inner-content">
 			<el-table
 			    :data="tableData"
 			    border
 			    v-loading="$store.state.bload"
 				element-loading-text="这应该是网络的问题..."
 			    style="width: 100%">
-			    <el-table-column v-for="(item,index) in pageInfo.data_area" key="item" :prop="item.value" :label="item.label" :width="item.width" width="200">
-			    	
+			    <el-table-column
+			      prop="repo_id"
+			      label="ID"
+			      width="100">
+			    </el-table-column>
+			    <el-table-column
+			      prop="title"
+			      label="标题"
+			      width="200">
+			    </el-table-column>
+			    <el-table-column
+			      prop="path"
+			      label="路径"
+			      min-width="300"
+			      >
 			    </el-table-column>
 			    <el-table-column
 			      label="操作"
 			      width="200">
 			      <template scope="scope">
 			        <el-button type="text" size="small" @click="edit(scope.row,'edit')">编辑</el-button>
-			        <el-button type="text" size="small" @click="edit(scope.row,'del')">删除</el-button>
+			        <el-button type="text" size="small" @click="edit(scope.row,'del')" style="color: #FA5555;">删除</el-button>
 			      </template>
 			    </el-table-column>
 			  </el-table>
@@ -121,6 +136,9 @@
 			}
 		},
 		methods:{
+			search(){
+				this.getList(1);
+			},
 			getList(num){
 				let _this = this;
 				let path = this.path;
@@ -209,6 +227,10 @@
 						}
 					}
 				});
+			},
+			clearSearch(){
+				this.title = '';
+				this.path = '';
 			}
 		}
 	}

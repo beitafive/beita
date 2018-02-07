@@ -3,22 +3,139 @@
 		<h2>{{msg.title}}</h2>
 		<p>项目：{{msg.project_name}}</p>
 		<p>模块：{{msg.module_name}}</p>
-		<p>状态：{{msg.status}}</p>
+		<p>状态：{{msg.status == 'ALLOW'?'启用':'禁用'}}</p>
 		<p>请求协议：{{msg.tcp}}</p>
 		<p>URL：{{msg.url}}</p>
 		<p>请求方式：{{msg.method}}</p>
-		<p>请求头部：{{msg.head}}</p>
-		<p v-html="'请求参数：<br>'+msg.request"></p>
-		<p v-html="'响应结果：<br>'+msg.response"></p>
+		<p>请求头部：
+			<el-table
+		    :data="header"
+		    border
+		    style="width: 100%;margin-top: 20px;">
+			    <el-table-column
+			      prop="header"
+			      label="头部"
+			      width="300">
+			    </el-table-column>
+			    <el-table-column
+			      prop="headerinfo"
+			      label="头部信息"
+			      >
+			    </el-table-column>
+		  </el-table>
+		</p>
+		<p>请求参数：
+			<el-table
+		    :data="requestInfo"
+		    v-if="request.type == 0"
+		    border
+		    style="width: 100%;margin-top: 20px;">
+			    <el-table-column			     
+			      label="必选"
+			      width="80">
+			     <template scope="scope">
+			     	<span>{{scope.row.checkstatus == true ? '是':'否'}}</span>
+			     </template>
+			    </el-table-column>
+			    <el-table-column
+			      prop="requestName"
+			      label="参数名"
+			      min-width="200">
+			    </el-table-column>
+			    <el-table-column
+			      prop="requestDemo"
+			      label="示例"
+			      min-width="200">
+			    </el-table-column>
+			    <el-table-column
+			      prop="paramType"
+			      label="参数类型"
+			      min-width="200">
+			    </el-table-column>
+			    <el-table-column
+			      prop="paramInfo"
+			      label="参数说明"
+			      min-width="200">
+			    </el-table-column>
+		  </el-table>
+		  <p v-if="request.type == 1">
+		  	{{request.requestParmas}}
+		  </p>
+		</p>
+		<p>响应参数：
+			<el-table
+		    :data="responseParamsInfo"
+		    v-if="responseParams.type == 0"
+		    border
+		    style="width: 100%;margin-top: 20px;">
+			    <el-table-column			     
+			      label="必选"
+			      width="80">
+			     <template scope="scope">
+			     	<span>{{scope.row.resCheckStatus == true ? '是':'否'}}</span>
+			     </template>
+			    </el-table-column>
+			    <el-table-column
+			      prop="responseName"
+			      label="参数名"
+			      min-width="200">
+			    </el-table-column>
+			    <el-table-column
+			      prop="responseDemo"
+			      label="示例"
+			      min-width="200">
+			    </el-table-column>
+			    <el-table-column
+			      prop="resParamType"
+			      label="参数类型"
+			      min-width="200">
+			    </el-table-column>
+			    <el-table-column
+			      prop="responseParamInfo"
+			      label="参数说明"
+			      min-width="200">
+			    </el-table-column>
+		  </el-table>
+		  <p v-if="responseParams.type == 1">
+		  	{{responseParams.responseP}}
+		  </p>
+		</p>
+		<p class="responseTab">
+			<el-tabs v-model="activeName" >
+			    <el-tab-pane label="响应结果1" name="first"><tree-view :data="responseInfo.restextarea0" ></tree-view></el-tab-pane>
+			    <el-tab-pane label="响应结果2" name="second"><tree-view :data="responseInfo.restextarea1" ></tree-view></el-tab-pane>
+			    <el-tab-pane label="响应结果3" name="third"><tree-view :data="responseInfo.restextarea2" ></tree-view></el-tab-pane>
+			</el-tabs>
+		</p>
+			
 	</div>
 </template>
 
 <script>
+
 	export default{
 		name:'apiDoc',
 		data(){
 			return{
-				msg:''
+				msg:'',
+				activeName: 'first',
+				header:[],//请求头部
+				//请求参数信息
+				request:{
+					type:0,
+					requestParmas:''
+				},
+				requestInfo:[],//请求参数列表
+				//响应参数列表总信息
+				responseParams:{
+					type:0,
+					responseP:''
+				},
+				responseParamsInfo:[],//响应参数列表
+				responseInfo:{},//响应结果
+				info1:{},
+				resShow:true
+
 			}
 		},
 		mounted(){
@@ -37,7 +154,45 @@
 					success:function(res){
 						let data = res;
 						if(data.error == 0){
-							that.msg = data.data;				
+							that.msg = data.data;	
+							that.header = that.msg.head != ''?JSON.parse(that.msg.head):[]; 	
+							//请求参数
+							if(that.msg.request != null){
+								that.request = that.msg.request != ''?JSON.parse(that.msg.request):{};
+								that.requestInfo = that.request.requestParmas 								
+							}else{
+								that.requestInfo = []
+								that.request = {
+									type:0,
+									requestParmas:''
+								}
+							}
+							//响应参数
+							if(that.msg.response_params != null){
+								that.responseParams = that.msg.response_params != '' ? JSON.parse(that.msg.response_params):{}; 
+								that.responseParamsInfo = that.responseParams.responseP; 
+							}else{
+								that.responseParams = {
+									type:0,
+									responseP:''
+								}
+							}
+							
+							//响应结果 
+							if( that.msg.response != ''){
+								that.responseInfo = JSON.parse(that.msg.response)
+								that.resShow = true;
+								that.responseInfo.restextarea0 = JSON.parse(that.responseInfo.restextarea0)
+								that.responseInfo.restextarea1 = JSON.parse(that.responseInfo.restextarea1)
+								that.responseInfo.restextarea2 = JSON.parse(that.responseInfo.restextarea2)
+
+							}else{
+								var info = {restextarea0:1,restextarea1:2,restextarea2:3}
+								// that.resShow = false;
+								that.responseInfo = info 
+								
+
+							}
 						}
 						if(data.error == 1){
 							that.$message(data.error_msg);
@@ -73,132 +228,8 @@
 		margin: 50px 0 20px 50px;
 		font-size:18px;
 	}
-	/*html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-
-	body{
-	    color:#444;
-	    font-family:Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman', serif;
-	    font-size:13px;
-	    line-height:1.5em;
-	    padding:1em;
-	    margin:auto;
-	    max-width:42em;
-	    background:#fefefe;
+	.w-apidoc .responseTab span{
+		display: inline-block;
+		min-height: 100px;
 	}
-	
-	h1, h2, h3, h4, h5, h6 {
-	    font-weight: bold;
-	}
-	
-	h1 {
-	    color: #000000;
-	    font-size: 28px;
-	}
-	
-	h2 {
-	    border-bottom: 2px solid #CCCCCC;
-	    color: #000000;
-	    font-size: 24px;
-	}
-	
-	h3 {
-	    border-bottom: 2px solid #CCCCCC;
-	    font-size: 18px;
-	}
-	
-	h4 {
-	    font-size: 16px;
-	}
-	
-	h5 {
-	    font-size: 14px;
-	}
-	
-	h6 {
-	    color: #777777;
-	    background-color: inherit;
-	    font-size: 14px;
-	}
-	
-	hr {
-	    height: 0.2em;
-	    border: 0;
-	    color: #CCCCCC;
-	    background-color: #CCCCCC;
-	}
-	
-	p, blockquote, ul, ol, dl, li, table, pre {
-	    margin: 15px 0;
-	}
-	
-	p{
-	    margin:1em 0;
-	}
-	
-	pre { 
-	    background-color: #F8F8F8;    
-	    border: 1px solid #CCCCCC;
-	    border-radius: 3px;
-	    overflow: auto;
-	    padding: 5px;
-	}
-	
-	pre code {
-	    background-color: #F8F8F8;
-	    border: none;    
-	    padding: 0;
-	}
-	
-	code {
-	    font-family: Consolas, Monaco, Andale Mono, monospace;
-	    background-color:#F8F8F8;
-	    border: 1px solid #CCCCCC;
-	    border-radius: 3px;
-	    padding: 0 0.2em;
-	    line-height: 1;
-	}
-	
-	pre > code {
-	    border: 0;
-	    margin: 0;
-	    padding: 0;
-	}
-	
-	
-	a{ color: #0645ad; text-decoration:none;}
-	a:visited{ color: #0b0080; }
-	a:hover{ color: #06e; }
-	a:active{ color:#faa700; }
-	a:focus{ outline: thin dotted; }
-	a:hover, a:active{ outline: 0; }
-	
-	::-moz-selection{background:rgba(255,255,0,0.3);color:#000}
-	::selection{background:rgba(255,255,0,0.3);color:#000}
-	
-	a::-moz-selection{background:rgba(255,255,0,0.3);color:#0645ad}
-	a::selection{background:rgba(255,255,0,0.3);color:#0645ad}
-	
-	blockquote{
-	    color:#666666;
-	    margin:0;
-	    padding-left: 3em;
-	    border-left: 0.5em #EEE solid;
-	}
-	
-	ul, ol { margin: 1em 0; padding: 0 0 0 2em; }
-	li p:last-child { margin:0 }
-	dd { margin: 0 0 0 2em; }
-	
-	img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; max-width:100%;}
-	
-	table { border-collapse: collapse; border-spacing: 0; }
-	td { vertical-align: top; }
-	
-	@media only screen and (min-width: 480px) {
-	    body{font-size:14px;}
-	}
-	
-	@media only screen and (min-width: 768px) {
-	    body{font-size:16px;}
-	}*/
 </style>

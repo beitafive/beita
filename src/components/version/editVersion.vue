@@ -102,7 +102,7 @@
 <style scoped>
 	.editversion{
 		float:left;
-		width:85%;
+		/*width:85%;*/
 		background:#fff;
 		box-sizing:border-box;
 		padding:20px 50px 150px 30px;

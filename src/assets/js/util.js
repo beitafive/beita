@@ -5,7 +5,8 @@
 
 export const  formatDate = function(date)
 	{
-		if(date == ''){
+    
+		if(date == null || date == ''){
 			return '';
 		}else{
 			var d = new Date(date);
@@ -23,7 +24,6 @@ export const  formatDate = function(date)
 export const validateMobile = function (mobile) 
    { 
    		let that = this;
-   		console.log(mobile);
        if(mobile.length==0){ 
           return false; 
        }     
@@ -39,7 +39,6 @@ export const validateMobile = function (mobile)
    }
 export const validateEmail = function (email) 
    { 
-   		console.log(email);
        if(email.length==0){ 
           return false; 
        } 
