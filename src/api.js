@@ -100,6 +100,8 @@ const api = {
 		get_options: `${base}api/requirement/get_options`,//提出者列表
 		get_user_options: `${base}api/requirement/get_user_options`,//负责人列表
 		remark: `${base}api/requirement/remark`,//需求备注
+		add_log: `${base}api/requirement/add_log`,//需求日志添加
+
 	},
 	//用户管理
 	usercontrol:{

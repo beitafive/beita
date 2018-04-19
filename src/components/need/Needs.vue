@@ -153,6 +153,7 @@
 				    <el-button @click="editNeed(scope.row.id)" v-if="bedit" type="text" size="small">编辑</el-button>
 			      
 					<el-button @click="remarkNeed(scope.row)" v-if="bremark" type="text" size="small">需求备注</el-button>
+					<el-button @click="addNeedLog(scope.row)" v-if="blog" type="text" size="small">添加日志</el-button>
 			       <!--  <router-link :to="{path:'/needDoc',query:{id:scope.row.id}}" target="_blank" v-if="bread">
 				        <el-button type="text" size="small">查看</el-button>			       
 			        </router-link> -->
@@ -192,6 +193,20 @@
 		  <span slot="footer" class="dialog-footer">
 		    <el-button @click="cancelRemark">取 消</el-button>
 		    <el-button type="primary" @click="confirmRemark">确 定</el-button>
+		  </span>
+		</el-dialog>
+		<!-- 需求日志 -->
+		<el-dialog
+		  title="提示"
+		  :visible.sync="logTip"
+		  size="tiny">
+		  <span style="display: inline-block;padding: 10px 0;">日志内容</span>
+		  <div class="refuse-info">
+			  <textarea class="content" v-model="needLog" placeholder="请填写日志"></textarea>
+		  </div>
+		  <span slot="footer" class="dialog-footer">
+		    <el-button @click="cancelRemark">取 消</el-button>
+		    <el-button type="primary" @click="confirmLog">确 定</el-button>
 		  </span>
 		</el-dialog>
 	</div>
@@ -254,6 +269,8 @@ export default({
 			bTip:false,			//需求备注
 			remarkInfo:'',		//备注内容
 
+			logTip:false,		//需求日志
+			needLog:'',			//需求日志内容
 			
 			badd:false,				//添加
 			bedit:false,			//编辑
@@ -265,6 +282,7 @@ export default({
 			bcreate_task:false,		//创建任务
 			bhandle: false,			//处理
 			bremark: false,			//需求备注权限
+			blog: false,			//需求日志权限
 
 			refuseReason:'',		//拒绝原因
 			status: '',				//需求状态
@@ -291,6 +309,7 @@ export default({
 			that.$store.state.perList.includes("need.create_task")?that.bcreate_task=true:'';
 			that.$store.state.perList.includes("need.handle")?that.bhandle=true:'';
 			that.$store.state.perList.includes("need.remark")?that.bremark=true:'';
+			that.$store.state.perList.includes("need.log")?that.blog=true:'';
 
 			//获取页面状态信息
 			that.pageInfo();
@@ -403,7 +422,6 @@ export default({
 		},
 		//确认备注
 		confirmRemark(){
-			console.log(this.remarkInfo)
 			let that = this;
 			$.ajax({
 				type:"post",
@@ -433,9 +451,45 @@ export default({
 			this.id = row.id;
 			this.bTip = true;
 		},
+		//取消添加
 		cancelRemark(){
+			//备注信息
 			this.remarkInfo = '';
 			this.bTip = false;
+			//日志信息
+			this.needLog = '';
+			this.logTip = false;
+		},
+		//添加需求日志
+		addNeedLog(row){
+			this.id = row.id;
+			this.logTip = true; 
+		},
+		//确认需求日志
+		confirmLog(){
+			let that = this;
+			$.ajax({
+				type:"get",
+				url:that.$api.need.add_log,
+				dataType:'json',
+				data:{
+					message:this.needLog,
+					id:this.id
+				},
+				success:function(res){
+					let data = res;
+					if(data.error==1){
+						that.$message(data.error_msg)
+						return;
+					}
+					if(data.error == 0){
+						that.$message('添加成功');
+						that.needLog = '';
+						that.logTip = false;				
+					}
+				}
+			});
+			
 		},
 		//下一页
 		nextPage(){
@@ -640,7 +694,7 @@ export default({
 	}
 	.w-needs .refuse-info textarea{
 		width:100%;
-		height:160px;
+		height:230px;
 		border:1px solid #DDD;
 		resize:none;
 		border-radius:5px;

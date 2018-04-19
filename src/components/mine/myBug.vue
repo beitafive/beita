@@ -6,6 +6,9 @@
 					<!-- <router-link to="/addbug" v-if="badd">
 						<button class="addUser">+ 添加BUG</button>			
 					</router-link> -->
+
+
+					
 				</h2>
 				<el-button  @click="add"  v-if="badd" type="primary" style="padding: 10px 30px;">+ 新增</el-button>
 				<p style="margin-top:20px;" class="co-search-wrap">

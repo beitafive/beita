@@ -46,7 +46,7 @@
 			   <el-button  @click="clearSearch" style="padding: 10px 23px;">清空输入</el-button>
 			</p>
 		</div>
-		<span class="page-info">任务总数：{{count}}</span>
+		<span class="page-info">API总数：{{count}}</span>
 		<!--列表展示-->
 		<div class="co-inner-content">
 			<el-table
